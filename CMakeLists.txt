@@ -14,8 +14,8 @@ aux_source_directory(Src SRC_LIST)
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        "${PROJECT_SOURCE_DIR}/Externals/SDL2-2.0.7/lib/x86"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+        "${PROJECT_SOURCE_DIR}/Externals/SDL2-2.0.7/lib/x86/SDL2.dll"
         $<TARGET_FILE_DIR:${PROJECT_NAME}>)
 
 find_package(OpenGL REQUIRED)
