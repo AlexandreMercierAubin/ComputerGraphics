@@ -8,10 +8,12 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 
 #Do that to access SDL as an external. No need to do that for Opengl as it is on every OS.
-set(SDL2_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Externals/SDL2-2.0.7/include)
-find_library(SDL2_LIBRARY NAMES SDL2 SDL2main SDL2test 
-			  PATHS ${CMAKE_CURRENT_SOURCE_DIR}/Externals/SDL2-2.0.7/lib/x86)
-
+set(SFML_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Externals/SFML-2.4.2/include)
+find_library(SFML_LIBRARY "sfml-main" "sfml-graphics" "sfml-system" "sfml-window"
+			  PATHS ${CMAKE_CURRENT_SOURCE_DIR}/Externals/SFML-2.4.2/lib)
+if(NOT SFML_LIBRARY)
+  message(FATAL_ERROR "SFML not found")
+endif()
 
 			  
 #Sets Src as the project folder
@@ -24,8 +26,8 @@ add_executable(${PROJECT_NAME} ${SRC_LIST})
 
 #post-build copy of the dll
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-        "${PROJECT_SOURCE_DIR}/Externals/SDL2-2.0.7/lib/x86/SDL2.dll"
+    COMMAND ${CMAKE_COMMAND} -E copy 
+        "${PROJECT_SOURCE_DIR}/Externals/SFML-2.4.2/bin"
         $<TARGET_FILE_DIR:${PROJECT_NAME}>)
 
 		
@@ -34,5 +36,5 @@ find_package(OpenGL REQUIRED)
 
 
 #include and links the externals
-include_directories( ${OPENGL_INCLUDE_DIRS} ${SDL2_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${SDL2_LIBRARY})
+include_directories( ${OPENGL_INCLUDE_DIRS} ${SFML_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${SFML_LIBRARY})
