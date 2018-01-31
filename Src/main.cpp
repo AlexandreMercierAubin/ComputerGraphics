@@ -1,24 +1,12 @@
-#include <SFML/Graphics.hpp>
+// IFT3100H18_Triptyque/main.cpp
+// Exemple d'échantillonnage dans une image chargée en mémoire pour en extraire 3 nouvelle images.
+// Ces nouvelles images sont ensuite dessinées de gauche à droite avec un espacement horizontal et vertical.
 
-int main()
+#include "ofMain.h"
+#include "application.h"
+
+int main( )
 {
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
-
-    while (window.isOpen())
-    {
-        sf::Event event;
-        while (window.pollEvent(event))
-        {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-
-        window.clear();
-        window.draw(shape);
-        window.display();
-    }
-
-    return 0;
+  ofSetupOpenGL(512, 512, OF_WINDOW);
+  ofRunApp(new Application());
 }
