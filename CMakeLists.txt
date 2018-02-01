@@ -22,7 +22,7 @@ add_executable(${PROJECT_NAME} ${SRC_LIST})
 
 #post-build copy of the dll
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy 
+    COMMAND ${CMAKE_COMMAND} -E copy_directory 
         "${PROJECT_SOURCE_DIR}/Externals/SFML-2.4.2/bin"
         $<TARGET_FILE_DIR:${PROJECT_NAME}>)
 
