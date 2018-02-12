@@ -8,18 +8,27 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 
 #Do that to access SDL as an external. No need to do that for Opengl as it is on every OS.
-if(CMAKE_CL_64)
-    # x64
-	set(sdlExternal /Externals/SDL2-2.0.7/lib/x64)
-else()
-    # good luck
-	set(sdlExternal /Externals/SDL2-2.0.7/lib/x86)
-endif()
 
-find_library(SDL2_LIBRARY NAMES SDL2 SDL2main SDL2test 
+if(WIN32 OR MSVS OR MSYS OR MINGW)
+    #to detect Windows compilers
+	if(CMAKE_CL_64)
+		# x64
+		set(sdlExternal /Externals/SDL2-2.0.7/lib/x64)
+	else()
+		# good luck
+		set(sdlExternal /Externals/SDL2-2.0.7/lib/x86)
+	endif()
+	
+	find_library(SDL2_LIBRARY NAMES SDL2 SDL2main SDL2test 
 			  PATHS ${CMAKE_CURRENT_SOURCE_DIR}${sdlExternal})
-
-set(SDL2_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Externals/SDL2-2.0.7/include)
+			  
+	set(SDL2_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Externals/SDL2-2.0.7/include)
+elseif(APPLE)
+    # Really dude?
+elseif(UNIX AND NOT APPLE)
+    #Linux, you are cooler than that apple dude
+	find_package(SDL2 REQUIRED)
+endif()
 
 			  
 #Sets Src as the project folder
@@ -30,11 +39,13 @@ aux_source_directory(Src SRC_LIST)
 add_executable(${PROJECT_NAME} ${SRC_LIST})
 
 
-#post-build copy of the dll
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-        "${PROJECT_SOURCE_DIR}${sdlExternal}/SDL2.dll"
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>)
+if(WIN32 OR MSVS OR MSYS OR MINGW)
+	#post-build copy of the dll for window users
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+			"${PROJECT_SOURCE_DIR}${sdlExternal}/SDL2.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+endif()
 
 		
 #A simple find_package works to get opengl
