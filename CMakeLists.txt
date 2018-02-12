@@ -8,10 +8,18 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 
 #Do that to access SDL as an external. No need to do that for Opengl as it is on every OS.
-set(SDL2_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Externals/SDL2-2.0.7/include)
-find_library(SDL2_LIBRARY NAMES SDL2 SDL2main SDL2test 
-			  PATHS ${CMAKE_CURRENT_SOURCE_DIR}/Externals/SDL2-2.0.7/lib/x86)
+if(CMAKE_CL_64)
+    # x64
+	set(sdlExternal /Externals/SDL2-2.0.7/lib/x64)
+else()
+    # good luck
+	set(sdlExternal /Externals/SDL2-2.0.7/lib/x86)
+endif()
 
+find_library(SDL2_LIBRARY NAMES SDL2 SDL2main SDL2test 
+			  PATHS ${CMAKE_CURRENT_SOURCE_DIR}${sdlExternal})
+
+set(SDL2_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Externals/SDL2-2.0.7/include)
 
 			  
 #Sets Src as the project folder
@@ -25,7 +33,7 @@ add_executable(${PROJECT_NAME} ${SRC_LIST})
 #post-build copy of the dll
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different 
-        "${PROJECT_SOURCE_DIR}/Externals/SDL2-2.0.7/lib/x86/SDL2.dll"
+        "${PROJECT_SOURCE_DIR}${sdlExternal}/SDL2.dll"
         $<TARGET_FILE_DIR:${PROJECT_NAME}>)
 
 		
