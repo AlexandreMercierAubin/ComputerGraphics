@@ -4,9 +4,9 @@
 class Renderer
 {
 public:
-	void setup(SDL_Window * window, SDL_Surface* screenSurface);
-	void draw();
-	void exit();
+	void setupRenderer(SDL_Window * window, SDL_Surface* screenSurface);
+	void drawRenderer();
+	void deleteRenderer();
 private:
 	SDL_Window * window;
 	SDL_Surface* screenSurface;
