@@ -33,7 +33,7 @@ void Application::setup()
 			//Get window surface
 			screenSurface = SDL_GetWindowSurface(window);
 
-			renderer.setup(window, screenSurface);
+			renderer.setupRenderer(window, screenSurface);
 		}
 	}
 
@@ -43,7 +43,7 @@ void Application::setup()
 
 void Application::draw()
 {
-	renderer.draw();
+	renderer.drawRenderer();
 }
 
 void Application::exit()
@@ -51,7 +51,7 @@ void Application::exit()
 	SDL_Log("<app::exit>");
 
 	//Destroy renderer
-	renderer.exit();
+	renderer.deleteRenderer();
 
 	//Release surface
 	SDL_FreeSurface(screenSurface);
