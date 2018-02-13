@@ -56,11 +56,6 @@ void Application::setupWindow(SDL_Window **window, SDL_GLContext &context)
 	//SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	/* This makes our buffer swap syncronized with the monitor's vertical refresh */
 	SDL_GL_SetSwapInterval(1);
-
-	#ifndef __APPLE__
-		glewExperimental = GL_TRUE;
-		glewInit();
-	#endif
 }
 
 void Application::draw()
