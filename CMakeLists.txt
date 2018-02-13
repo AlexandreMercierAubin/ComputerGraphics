@@ -14,27 +14,39 @@ if(WIN32 OR MSVS OR MSYS OR MINGW)
 	if(CMAKE_CL_64)
 		MESSAGE("Building ofr X64")
 		set(sdlExternal /Externals/SDL2-2.0.7/lib/x64)
+		set(glewExternal /Externals/glew-2.1.0/lib/Release/x64)
+		
 	else()
 		MESSAGE("Building for x86")
 		set(sdlExternal /Externals/SDL2-2.0.7/lib/x86)
+		set(glewExternal /Externals/glew-2.1.0/lib/Release/Win32)
+		
 	endif()
 	
 	find_library(SDL2_LIBRARIES NAMES SDL2 SDL2main SDL2test 
 			  PATHS ${CMAKE_CURRENT_SOURCE_DIR}${sdlExternal})
+	find_library(GLEW_LIBRARIES NAMES GLEW glew32 glew glew32s
+			  PATHS ${CMAKE_CURRENT_SOURCE_DIR}${glewExternal})
 			  
 	set(SDL2_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Externals/SDL2-2.0.7/include)
-	MESSAGE("SDL2 found:"${SDL2_FOUND})
+	set(GLEW_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Externals/glew-2.1.0/include)
+	
+	MESSAGE("SDL2 found:" ${SDL2_FOUND})
+	MESSAGE("GLEW found:" ${GLEW_FOUND})
 elseif(APPLE)
 	MESSAGE("Really dude? anyway, this might or might not work")
-	INCLUDE(FindPkgConfig)
-	PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
-	MESSAGE("SDL2 found:"${SDL2_FOUND})
+	find_package(GLEW REQUIRED)
+	find_package(SDL2 REQUIRED)
+	MESSAGE("SDL2 found:" ${SDL2_FOUND})
+	MESSAGE("GLEW found:" ${GLEW_FOUND})
 elseif(UNIX AND NOT APPLE)
 	MESSAGE("Linux, you are cooler than that apple dude")
 	find_package(SDL2 REQUIRED)
+	find_package(GLEW REQUIRED)
 	#INCLUDE(FindPkgConfig)
 	#PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
-	MESSAGE("SDL2 found:"${SDL2_FOUND})
+	MESSAGE("SDL2 found:" ${SDL2_FOUND})
+	MESSAGE("GLEW found:" ${GLEW_FOUND})
 endif()
 
 			  
@@ -52,13 +64,19 @@ if(WIN32 OR MSVS OR MSYS OR MINGW)
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different 
 			"${PROJECT_SOURCE_DIR}${sdlExternal}/SDL2.dll"
 			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+			
+	#post-build copy of the dll for window users
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+			"${PROJECT_SOURCE_DIR}${glewExternal}/glew32.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
 endif()
 
 		
 #A simple find_package works to get opengl
 find_package(OpenGL REQUIRED)
-MESSAGE("OpenGL found:"${OpenGL_FOUND})
+MESSAGE("OpenGL found:" ${OpenGL_FOUND})
 
 #include and links the externals
-include_directories(${OPENGL_INCLUDE_DIRS} ${SDL2_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES})
+include_directories(${OPENGL_INCLUDE_DIRS} ${SDL2_INCLUDE_DIR} ${GLEW_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${GLEW_LIBRARIES})

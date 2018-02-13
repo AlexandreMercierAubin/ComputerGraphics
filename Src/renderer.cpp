@@ -1,21 +1,26 @@
 #include "renderer.h"
 
-void Renderer::setupRenderer(SDL_Window * window, SDL_Surface* screenSurface)
+void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 {
 	this->window = window;
-	this->screenSurface = screenSurface;
-	sdlRenderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 }
 
 void Renderer::drawRenderer()
 {
-	SDL_SetRenderDrawColor(sdlRenderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-	SDL_RenderClear(sdlRenderer);
 
-	SDL_SetRenderDrawColor(sdlRenderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-	SDL_RenderDrawLine(sdlRenderer, 0, 0, 400, 400);
+	glClearColor(0.0, 255.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
 
-	SDL_RenderPresent(sdlRenderer);
+	//oldGlTest
+	glLineWidth(2.5);
+	glColor3f(1.0, 0.0, 0.0);
+	glBegin(GL_LINES);
+	glVertex3f(0.0, 0.0, 0.0);
+	glVertex3f(15, 0, 0);
+	glEnd();
+
+	//swap buffer
+	SDL_GL_SwapWindow(window);
 
 	//Wait two seconds
 	SDL_Delay(50000);
