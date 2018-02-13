@@ -77,6 +77,8 @@ endif()
 find_package(OpenGL REQUIRED)
 MESSAGE("OpenGL found:" ${OpenGL_FOUND})
 
+set(GLM_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Externals/glm-0.9.9-a2)
+
 #include and links the externals
-include_directories(${OPENGL_INCLUDE_DIRS} ${SDL2_INCLUDE_DIR} ${GLEW_INCLUDE_DIR})
+include_directories(${OPENGL_INCLUDE_DIRS} ${SDL2_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLM_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${GLEW_LIBRARIES})

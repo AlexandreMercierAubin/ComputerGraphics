@@ -7,6 +7,7 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 
 void Renderer::drawRenderer()
 {
+	GLuint testLib;
 
 	glClearColor(0.0, 255.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT);
