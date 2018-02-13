@@ -37,5 +37,5 @@ private:
 	void MatTranslation(int index);
 
 	//testfunc
-	void Renderer::courbeKoch(glm::vec3 pointDebut, glm::vec3 pointFin, int nbIterations);
+	void courbeKoch(glm::vec3 pointDebut, glm::vec3 pointFin, int nbIterations);
 };

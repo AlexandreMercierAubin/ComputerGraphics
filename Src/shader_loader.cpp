@@ -1,11 +1,11 @@
-#include "Shader_Loader.h" 
+#include "shader_loader.h" 
 
 using namespace Core;
 
 Shader_Loader::Shader_Loader(void) {}
 Shader_Loader::~Shader_Loader(void) {}
 
-std::string Shader_Loader::ReadShader(char *filename)
+std::string Shader_Loader::ReadShader(std::string filename)
 {
 
 	std::string shaderCode;
@@ -13,7 +13,7 @@ std::string Shader_Loader::ReadShader(char *filename)
 
 	if (!file.good())
 	{
-		std::cout << strerror(errno) << " Can't read shader " << std::experimental::filesystem::current_path() << filename << std::endl;
+		std::cout << strerror(errno) << " Can't read shader " << filename << std::endl;
 		std::terminate();
 	}
 
@@ -26,7 +26,7 @@ std::string Shader_Loader::ReadShader(char *filename)
 }
 
 GLuint Shader_Loader::CreateShader(GLenum shaderType, std::string
-	source, char* shaderName)
+	source, std::string shaderName)
 {
 
 	int compile_result = 0;
@@ -53,8 +53,8 @@ GLuint Shader_Loader::CreateShader(GLenum shaderType, std::string
 	return shader;
 }
 
-GLuint Shader_Loader::CreateProgram(char* vertexShaderFilename,
-	char* fragmentShaderFilename)
+GLuint Shader_Loader::CreateProgram(std::string vertexShaderFilename,
+                                    std::string fragmentShaderFilename)
 {
 
 	//read the shader files and save the code
@@ -62,7 +62,7 @@ GLuint Shader_Loader::CreateProgram(char* vertexShaderFilename,
 	std::string fragment_shader_code = ReadShader(fragmentShaderFilename);
 
 	GLuint vertex_shader = CreateShader(GL_VERTEX_SHADER, vertex_shader_code, "vertex shader");
-	GLuint fragment_shader = CreateShader(GL_FRAGMENT_SHADER, fragment_shader_code, "fragment shader");
+	GLuint fragment_shader = CreateShader(GL_FRAGMENT_SHADER, fragment_shader_code, "fragment shader" );
 
 	int link_result = 0;
 	//create the program handle, attatch the shaders and link it

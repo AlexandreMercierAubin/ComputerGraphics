@@ -47,6 +47,8 @@ elseif(UNIX AND NOT APPLE)
 	#PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
 	MESSAGE("SDL2 found:" ${SDL2_FOUND})
 	MESSAGE("GLEW found:" ${GLEW_FOUND})
+
+	set (CMAKE_CXX_FLAGS "-std=c++14")
 endif()
 
 			  
