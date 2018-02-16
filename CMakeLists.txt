@@ -67,14 +67,19 @@ if(WIN32 OR MSVS OR MSYS OR MINGW)
 			"${PROJECT_SOURCE_DIR}${sdlExternal}/SDL2.dll"
 			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
 			
-	#post-build copy of the dll for window users
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different 
 			"${PROJECT_SOURCE_DIR}${glewExternal}/glew32.dll"
 			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+			
+
 endif()
 
-		
+#add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+#		COMMAND ${CMAKE_COMMAND} -E copy_directory 
+#			"${PROJECT_SOURCE_DIR}/Resources"
+#			$<TARGET_FILE_DIR:${PROJECT_NAME}>/Resources)
+
 #A simple find_package works to get opengl
 find_package(OpenGL REQUIRED)
 MESSAGE("OpenGL found:" ${OpenGL_FOUND})

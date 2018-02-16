@@ -7,6 +7,9 @@
 #include<vector>
 #include "shader_loader.h"
 
+#include "kochFragmentShader.h"
+#include "kochVertexShader.h"
+
 class Renderer
 {
 public:

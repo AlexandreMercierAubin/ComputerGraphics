@@ -23,7 +23,9 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 void Renderer::initShaders()
 {
 	Core::Shader_Loader loader;
-	shaderID = loader.CreateProgram("vertexShaderKoch.glsl", "fragmentShaderKoch.glsl");
+	kochFragmentShader fshader;
+	kochVertexShader vshader;
+	shaderID = loader.CreateProgram(vshader, fshader);
 
 	glGenBuffers(1, &bufferID);
 	glGenBuffers(1, &bufferColorID);

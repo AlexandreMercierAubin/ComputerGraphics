@@ -1,4 +1,9 @@
-#version 430 core      
+#pragma once
+#include "abstractShader.h"
+class kochVertexShader : public abstractShader
+{
+	std::string vshader =
+		R"(#version 430 core      
                     
 layout(location = 0) in vec3 in_vertice; 
 layout(location = 1) in vec3 in_color;
@@ -15,4 +20,12 @@ void main()
   fragColor= in_color;
 
 }
+)";
 
+
+public:
+	virtual std::string getShader()
+	{
+		return vshader;
+	}
+};
