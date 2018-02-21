@@ -1,14 +1,17 @@
 #pragma once
-#include "SDL2/SDL.h"
+#include<vector>
+
+#include <SDL2/SDL.h>
 #include <GL/glew.h>
+#include <assimp/Importer.hpp>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include<vector>
-#include "shader_loader.h"
 
-#include "kochFragmentShader.h"
-#include "kochVertexShader.h"
+#include "KochFragmentShader.h"
+#include "KochVertexShader.h"
+#include "ShaderLoader.h"
 
 class Renderer
 {

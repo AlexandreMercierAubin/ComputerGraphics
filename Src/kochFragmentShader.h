@@ -1,8 +1,8 @@
 #pragma once
-#include "abstractShader.h"
+#include "AbstractShader.h"
 
 
-class kochFragmentShader : public abstractShader
+class KochFragmentShader : public AbstractShader
 {
 	std::string fshader =
 R"(#version 430 core

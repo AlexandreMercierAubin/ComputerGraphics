@@ -1,6 +1,6 @@
 #pragma once
 #include "SDL2/SDL.h"
-#include "renderer.h"
+#include "Renderer.h"
 #include <GL/glew.h>
 
 class Application

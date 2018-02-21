@@ -9,22 +9,22 @@
 #include <iostream>
 #include<fstream>
 #include <experimental/filesystem>
-#include "abstractShader.h"
+#include "AbstractShader.h"
 #include<sstream>
 
 namespace Core
 {
-	class Shader_Loader
+	class ShaderLoader
 	{
 	private:
-		std::string ReadShader(abstractShader &absShader);
+		std::string ReadShader(AbstractShader &absShader);
 		GLuint CreateShader(GLenum shaderType, std::string source, std::string shadername);
 	
 	public:
-		Shader_Loader(void);
-		~Shader_Loader(void);
+		ShaderLoader(void);
+		~ShaderLoader(void);
 
-		GLuint CreateProgram(abstractShader &absVertexShader, abstractShader &absFragmentShader);
+		GLuint CreateProgram(AbstractShader &absVertexShader, AbstractShader &absFragmentShader);
 	};
 }
 

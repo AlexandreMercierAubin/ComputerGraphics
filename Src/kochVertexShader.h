@@ -1,6 +1,6 @@
 #pragma once
-#include "abstractShader.h"
-class kochVertexShader : public abstractShader
+#include "AbstractShader.h"
+class KochVertexShader : public AbstractShader
 {
 	std::string vshader =
 		R"(#version 430 core      

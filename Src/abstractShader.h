@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-class abstractShader
+class AbstractShader
 {
 	public:
 		virtual std::string getShader() 

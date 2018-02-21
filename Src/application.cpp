@@ -1,4 +1,5 @@
-#include "application.h"
+#pragma once
+#include "Application.h"
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
@@ -60,14 +61,43 @@ void Application::setupWindow(SDL_Window **window, SDL_GLContext &context)
 
 void Application::draw()
 {
-	renderer.drawRenderer();
+	SDL_Event event;
+	int quit = 0;
+
+	while (!quit) {
+
+		/* Poll for events */
+		while (SDL_PollEvent(&event)) {
+
+			switch (event.type) {
+				/* Keyboard event */
+				/* Pass the event data onto PrintKeyInfo() */
+			case SDL_KEYDOWN:
+			case SDL_KEYUP:
+				if (event.key.keysym.sym == SDLK_ESCAPE)
+					SDL_Quit();
+				break;
+
+				/* SDL_QUIT event (window close) */
+			case SDL_QUIT:
+				quit = 1;
+				break;
+
+			default:
+				renderer.drawRenderer();
+				break;
+			}
+
+		}
+
+	}
 }
 
 void Application::exit()
 {
 	SDL_Log("<app::exit>");
 
-	//Destroy renderer
+	//Destroy Renderer
 	renderer.deleteRenderer();
 
 	//Destroy window

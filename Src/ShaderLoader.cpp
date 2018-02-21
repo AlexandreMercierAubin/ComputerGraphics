@@ -1,11 +1,12 @@
-#include "shader_loader.h" 
+#pragma once
+#include "ShaderLoader.h" 
 
 using namespace Core;
 
-Shader_Loader::Shader_Loader(void) {}
-Shader_Loader::~Shader_Loader(void) {}
+ShaderLoader::ShaderLoader(void) {}
+ShaderLoader::~ShaderLoader(void) {}
 
-std::string Shader_Loader::ReadShader(abstractShader &absShader)
+std::string ShaderLoader::ReadShader(AbstractShader &absShader)
 {
 
 	std::string shaderCode;
@@ -19,7 +20,7 @@ std::string Shader_Loader::ReadShader(abstractShader &absShader)
 	return shaderCode;
 }
 
-GLuint Shader_Loader::CreateShader(GLenum shaderType, std::string
+GLuint ShaderLoader::CreateShader(GLenum shaderType, std::string
 	source, std::string shaderName)
 {
 
@@ -47,7 +48,7 @@ GLuint Shader_Loader::CreateShader(GLenum shaderType, std::string
 	return shader;
 }
 
-GLuint Shader_Loader::CreateProgram(abstractShader &absVertexShader, abstractShader &absFragmentShader)
+GLuint ShaderLoader::CreateProgram(AbstractShader &absVertexShader, AbstractShader &absFragmentShader)
 {
 
 	//read the shader files and save the code

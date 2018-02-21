@@ -1,4 +1,5 @@
-#include "renderer.h"
+#pragma once
+#include "Renderer.h"
 
 
 void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
@@ -22,9 +23,9 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 
 void Renderer::initShaders()
 {
-	Core::Shader_Loader loader;
-	kochFragmentShader fshader;
-	kochVertexShader vshader;
+	Core::ShaderLoader loader;
+	KochFragmentShader fshader;
+	KochVertexShader vshader;
 	shaderID = loader.CreateProgram(vshader, fshader);
 
 	glGenBuffers(1, &bufferID);
