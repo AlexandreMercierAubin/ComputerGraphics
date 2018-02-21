@@ -9,7 +9,8 @@ University project repository
 * don't forget to install sdl before running!    
 apt-get install libsdl2-dev    
 apt-get install libglew-dev    
-
+apt-get install libassimp3v5
+apt-get install libsdl2-image-dev
 
 ## OSX
 * it wasn't tested on mac, so have fun!
