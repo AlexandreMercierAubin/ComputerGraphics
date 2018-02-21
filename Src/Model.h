@@ -1,5 +1,4 @@
 #pragma once
-// Std. Includes
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -7,12 +6,11 @@
 #include <map>
 #include <vector>
 using namespace std;
-// GL Includes
+
 #include <GL\glew.h>
 #include <glm\glm.hpp>
 #include <glm\gtc\matrix_transform.hpp>
 #include <glm\gtc\type_ptr.hpp>
-//#include "..\Dependencies\soil\src\SOIL.h"
 #include <assimp\Importer.hpp>
 #include <assimp\scene.h>
 #include <assimp\postprocess.h>
@@ -24,10 +22,7 @@ using namespace std;
 
 class Model
 {
-public:
-	/*  Functions   */
-	// Default Constructor
-	
+public:	
 	Model();
 	// Constructor, expects a filepath to a 3D Model.
 	Model(GLchar* path, int colorType);
