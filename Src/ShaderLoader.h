@@ -17,14 +17,13 @@ namespace Core
 	class ShaderLoader
 	{
 	private:
-		std::string ReadShader(AbstractShader &absShader);
 		GLuint CreateShader(GLenum shaderType, std::string source, std::string shadername);
 	
 	public:
 		ShaderLoader(void);
 		~ShaderLoader(void);
 
-		GLuint CreateProgram(AbstractShader &absVertexShader, AbstractShader &absFragmentShader);
+		GLuint CreateProgram(AbstractShader &absShader);
 	};
 }
 

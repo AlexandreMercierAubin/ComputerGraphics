@@ -6,20 +6,6 @@ using namespace Core;
 ShaderLoader::ShaderLoader(void) {}
 ShaderLoader::~ShaderLoader(void) {}
 
-std::string ShaderLoader::ReadShader(AbstractShader &absShader)
-{
-
-	std::string shaderCode;
-	std::cout << absShader.getShader();
-	std::stringstream file;
-	file << absShader.getShader();
-	file.seekg(0, std::ios::end);
-	shaderCode.resize((unsigned int)file.tellg());
-	file.seekg(0, std::ios::beg);
-	file.read(&shaderCode[0], shaderCode.size());
-	return shaderCode;
-}
-
 GLuint ShaderLoader::CreateShader(GLenum shaderType, std::string
 	source, std::string shaderName)
 {
@@ -48,12 +34,12 @@ GLuint ShaderLoader::CreateShader(GLenum shaderType, std::string
 	return shader;
 }
 
-GLuint ShaderLoader::CreateProgram(AbstractShader &absVertexShader, AbstractShader &absFragmentShader)
+GLuint ShaderLoader::CreateProgram(AbstractShader &absShader)
 {
 
 	//read the shader files and save the code
-	std::string vertex_shader_code = ReadShader(absVertexShader);
-	std::string fragment_shader_code = ReadShader(absFragmentShader);
+	std::string vertex_shader_code = absShader.getVertexShader();
+	std::string fragment_shader_code = absShader.getFragmentShader();
 
 	GLuint vertex_shader = CreateShader(GL_VERTEX_SHADER, vertex_shader_code, "vertex shader");
 	GLuint fragment_shader = CreateShader(GL_FRAGMENT_SHADER, fragment_shader_code, "fragment shader" );

@@ -14,18 +14,23 @@ if(WIN32 OR MSVS OR MSYS OR MINGW)
 	if(CMAKE_CL_64)
 		MESSAGE("Building ofr X64")
 		set(sdlExternal /Externals/SDL2-2.0.7/lib/x64)
+		set(sdlImageExternal /Externals/SDL2_image-2.0.2/lib/x64)
 		set(glewExternal /Externals/glew-2.1.0/lib/Release/x64)
 		set(assimpExternal /Externals/glew-2.1.0/lib/x64)
 		
 	else()
 		MESSAGE("Building for x86")
 		set(sdlExternal /Externals/SDL2-2.0.7/lib/x86)
+		set(sdlImageExternal /Externals/SDL2_image-2.0.2/lib/x86)
 		set(glewExternal /Externals/glew-2.1.0/lib/Release/Win32)
 		set(assimpExternal /Externals/Assimp/lib/x86)
 		
 	endif()
 	
-	find_library(SDL2_LIBRARIES NAMES SDL2 SDL2main SDL2test SDL_image
+	find_library(SDL2_LIBRARIES NAMES SDL2 SDL2main SDL2test
+			  PATHS ${CMAKE_CURRENT_SOURCE_DIR}${sdlExternal})
+			  
+	find_library(SDL2IMAGE_LIBRARIES NAMES SDL2_image
 			  PATHS ${CMAKE_CURRENT_SOURCE_DIR}${sdlExternal})
 			  
 	find_library(GLEW_LIBRARIES NAMES GLEW glew32 glew glew32s
@@ -35,6 +40,7 @@ if(WIN32 OR MSVS OR MSYS OR MINGW)
 			  PATHS ${CMAKE_CURRENT_SOURCE_DIR}${assimpExternal})
 			  
 	set(SDL2_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Externals/SDL2-2.0.7/include)
+	set(SDL2IMAGE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Externals/SDL2-2.0.7/include)
 	set(GLEW_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Externals/glew-2.1.0/include)
 	set(ASSIMP_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Externals/Assimp/include)
 	
@@ -57,6 +63,7 @@ endif()
 
 
 MESSAGE("SDL2 found:" ${SDL2_FOUND})
+MESSAGE("SDL2 found:" ${SDL2IMAGE_FOUND})
 MESSAGE("GLEW found:" ${GLEW_FOUND})
 MESSAGE("ASSIMP found:" ${ASSIMP_FOUND})
 		  
@@ -83,6 +90,26 @@ if(WIN32 OR MSVS OR MSYS OR MINGW)
 			
 	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+			"${PROJECT_SOURCE_DIR}${sdlExternal}/libpng16-16.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+			
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+			"${PROJECT_SOURCE_DIR}${sdlExternal}/zlib1.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+			
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+			"${PROJECT_SOURCE_DIR}${sdlExternal}/libtiff-5.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+			
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+			"${PROJECT_SOURCE_DIR}${sdlExternal}/libwebp-7.dll"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
+			
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_if_different 
 			"${PROJECT_SOURCE_DIR}${glewExternal}/glew32.dll"
 			$<TARGET_FILE_DIR:${PROJECT_NAME}>)
 	
@@ -94,17 +121,17 @@ if(WIN32 OR MSVS OR MSYS OR MINGW)
 
 endif()
 
-#add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-#		COMMAND ${CMAKE_COMMAND} -E copy_directory 
-#			"${PROJECT_SOURCE_DIR}/Resources"
-#			$<TARGET_FILE_DIR:${PROJECT_NAME}>/Resources)
-
 #A simple find_package works to get opengl
 find_package(OpenGL REQUIRED)
 MESSAGE("OpenGL found:" ${OpenGL_FOUND})
 
 set(GLM_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Externals/glm-0.9.9-a2)
 
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory 
+			"${PROJECT_SOURCE_DIR}/Resources"
+			$<TARGET_FILE_DIR:${PROJECT_NAME}>/Resources)
+
 #include and links the externals
-include_directories(${OPENGL_INCLUDE_DIRS} ${SDL2_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLM_INCLUDE_DIR} ${ASSIMP_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES})
+include_directories(${OPENGL_INCLUDE_DIRS} ${SDL2_INCLUDE_DIR} ${SDL2IMAGE_INCLUDE_DIR} ${GLEW_INCLUDE_DIR} ${GLM_INCLUDE_DIR} ${ASSIMP_INCLUDE_DIR})
+target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES} ${GLEW_LIBRARIES} ${ASSIMP_LIBRARIES})

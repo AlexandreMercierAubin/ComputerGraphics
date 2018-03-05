@@ -48,13 +48,13 @@ void Application::setupWindow(SDL_Window **window, SDL_GLContext &context)
 
 	//set the gl version to be loaded
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 5);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 	/* Turn on double buffering with a 24bit Z buffer.
 	* You may need to change this to 16 or 32 for your system */
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	//SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	/* This makes our buffer swap syncronized with the monitor's vertical refresh */
 	SDL_GL_SetSwapInterval(1);
 }
@@ -73,12 +73,13 @@ void Application::draw()
 				/* Keyboard event */
 				/* Pass the event data onto PrintKeyInfo() */
 			case SDL_KEYDOWN:
-			case SDL_KEYUP:
-				if (event.key.keysym.sym == SDLK_ESCAPE)
+				if (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q)
 					SDL_Quit();
 				break;
 
-				/* SDL_QUIT event (window close) */
+			case SDL_KEYUP:
+				break;
+
 			case SDL_QUIT:
 				quit = 1;
 				break;

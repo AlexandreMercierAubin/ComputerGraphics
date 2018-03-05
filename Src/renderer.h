@@ -9,9 +9,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "KochFragmentShader.h"
-#include "KochVertexShader.h"
+#include "KochShader.h"
 #include "ShaderLoader.h"
+#include "ModelShader.h"
+#include "Model.h"
+#include "Scene.h"
 
 class Renderer
 {
@@ -19,6 +21,9 @@ public:
 	void setupRenderer(SDL_Window * window, SDL_GLContext *context);
 	void drawRenderer();
 	void deleteRenderer();
+
+	Scene scene;
+	glm::mat4 perspective;
 private:
 	SDL_Window * window;
 	SDL_GLContext gl;
@@ -34,14 +39,23 @@ private:
 	GLuint matRotation;
 	GLuint matScale;
 	GLuint matTranslation;
+	glm::mat4 MatView(bool staticPos);
 
 	float testScale;
 
 	void initShaders();
 	void MatScale();
 	void MatRotation();
-	void MatTranslation(int index);
+	void MatTranslation();
 
 	//testfunc
 	void courbeKoch(glm::vec3 pointDebut, glm::vec3 pointFin, int nbIterations);
+	Model g_requinModel;
+	GLuint kochShaderID;
+	GLuint kochBufferID;
+	GLuint kochBufferColorID;
+
+
+	float g_angleLumiere = glm::radians(270.0f);
+	float g_intensiteLumiere = 1;
 };

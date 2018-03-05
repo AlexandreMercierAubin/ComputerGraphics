@@ -1,6 +1,13 @@
 #pragma once
 #include "Renderer.h"
 
+glm::vec3 g_direction(0.0, 0.0, 1.0);
+glm::vec4 g_uniformCouleur(1.0, 1.0, 1.0, 1.0);
+
+glm::vec3 g_position(0.0, 0.0, 1.0);
+glm::vec3 g_orientation(0.0, 1.0, 0.0);
+GLfloat g_yaw = -90;
+GLfloat g_pitch = 0;
 
 void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 {
@@ -12,33 +19,45 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 	#endif
 
 	initShaders();
-	glUseProgram(shaderID);
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthFunc(GL_LEQUAL);
+
 	BackgroundColor.push_back(glm::vec3(0.0, 1.0, 1.0));
 	srand(static_cast <unsigned> (time(0)));
 	testScale = 0;
 
-
+	g_requinModel = Model("Resources/megalodon/megalodon.FBX",4);
 }
 
 void Renderer::initShaders()
 {
 	Core::ShaderLoader loader;
-	KochFragmentShader fshader;
-	KochVertexShader vshader;
-	shaderID = loader.CreateProgram(vshader, fshader);
+	ModelShader modelShader;
+	KochShader kochShader;
+	kochShaderID = loader.CreateProgram(kochShader);
+	shaderID = loader.CreateProgram(modelShader);
 
-	glGenBuffers(1, &bufferID);
-	glGenBuffers(1, &bufferColorID);
+	glGenBuffers(1, &kochBufferID);
+	glGenBuffers(1, &kochBufferColorID);
 
-	matRotation = glGetUniformLocation(shaderID, "matRotation");
-	matScale = glGetUniformLocation(shaderID, "matScale");
-	matTranslation = glGetUniformLocation(shaderID, "matTranslation");
+
+	//matRotation = glGetUniformLocation(kochShaderID, "matRotation");
+	//matScale = glGetUniformLocation(kochShaderID, "matScale");
+	//matTranslation = glGetUniformLocation(kochShaderID, "matTranslation");
 
 	float pythagore = sqrtf(pow(0.5f, 2.f) / 2.f);
 	courbeKoch(glm::vec3(-pythagore, pythagore, 0), glm::vec3(pythagore, pythagore, 0), 4);
 	courbeKoch(glm::vec3(pythagore, pythagore, 0), glm::vec3(0, -0.5, 0), 4);
 	courbeKoch(glm::vec3(0, -0.5, 0), glm::vec3(-pythagore, pythagore, 0), 4);
+
+	perspective = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+	//glUseProgram(kochShaderID);
+	glUseProgram(shaderID);
 }
 
 void Renderer::courbeKoch(glm::vec3 pointDebut, glm::vec3 pointFin, int nbIterations)
@@ -119,71 +138,84 @@ void Renderer::MatRotation() // matrice de rotation
 	glUniformMatrix4fv(matRotation, 1, GL_TRUE, &rotat[0][0]);
 }
 
-void Renderer::MatTranslation(int index) // matrice de translation
+void Renderer::MatTranslation() // matrice de translation
 {
 	glm::mat4 trans;
-	if (index == 0)
-	{
-		trans = glm::mat4(1.0);
-	}
-	else if (index == 1)
-	{
-		trans[0][0] = 1.0f; trans[0][1] = 0.0f; trans[0][2] = 0.0f; trans[0][3] = 0.7f;
-		trans[1][0] = 0.0f; trans[1][1] = 1.0f; trans[1][2] = 0.0f; trans[1][3] = 0.0f;
-		trans[2][0] = 0.0f; trans[2][1] = 0.0f; trans[2][2] = 1.0f; trans[2][3] = 0.0f;
-		trans[3][0] = 0.0f; trans[3][1] = 0.0f; trans[3][2] = 0.0f; trans[3][3] = 1.0f;
-	}
-	else
-	{
-		trans[0][0] = 1.0f; trans[0][1] = 0.0f; trans[0][2] = 0.0f; trans[0][3] = -0.7f;
-		trans[1][0] = 0.0f; trans[1][1] = 1.0f; trans[1][2] = 0.0f; trans[1][3] = 0.0f;
-		trans[2][0] = 0.0f; trans[2][1] = 0.0f; trans[2][2] = 1.0f; trans[2][3] = 0.0f;
-		trans[3][0] = 0.0f; trans[3][1] = 0.0f; trans[3][2] = 0.0f; trans[3][3] = 1.0f;
-	}
+	trans = glm::mat4(1.0);
+
 
 
 	glUniformMatrix4fv(matTranslation, 1, GL_TRUE, &trans[0][0]);
 }
 
+glm::mat4 Renderer::MatView(bool staticPos) 
+{
+	glm::mat4 vue;
+	glm::vec3 front;
+	glm::vec3 position;
+
+	g_position.y = 0;
+
+	front.x = cos(glm::radians(g_yaw)) * cos(glm::radians(g_pitch));
+	front.y = sin(glm::radians(g_pitch));
+	front.z = sin(glm::radians(g_yaw)) * cos(glm::radians(g_pitch));
+
+	g_direction = glm::normalize(front);
+
+	if (staticPos)
+	{
+		position = glm::vec3(0.0, 0.0, 1.0);
+	}
+	else
+	{
+		position = g_position;
+	}
+
+	vue = glm::lookAt(position, g_direction + position, g_orientation);
+	return vue;
+}
 
 void Renderer::drawRenderer()
 {
-	glClearColor(0.0, 255.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glUseProgram(kochShaderID);
 
-	//temp drawloop
-	for (int i = 0; i < 100; ++i) 
-	{
-		glClearColor(0.0, 255.0, 0.0, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0, 1.0, 1.0, 0);// background
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		MatRotation();
-		MatScale();
-		MatTranslation(0);
+	//MatRotation();
+	//MatScale();
+	//MatTranslation();
 
-		glBindBuffer(GL_ARRAY_BUFFER, bufferID);
-		glBufferData(GL_ARRAY_BUFFER, Lines.size() * sizeof(glm::vec3), Lines.data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	//glBindBuffer(GL_ARRAY_BUFFER, kochBufferID);
+	//glBufferData(GL_ARRAY_BUFFER, Lines.size() * sizeof(glm::vec3), Lines.data(), GL_STATIC_DRAW);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-		glBindBuffer(GL_ARRAY_BUFFER, bufferColorID);
-		glBufferData(GL_ARRAY_BUFFER, Colors.size() * sizeof(glm::vec3), Colors.data(), GL_STATIC_DRAW);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	//glBindBuffer(GL_ARRAY_BUFFER, kochBufferColorID);
+	//glBufferData(GL_ARRAY_BUFFER, Colors.size() * sizeof(glm::vec3), Colors.data(), GL_STATIC_DRAW);
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
+	//glEnableVertexAttribArray(0);
+	//glEnableVertexAttribArray(1);
 
-		glLineWidth(2);
-		glDrawArrays(GL_LINES, 0, Lines.size());
+	//glLineWidth(2);
+	//glDrawArrays(GL_LINES, 0, Lines.size());
 
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
-		//swap buffer
-		SDL_GL_SwapWindow(window);
+	//glDisableVertexAttribArray(0);
+	//glDisableVertexAttribArray(1);
 
-		testScale += 0.01f;
-		//Wait two seconds
-		SDL_Delay(10);
-	}
+	glm::vec3 temp1(0.0f, -0.2f, 0.5f); glm::vec3 temp2(0.0028f, 0.0028f, 0.0028f);
+
+	glUseProgram(shaderID);
+	glm::mat4 view = MatView(false);
+	scene.drawModel(shaderID, view, perspective ,g_requinModel, temp1, temp2, g_uniformCouleur, g_intensiteLumiere, g_direction);
+
+	//swap buffer
+	SDL_GL_SwapWindow(window);
+
+	testScale += 0.05f;
+	//Wait two seconds
+	//SDL_Delay(50);
+	
 }
 
 
@@ -191,6 +223,9 @@ void Renderer::drawRenderer()
 void Renderer::deleteRenderer()
 {
 	glDeleteProgram(shaderID);
+	glDeleteProgram(kochShaderID);
+	glDeleteBuffers(1, &kochBufferID);
 	glDeleteBuffers(1, &bufferID);
+	scene.deleteScene();
 }
 
