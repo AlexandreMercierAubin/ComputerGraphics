@@ -159,20 +159,16 @@ vector<Mesh::Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType
 	return textures;
 }
 
-
-GLint Model::textureFromFile(const char* path, string directory)
+SDL_Surface * Model::loadImage(string filename)
 {
-	//Generate texture ID and load texture data 
-	string filename = string(path);
-	filename = directory + '/' + filename;
-	GLuint textureID;
-	GLenum texture_format;
-	glGenTextures(1, &textureID);
-
 	SDL_Surface* image = NULL;
 	image = IMG_Load(filename.c_str());
+	return image;
+}
 
-	GLint nOfColors = image->format->BytesPerPixel;
+void  Model::getImageProperties(SDL_Surface *image, GLint &nOfColors,GLenum &texture_format)
+{
+	nOfColors = image->format->BytesPerPixel;
 	if (nOfColors == 4)     // contains an alpha channel 
 	{
 		if (image->format->Rmask == 0x000000ff) texture_format = GL_RGBA;
@@ -185,8 +181,22 @@ GLint Model::textureFromFile(const char* path, string directory)
 	}
 	else
 	{
-		cout<<"weird texture detected"<<endl;
+		cout << "weird texture detected" << endl;
 	}
+}
+
+GLint Model::textureFromFile(const char* path, string directory)
+{
+	//Generate texture ID and load texture data 
+	string filename = string(path);
+	filename = directory + '/' + filename;
+	GLuint textureID;
+	GLenum texture_format;
+	GLint nOfColors;
+	glGenTextures(1, &textureID);
+
+	SDL_Surface* image = loadImage(filename);
+	getImageProperties(image, nOfColors, texture_format);
 
 	// Assign texture to ID
 	glBindTexture(GL_TEXTURE_2D, textureID);

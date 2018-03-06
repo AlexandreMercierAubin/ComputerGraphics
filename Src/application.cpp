@@ -4,7 +4,6 @@
 
 void Application::setup()
 {
-	renderer = Renderer();
 
 	//The window we'll be rendering to
 	window = NULL;
@@ -67,7 +66,7 @@ void Application::F11Keypress()
 
 }
 
-void Application::draw()
+void Application::mainLoop()
 {
 	SDL_Event event;
 	int quit = 0;

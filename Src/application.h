@@ -8,7 +8,7 @@ class Application
 	public:
 		
 		void setup();
-		void draw();
+		void mainLoop();
 		void exit();
 		Application();
 	private:

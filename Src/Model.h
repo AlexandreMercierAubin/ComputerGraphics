@@ -30,6 +30,9 @@ public:
 	// Draws the Model, and thus all its Meshes
 	void Draw(GLuint shader);
 
+	static SDL_Surface *loadImage(string filename);
+	static void getImageProperties(SDL_Surface *image, GLint &nOfColors, GLenum &texture_format);
+
 private:
 	/*  Model Data  */
 	

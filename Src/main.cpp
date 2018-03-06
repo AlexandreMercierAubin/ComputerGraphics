@@ -11,7 +11,7 @@ int main()
 
 	Application app = Application();
 	app.setup();
-	app.draw();
+	app.mainLoop();
 	app.exit();
 
 	return 0;

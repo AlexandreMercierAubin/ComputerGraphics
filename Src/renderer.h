@@ -12,6 +12,7 @@
 #include "KochShader.h"
 #include "ShaderLoader.h"
 #include "ModelShader.h"
+#include "SkyboxShader.h"
 #include "Model.h"
 #include "Scene.h"
 
@@ -31,6 +32,7 @@ private:
 	SDL_GLContext gl;
 	SDL_Renderer *sdlRenderer;
 	GLuint shaderID;
+	GLuint skyboxID;
 	GLuint bufferID;
 	GLuint bufferColorID;
 

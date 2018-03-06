@@ -39,12 +39,15 @@ void Renderer::initShaders()
 	Core::ShaderLoader loader;
 	ModelShader modelShader;
 	KochShader kochShader;
+	SkyboxShader skyboxShader;
 	kochShaderID = loader.CreateProgram(kochShader);
 	shaderID = loader.CreateProgram(modelShader);
+	skyboxID = loader.CreateProgram(skyboxShader);
 
 	glGenBuffers(1, &kochBufferID);
 	glGenBuffers(1, &kochBufferColorID);
 
+	scene.createSkybox(100, 100);
 
 	matRotation = glGetUniformLocation(kochShaderID, "matRotation");
 	matScale = glGetUniformLocation(kochShaderID, "matScale");
@@ -150,7 +153,7 @@ void Renderer::MatTranslation() // matrice de translation
 
 glm::mat4 Renderer::MatView(bool staticPos) 
 {
-	glm::mat4 vue;
+	glm::mat4 view;
 	glm::vec3 front;
 	glm::vec3 position;
 
@@ -171,8 +174,8 @@ glm::mat4 Renderer::MatView(bool staticPos)
 		position = g_position;
 	}
 
-	vue = glm::lookAt(position, g_direction + position, g_orientation);
-	return vue;
+	view = glm::lookAt(position, g_direction + position, g_orientation);
+	return view;
 }
 
 void Renderer::drawRenderer()
@@ -208,6 +211,8 @@ void Renderer::drawRenderer()
 	glUseProgram(shaderID);
 	glm::mat4 view = MatView(false);
 	scene.drawModel(shaderID, view, perspective ,g_requinModel, temp1, temp2, g_uniformCouleur, g_intensiteLumiere, g_direction);
+
+	scene.drawSkybox(view, perspective, skyboxID, glm::vec4(1, 1, 1, 1));
 
 	//swap buffer
 	SDL_GL_SwapWindow(window);
