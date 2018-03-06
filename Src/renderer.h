@@ -22,6 +22,8 @@ public:
 	void drawRenderer();
 	void deleteRenderer();
 
+	void screenShot(int x, int y, int w, int h, const char * filename);
+
 	Scene scene;
 	glm::mat4 perspective;
 private:

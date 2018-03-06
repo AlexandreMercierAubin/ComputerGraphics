@@ -229,3 +229,15 @@ void Renderer::deleteRenderer()
 	scene.deleteScene();
 }
 
+void Renderer::screenShot(int x, int y, int w, int h, const char * filename)
+{
+	unsigned char * pixels = new unsigned char[w*h * 4]; // 4 bytes for RGBA
+	glReadPixels(x, y, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+	SDL_Surface * surf = SDL_CreateRGBSurfaceFrom(pixels, w, h, 8 * 4, w * 4, 0, 0, 0, 0);
+	SDL_SaveBMP(surf, filename);
+
+	SDL_FreeSurface(surf);
+	delete[] pixels;
+}
+

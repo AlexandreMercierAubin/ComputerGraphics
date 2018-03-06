@@ -15,6 +15,7 @@ class Application
 		SDL_Window *window;
 		SDL_GLContext context;
 		Renderer renderer;
+		void F11Keypress();
 
 		void setupWindow(SDL_Window **window, SDL_GLContext &context);
 };

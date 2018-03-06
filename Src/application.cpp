@@ -59,6 +59,16 @@ void Application::setupWindow(SDL_Window **window, SDL_GLContext &context)
 	SDL_GL_SetSwapInterval(1);
 }
 
+void Application::F11Keypress() 
+{
+	int width;
+	int height;
+
+	SDL_GetWindowSize(window, &width, &height);
+	renderer.screenShot(0, 0, width, height, "test.bmp");
+
+}
+
 void Application::draw()
 {
 	SDL_Event event;
@@ -75,6 +85,8 @@ void Application::draw()
 			case SDL_KEYDOWN:
 				if (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q)
 					SDL_Quit();
+				else if (event.key.keysym.sym == SDLK_F11)
+					F11Keypress();
 				break;
 
 			case SDL_KEYUP:
