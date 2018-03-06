@@ -34,7 +34,7 @@ private:
 	GLuint bufferID;
 	GLuint bufferColorID;
 
-	std::vector<glm::vec3> BackgroundColor;
+	glm::vec3 BackgroundColor;
 	std::vector<glm::vec3> Lines; 
 	std::vector<glm::vec3> Colors;
 	

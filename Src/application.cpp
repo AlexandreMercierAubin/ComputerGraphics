@@ -1,10 +1,6 @@
 #pragma once
 #include "Application.h"
 
-//Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-
 
 void Application::setup()
 {
@@ -39,8 +35,10 @@ void Application::setup()
 void Application::setupWindow(SDL_Window **window, SDL_GLContext &context)
 {
 	//Create window
+	int initialWidth = 600;
+	int initialHeigth = 400;
 	*window = SDL_CreateWindow("Infographics", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-								SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+								initialWidth, initialHeigth, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 
 	//create the opengl context
 	context = SDL_GL_CreateContext(*window);

@@ -25,7 +25,7 @@ class Model
 public:	
 	Model();
 	// Constructor, expects a filepath to a 3D Model.
-	Model(GLchar* path, int colorType);
+	Model(GLchar* path);
 
 	// Draws the Model, and thus all its Meshes
 	void Draw(GLuint shader);
@@ -39,17 +39,17 @@ private:
 
 										/*  Functions   */
 										// Loads a Model with supported ASSIMP extensions from file and stores the resulting Meshes in the Meshes vector.
-	void loadModel(string path, int colorType);
+	void loadModel(string path);
 
 	// Processes a node in a recursive fashion. Processes each individual Mesh located at the node and repeats this process on its children nodes (if any).
-	void processNode(aiNode* node, const aiScene* scene, int colorType);
+	void processNode(aiNode* node, const aiScene* scene);
 
-	Mesh processMesh(aiMesh* Mesh, const aiScene* scene, int colorType);
+	Mesh processMesh(aiMesh* Mesh, const aiScene* scene);
 
 	// Checks all material textures of a given type and loads the textures if they're not loaded yet.
 	// The required info is returned as a Texture struct.
-	vector<Mesh::Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName, int colorType);
+	vector<Mesh::Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName);
 
-	GLint textureFromFile(const char* path, string directory, int colorType);
+	GLint textureFromFile(const char* path, string directory);
 };
 

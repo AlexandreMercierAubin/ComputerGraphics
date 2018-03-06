@@ -27,11 +27,11 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthFunc(GL_LEQUAL);
 
-	BackgroundColor.push_back(glm::vec3(0.0, 1.0, 1.0));
+	BackgroundColor=glm::vec3(0.0, 0.0, 1.0);
 	srand(static_cast <unsigned> (time(0)));
 	testScale = 0;
 
-	g_requinModel = Model("Resources/megalodon/megalodon.FBX",4);
+	g_requinModel = Model("Resources/megalodon/megalodon.FBX");
 }
 
 void Renderer::initShaders()
@@ -46,9 +46,9 @@ void Renderer::initShaders()
 	glGenBuffers(1, &kochBufferColorID);
 
 
-	//matRotation = glGetUniformLocation(kochShaderID, "matRotation");
-	//matScale = glGetUniformLocation(kochShaderID, "matScale");
-	//matTranslation = glGetUniformLocation(kochShaderID, "matTranslation");
+	matRotation = glGetUniformLocation(kochShaderID, "matRotation");
+	matScale = glGetUniformLocation(kochShaderID, "matScale");
+	matTranslation = glGetUniformLocation(kochShaderID, "matTranslation");
 
 	float pythagore = sqrtf(pow(0.5f, 2.f) / 2.f);
 	courbeKoch(glm::vec3(-pythagore, pythagore, 0), glm::vec3(pythagore, pythagore, 0), 4);
@@ -179,29 +179,29 @@ void Renderer::drawRenderer()
 {
 	glUseProgram(kochShaderID);
 
-	glClearColor(0, 1.0, 1.0, 0);// background
+	glClearColor(BackgroundColor[0], BackgroundColor[1], BackgroundColor[2], 0);// background
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//MatRotation();
-	//MatScale();
-	//MatTranslation();
+	MatRotation();
+	MatScale();
+	MatTranslation();
 
-	//glBindBuffer(GL_ARRAY_BUFFER, kochBufferID);
-	//glBufferData(GL_ARRAY_BUFFER, Lines.size() * sizeof(glm::vec3), Lines.data(), GL_STATIC_DRAW);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, kochBufferID);
+	glBufferData(GL_ARRAY_BUFFER, Lines.size() * sizeof(glm::vec3), Lines.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-	//glBindBuffer(GL_ARRAY_BUFFER, kochBufferColorID);
-	//glBufferData(GL_ARRAY_BUFFER, Colors.size() * sizeof(glm::vec3), Colors.data(), GL_STATIC_DRAW);
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, kochBufferColorID);
+	glBufferData(GL_ARRAY_BUFFER, Colors.size() * sizeof(glm::vec3), Colors.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-	//glEnableVertexAttribArray(0);
-	//glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
 
-	//glLineWidth(2);
-	//glDrawArrays(GL_LINES, 0, Lines.size());
+	glLineWidth(2);
+	glDrawArrays(GL_LINES, 0, Lines.size());
 
-	//glDisableVertexAttribArray(0);
-	//glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
 
 	glm::vec3 temp1(0.0f, -0.2f, 0.5f); glm::vec3 temp2(0.0028f, 0.0028f, 0.0028f);
 
@@ -213,8 +213,6 @@ void Renderer::drawRenderer()
 	SDL_GL_SwapWindow(window);
 
 	testScale += 0.05f;
-	//Wait two seconds
-	//SDL_Delay(50);
 	
 }
 
@@ -232,7 +230,7 @@ void Renderer::deleteRenderer()
 void Renderer::screenShot(int x, int y, int w, int h, const char * filename)
 {
 	unsigned char * pixels = new unsigned char[w*h * 4]; // 4 bytes for RGBA
-	glReadPixels(x, y, w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	glReadPixels(x, y, w, h, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
 
 	SDL_Surface * surf = SDL_CreateRGBSurfaceFrom(pixels, w, h, 8 * 4, w * 4, 0, 0, 0, 0);
 	SDL_SaveBMP(surf, filename);

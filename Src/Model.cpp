@@ -7,9 +7,9 @@
 	
 Model::Model(){}
 // Constructor, expects a filepath to a 3D Model.
-Model::Model(GLchar* path, int colorType)
+Model::Model(GLchar* path)
 {
-	this->loadModel(path,colorType);
+	this->loadModel(path);
 }
 
 // Draws the Model, and thus all its Meshes
@@ -21,7 +21,7 @@ void Model::Draw(GLuint shader)
 
 									/*  Functions   */
 									// Loads a Model with supported ASSIMP extensions from file and stores the resulting Meshes in the Meshes vector.
-void Model::loadModel(string path, int colorType)
+void Model::loadModel(string path)
 {
 	// Read file via ASSIMP
 	Assimp::Importer importer;
@@ -37,11 +37,11 @@ void Model::loadModel(string path, int colorType)
 	this->directory = path.substr(0, path.find_last_of('/'));
 
 	// Process ASSIMP's root node recursively
-	this->processNode(scene->mRootNode, scene,colorType);
+	this->processNode(scene->mRootNode, scene);
 }
 
 // Processes a node in a recursive fashion. Processes each individual Mesh located at the node and repeats this process on its children nodes (if any).
-void Model::processNode(aiNode* node, const aiScene* scene, int colorType)
+void Model::processNode(aiNode* node, const aiScene* scene)
 {
 	// Process each Mesh located at the current node
 	for (GLuint i = 0; i < node->mNumMeshes; i++)
@@ -49,17 +49,17 @@ void Model::processNode(aiNode* node, const aiScene* scene, int colorType)
 		// The node object only contains indices to index the actual objects in the scene. 
 		// The scene contains all the data, node is just to keep stuff organized (like relations between nodes).
 		aiMesh* Mesh = scene->mMeshes[node->mMeshes[i]];
-		this->Meshes.push_back(this->processMesh(Mesh, scene,colorType));
+		this->Meshes.push_back(this->processMesh(Mesh, scene));
 	}
 	// After we've processed all of the Meshes (if any) we then recursively process each of the children nodes
 	for (GLuint i = 0; i < node->mNumChildren; i++)
 	{
-		this->processNode(node->mChildren[i], scene, colorType);
+		this->processNode(node->mChildren[i], scene);
 	}
 
 }
 
-Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene, int colorType)
+Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 {
 	// Data to fill
 	vector<Mesh::Vertex> vertices;
@@ -115,10 +115,10 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene, int colorType)
 		// Normal: texture_normalN
 
 		// 1. Diffuse maps
-		vector<Mesh::Texture> diffuseMaps = this->loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse", colorType);
+		vector<Mesh::Texture> diffuseMaps = this->loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 		// 2. Specular maps
-		vector<Mesh::Texture> specularMaps = this->loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular", colorType);
+		vector<Mesh::Texture> specularMaps = this->loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 	}
 
@@ -128,7 +128,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene, int colorType)
 
 // Checks all material textures of a given type and loads the textures if they're not loaded yet.
 // The required info is returned as a Texture struct.
-vector<Mesh::Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName ,int colorType)
+vector<Mesh::Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, string typeName)
 {
 	vector<Mesh::Texture> textures;
 	for (GLuint i = 0; i < mat->GetTextureCount(type); i++)
@@ -149,7 +149,7 @@ vector<Mesh::Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType
 		if (!skip)
 		{   // If texture hasn't been loaded already, load it
 			Mesh::Texture texture;
-			texture.id = textureFromFile(str.C_Str(), this->directory, colorType);
+			texture.id = textureFromFile(str.C_Str(), this->directory);
 			texture.type = typeName;
 			texture.path = str;
 			textures.push_back(texture);
@@ -160,20 +160,37 @@ vector<Mesh::Texture> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType
 }
 
 
-GLint Model::textureFromFile(const char* path, string directory, int colorType =4)
+GLint Model::textureFromFile(const char* path, string directory)
 {
 	//Generate texture ID and load texture data 
 	string filename = string(path);
 	filename = directory + '/' + filename;
 	GLuint textureID;
+	GLenum texture_format;
 	glGenTextures(1, &textureID);
 
 	SDL_Surface* image = NULL;
 	image = IMG_Load(filename.c_str());
 
+	GLint nOfColors = image->format->BytesPerPixel;
+	if (nOfColors == 4)     // contains an alpha channel 
+	{
+		if (image->format->Rmask == 0x000000ff) texture_format = GL_RGBA;
+		else texture_format = GL_BGRA;
+	}
+	else if (nOfColors == 3)     // no alpha channel 
+	{
+		if (image->format->Rmask == 0x000000ff) texture_format = GL_RGB;
+		else texture_format = GL_BGR;
+	}
+	else
+	{
+		cout<<"weird texture detected"<<endl;
+	}
+
 	// Assign texture to ID
 	glBindTexture(GL_TEXTURE_2D, textureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, colorType, image->w, image->h, 0, colorType, GL_UNSIGNED_BYTE, image->pixels);
+	glTexImage2D(GL_TEXTURE_2D, 0, nOfColors, image->w, image->h, 0, texture_format, GL_UNSIGNED_BYTE, image->pixels);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	// Parameters
