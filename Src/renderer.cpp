@@ -1,6 +1,6 @@
 #pragma once
 #include "Renderer.h"
-#include "imgui\imgui.h"
+#include "imgui.h"
 
 glm::vec3 g_direction(0.0, 0.0, 1.0);
 glm::vec4 g_uniformCouleur(1.0, 1.0, 1.0, 1.0);
