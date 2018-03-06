@@ -1,5 +1,6 @@
 #pragma once
 #include "Renderer.h"
+#include "imgui\imgui.h"
 
 glm::vec3 g_direction(0.0, 0.0, 1.0);
 glm::vec4 g_uniformCouleur(1.0, 1.0, 1.0, 1.0);
@@ -32,6 +33,8 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 	testScale = 0;
 
 	g_requinModel = Model("Resources/megalodon/megalodon.FBX");
+
+	ImGui::CreateContext();
 }
 
 void Renderer::initShaders()
