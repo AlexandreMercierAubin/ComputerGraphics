@@ -8,6 +8,7 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "imconfig.h"
+#include "imgui_impl_sdl_gl3.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -66,4 +67,7 @@ private:
 
 	float g_angleLumiere = glm::radians(270.0f);
 	float g_intensiteLumiere = 1;
+
+	void drawGUI();
+	void importerImage(string file);
 };

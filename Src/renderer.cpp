@@ -1,6 +1,5 @@
 #pragma once
 #include "Renderer.h"
-#include "imgui.h"
 
 glm::vec3 g_direction(0.0, 0.0, 1.0);
 glm::vec4 g_uniformCouleur(1.0, 1.0, 1.0, 1.0);
@@ -19,15 +18,6 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 		glewInit();
 	#endif
 
-	// Setup ImGui binding
-	ImGui::CreateContext();
-	//ImGuiIO& io = ImGui::GetIO(); (void)io;
-	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
-	//ImGui_ImplSdlGL3_Init(window);
-
-	// Setup style
-	//ImGui::StyleColorsDark();
-
 	initShaders();
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -43,7 +33,11 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 
 	g_requinModel = Model("Resources/megalodon/megalodon.FBX");
 
+	// Setup ImGUI
 	ImGui::CreateContext();
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+	ImGui_ImplSdlGL3_Init(window);
+	ImGui::StyleColorsDark();
 }
 
 void Renderer::initShaders()
@@ -226,11 +220,12 @@ void Renderer::drawRenderer()
 
 	scene.drawSkybox(view, perspective, skyboxID, glm::vec4(1, 1, 1, 1));
 
+	drawGUI();
+
 	//swap buffer
 	SDL_GL_SwapWindow(window);
 
 	testScale += 0.05f;
-	
 }
 
 
@@ -254,5 +249,31 @@ void Renderer::screenShot(int x, int y, int w, int h, const char * filename)
 
 	SDL_FreeSurface(surf);
 	delete[] pixels;
+}
+
+void Renderer::drawGUI()
+{
+	ImGui_ImplSdlGL3_NewFrame(window);
+	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
+
+	ImGui::Begin("Params");
+
+	static char fichier[1000] = "Test";
+	ImGui::InputText("", fichier, IM_ARRAYSIZE(fichier));
+
+	ImGui::SameLine();
+	if (ImGui::Button("Importer image"))
+		importerImage(string(fichier));
+
+	ImGui::End();
+
+	// ImGui render
+	ImGui::Render();
+	ImGui_ImplSdlGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void Renderer::importerImage(string fichier)
+{
+	// TO-DO
 }
 

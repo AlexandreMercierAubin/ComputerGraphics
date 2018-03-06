@@ -77,11 +77,14 @@ void Application::mainLoop()
 		/* Poll for events */
 		while (SDL_PollEvent(&event)) {
 
+			// ImGui procces event pour écrire dans textbox, etc.
+			ImGui_ImplSdlGL3_ProcessEvent(&event);
+
 			switch (event.type) {
 				/* Keyboard event */
 				/* Pass the event data onto PrintKeyInfo() */
 			case SDL_KEYDOWN:
-				if (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q)
+				if (event.key.keysym.sym == SDLK_ESCAPE)
 					SDL_Quit();
 				else if (event.key.keysym.sym == SDLK_F11)
 					F11Keypress();
@@ -94,13 +97,13 @@ void Application::mainLoop()
 				quit = 1;
 				break;
 
-			default:
-				renderer.drawRenderer();
-				break;
+			//default:
+			//	renderer.drawRenderer();
+			//	break;
 			}
 
 		}
-
+		renderer.drawRenderer();
 	}
 }
 
