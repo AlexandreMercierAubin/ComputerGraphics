@@ -18,6 +18,15 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 		glewInit();
 	#endif
 
+	// Setup ImGui binding
+	ImGui::CreateContext();
+	//ImGuiIO& io = ImGui::GetIO(); (void)io;
+	//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
+	//ImGui_ImplSdlGL3_Init(window);
+
+	// Setup style
+	//ImGui::StyleColorsDark();
+
 	initShaders();
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -185,26 +194,26 @@ void Renderer::drawRenderer()
 	glClearColor(BackgroundColor[0], BackgroundColor[1], BackgroundColor[2], 0);// background
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	MatRotation();
-	MatScale();
-	MatTranslation();
+	//MatRotation();
+	//MatScale();
+	//MatTranslation();
 
-	glBindBuffer(GL_ARRAY_BUFFER, kochBufferID);
-	glBufferData(GL_ARRAY_BUFFER, Lines.size() * sizeof(glm::vec3), Lines.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	//glBindBuffer(GL_ARRAY_BUFFER, kochBufferID);
+	//glBufferData(GL_ARRAY_BUFFER, Lines.size() * sizeof(glm::vec3), Lines.data(), GL_STATIC_DRAW);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-	glBindBuffer(GL_ARRAY_BUFFER, kochBufferColorID);
-	glBufferData(GL_ARRAY_BUFFER, Colors.size() * sizeof(glm::vec3), Colors.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	//glBindBuffer(GL_ARRAY_BUFFER, kochBufferColorID);
+	//glBufferData(GL_ARRAY_BUFFER, Colors.size() * sizeof(glm::vec3), Colors.data(), GL_STATIC_DRAW);
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
+	//glEnableVertexAttribArray(0);
+	//glEnableVertexAttribArray(1);
 
-	glLineWidth(2);
-	glDrawArrays(GL_LINES, 0, Lines.size());
+	//glLineWidth(2);
+	//glDrawArrays(GL_LINES, 0, Lines.size());
 
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
+	//glDisableVertexAttribArray(0);
+	//glDisableVertexAttribArray(1);
 
 	glm::vec3 temp1(0.0f, -0.2f, 0.5f); glm::vec3 temp2(0.0028f, 0.0028f, 0.0028f);
 

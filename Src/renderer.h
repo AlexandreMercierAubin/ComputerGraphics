@@ -5,6 +5,10 @@
 #include <GL/glew.h>
 #include <assimp/Importer.hpp>
 
+#include "imgui.h"
+#include "imgui_internal.h"
+#include "imconfig.h"
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>

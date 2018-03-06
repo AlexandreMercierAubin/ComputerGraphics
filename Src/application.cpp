@@ -27,6 +27,7 @@ void Application::setup()
 	else
 	{
 		renderer.setupRenderer(window, &context);
+
 	}
 
 }
@@ -44,8 +45,8 @@ void Application::setupWindow(SDL_Window **window, SDL_GLContext &context)
 
 
 	//set the gl version to be loaded
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 	/* Turn on double buffering with a 24bit Z buffer.

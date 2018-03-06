@@ -5,7 +5,8 @@
 class KochShader : public AbstractShader
 {
 	std::string fshader =
-R"(#version 430 core
+R"(
+#version 430 core
 
 in vec3 fragColor;
 
