@@ -11,6 +11,7 @@ apt-get install libsdl2-dev
 apt-get install libglew-dev    
 apt-get install libassimp3v5    
 apt-get install libsdl2-image-dev    
+apt-get install cmake xorg-dev libglu1-mesa-dev libsdl2.0
 
 ## OSX
 * it wasn't tested on mac, so have fun!
