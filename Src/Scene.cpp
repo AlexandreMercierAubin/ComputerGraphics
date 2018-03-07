@@ -33,6 +33,11 @@ void Scene::setupScene()
 	vObject[1]->Create(shaderID);
 }
 
+void Scene::addObject(shared_ptr<AbstractObject> object) 
+{
+	vObject.push_back(object);
+}
+
 
 glm::mat4 Scene::MatView(bool staticPos)
 {
@@ -68,6 +73,24 @@ void Scene::drawScene()
 	{
 		(*it)->Draw(perspective, view);
 	}
+}
+
+void Scene::mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel)
+{
+	yaw += xRel;
+	if (pitch + yRel*sensitivity > 89)
+	{
+		pitch = 89;
+	}
+	else if (pitch + yRel * sensitivity< -89)
+	{
+		pitch = -89;
+	}
+	else
+	{
+		pitch += yRel;
+	}
+	view = MatView(false);
 }
 
 

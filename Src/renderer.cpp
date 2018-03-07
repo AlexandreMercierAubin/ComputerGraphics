@@ -207,7 +207,6 @@ void Renderer::drawRenderer()
 }
 
 
-
 void Renderer::deleteRenderer()
 {
 	
@@ -215,6 +214,20 @@ void Renderer::deleteRenderer()
 	glDeleteBuffers(1, &kochBufferID);
 	
 	scene.deleteScene();
+}
+
+void Renderer::resize(const int & w, const int & h)
+{
+	glViewport(0, 0, w, h);
+}
+
+void Renderer::mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel)
+{
+	if (SDL_GetWindowID(window)==windowID ) 
+	{
+		scene.mouseMotion(timestamp, windowID, state, x, y, xRel, yRel);
+		drawRenderer();
+	}
 }
 
 void Renderer::screenShot(int x, int y, int w, int h, const char * filename)
