@@ -37,7 +37,7 @@ glm::mat4 Scene::MatView(bool staticPos)
 {
 	glm::mat4 view;
 	glm::vec3 front;
-	glm::vec3 position;
+	glm::vec3 Position;
 
 	position.y = 0;
 
@@ -49,14 +49,14 @@ glm::mat4 Scene::MatView(bool staticPos)
 
 	if (staticPos)
 	{
-		position = glm::vec3(0.0, 0.0, 1.0);
+		Position = glm::vec3(0.0, 0.0, 1.0);
 	}
 	else
 	{
-		position = position;
+		Position = position;
 	}
 
-	view = glm::lookAt(position, direction + position, orientation);
+	view = glm::lookAt(Position, direction + Position, orientation);
 	return view;
 }
 
