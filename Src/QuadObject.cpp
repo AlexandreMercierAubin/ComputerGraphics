@@ -52,7 +52,7 @@ void QuadObject::Create(GLuint &Program)
 
 	GLint channels;
 	GLenum type;
-	SDL_Surface *image = Model::loadImage("Resources/Skybox/HandMadeSky_up.tga");
+	SDL_Surface *image = Model::loadImage(texturePath);
 	Model::getImageProperties(image, channels, type);
 
 	// Assign texture to ID
@@ -87,7 +87,7 @@ void QuadObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 
 	glActiveTexture(0);
 	glBindTexture(GL_TEXTURE_2D, textureID);
-	glUniform1i(glGetUniformLocation(program, "text"), 0);
+	glUniform1i(glGetUniformLocation(program, "tex"), 0);
 
 	glBindVertexArray(VertexArray);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -97,4 +97,14 @@ void QuadObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 void QuadObject::Delete()
 {
 	glDeleteVertexArrays(1, &VertexArray);
+}
+
+QuadObject::QuadObject(std::string texturePath)
+{
+	this->texturePath = texturePath;
+}
+
+QuadObject::QuadObject()
+{
+
 }

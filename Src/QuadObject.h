@@ -14,9 +14,11 @@ private:
 		0,1,2,//face
 		0,3,2
 	};
+	std::string texturePath;
 public:
 	virtual void Create(GLuint &Program);
 	virtual void Draw(glm::mat4 &perspective, glm::mat4 &view);
 	virtual void Delete();
-	//virtual void SetColor();
+	QuadObject(std::string texturePath);
+	QuadObject();
 };

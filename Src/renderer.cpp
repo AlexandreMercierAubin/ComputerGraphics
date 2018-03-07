@@ -295,17 +295,6 @@ void Renderer::drawCursor()
 	float glX = x / halfW - 1.0f;
 	float glY = -y / halfH + 1.0f;
 
-	//// Test
-	//PrimitiveObject primitive;
-	//primitive.Create(primitiveShaderID);
-	//primitive.setCouleurRemplissage(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	//primitive.setCouleurBordure(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-	//primitive.setEpaisseurBordure(2);
-	//primitive.setTypePrimitive(GL_TRIANGLES);
-	//std::vector<glm::vec3> v = { glm::vec3(glX, glY + 0.2f, 0.0f), glm::vec3(glX - 0.2f, glY - 0.2f, 0.0f), glm::vec3(glX + 0.2f, glY - 0.2f, 0.0f) };
-	//primitive.setVertices(v);
-	//primitive.Draw();
-
 	std::vector<glm::vec3> positions;
 
 	switch (typeCurseur)
