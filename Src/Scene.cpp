@@ -38,6 +38,7 @@ void Scene::addObject(shared_ptr<AbstractObject> object)
 	vObject.push_back(object);
 }
 
+
 glm::mat4 Scene::MatView(bool staticPos)
 {
 	glm::mat4 view;

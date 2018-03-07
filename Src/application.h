@@ -17,6 +17,7 @@ class Application
 		SDL_GLContext context;
 		Renderer renderer;
 		void F11Keypress();
+		void windowEvents(const SDL_Event * event);
 
 		void setupWindow(SDL_Window **window, SDL_GLContext &context);
 };

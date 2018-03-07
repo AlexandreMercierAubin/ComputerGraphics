@@ -24,6 +24,7 @@ public:
 	void setupRenderer(SDL_Window * window, SDL_GLContext *context);
 	void drawRenderer();
 	void deleteRenderer();
+	void resize(int w,int h);
 
 	void screenShot(int x, int y, int w, int h, const char * filename);
 

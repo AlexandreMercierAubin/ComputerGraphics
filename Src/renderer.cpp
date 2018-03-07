@@ -196,7 +196,10 @@ void Renderer::drawRenderer()
 	testScale += 0.05f;
 }
 
-
+void Renderer::resize(int w, int h)
+{
+	glViewport(0, 0, w, h);
+}
 
 void Renderer::deleteRenderer()
 {

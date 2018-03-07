@@ -93,6 +93,9 @@ void Application::mainLoop()
 					F11Keypress();
 				break;
 
+			case SDL_WINDOWEVENT:
+				windowEvents(&event);
+
 			case SDL_KEYUP:
 				break;
 
@@ -107,6 +110,20 @@ void Application::mainLoop()
 
 		}
 		renderer.drawRenderer();
+	}
+}
+
+void Application::windowEvents(const SDL_Event * event)
+{
+	switch (event->window.event)
+	{
+	case SDL_WINDOWEVENT_SIZE_CHANGED:
+		renderer.resize(event->window.data1, event->window.data2);
+		break;
+
+	case SDL_WINDOWEVENT_RESIZED:
+		renderer.resize(event->window.data1, event->window.data2);
+		break;
 	}
 }
 
