@@ -15,9 +15,6 @@
 
 #include "KochShader.h"
 #include "ShaderLoader.h"
-#include "ModelShader.h"
-#include "SkyboxShader.h"
-#include "Model.h"
 #include "Scene.h"
 
 class Renderer
@@ -30,15 +27,10 @@ public:
 	void screenShot(int x, int y, int w, int h, const char * filename);
 
 	Scene scene;
-	glm::mat4 perspective;
 private:
 	SDL_Window * window;
 	SDL_GLContext gl;
 	SDL_Renderer *sdlRenderer;
-	GLuint shaderID;
-	GLuint skyboxID;
-	GLuint bufferID;
-	GLuint bufferColorID;
 
 	glm::vec3 BackgroundColor;
 	std::vector<glm::vec3> Lines; 
@@ -47,23 +39,22 @@ private:
 	GLuint matRotation;
 	GLuint matScale;
 	GLuint matTranslation;
-	glm::mat4 MatView(bool staticPos);
 
 	float testScale;
 
 	void initShaders();
+
+	//for the koch test, remove that when done
 	void MatScale();
 	void MatRotation();
 	void MatTranslation();
+	
 
 	//testfunc
 	void courbeKoch(glm::vec3 pointDebut, glm::vec3 pointFin, int nbIterations);
-	Model g_requinModel;
 	GLuint kochShaderID;
 	GLuint kochBufferID;
 	GLuint kochBufferColorID;
+	// end of koch test
 
-
-	float g_angleLumiere = glm::radians(270.0f);
-	float g_intensiteLumiere = 1;
 };

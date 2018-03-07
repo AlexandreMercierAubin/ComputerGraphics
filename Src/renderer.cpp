@@ -2,13 +2,7 @@
 #include "Renderer.h"
 #include "imgui.h"
 
-glm::vec3 g_direction(0.0, 0.0, 1.0);
-glm::vec4 g_uniformCouleur(1.0, 1.0, 1.0, 1.0);
 
-glm::vec3 g_position(0.0, 0.0, 1.0);
-glm::vec3 g_orientation(0.0, 1.0, 0.0);
-GLfloat g_yaw = -90;
-GLfloat g_pitch = 0;
 
 void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 {
@@ -37,29 +31,27 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthFunc(GL_LEQUAL);
 
+	scene.setupScene();
+
 	BackgroundColor=glm::vec3(0.0, 0.0, 1.0);
 	srand(static_cast <unsigned> (time(0)));
 	testScale = 0;
 
-	g_requinModel = Model("Resources/megalodon/megalodon.FBX");
 
 	ImGui::CreateContext();
 }
 
 void Renderer::initShaders()
 {
+	//test, remove that 
 	Core::ShaderLoader loader;
-	ModelShader modelShader;
 	KochShader kochShader;
-	SkyboxShader skyboxShader;
 	kochShaderID = loader.CreateProgram(kochShader);
-	shaderID = loader.CreateProgram(modelShader);
-	skyboxID = loader.CreateProgram(skyboxShader);
+
 
 	glGenBuffers(1, &kochBufferID);
 	glGenBuffers(1, &kochBufferColorID);
 
-	scene.createSkybox(100, 100);
 
 	matRotation = glGetUniformLocation(kochShaderID, "matRotation");
 	matScale = glGetUniformLocation(kochShaderID, "matScale");
@@ -70,9 +62,8 @@ void Renderer::initShaders()
 	courbeKoch(glm::vec3(pythagore, pythagore, 0), glm::vec3(0, -0.5, 0), 4);
 	courbeKoch(glm::vec3(0, -0.5, 0), glm::vec3(-pythagore, pythagore, 0), 4);
 
-	perspective = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 	//glUseProgram(kochShaderID);
-	glUseProgram(shaderID);
+	glUseProgram(kochShaderID);
 }
 
 void Renderer::courbeKoch(glm::vec3 pointDebut, glm::vec3 pointFin, int nbIterations)
@@ -163,32 +154,6 @@ void Renderer::MatTranslation() // matrice de translation
 	glUniformMatrix4fv(matTranslation, 1, GL_TRUE, &trans[0][0]);
 }
 
-glm::mat4 Renderer::MatView(bool staticPos) 
-{
-	glm::mat4 view;
-	glm::vec3 front;
-	glm::vec3 position;
-
-	g_position.y = 0;
-
-	front.x = cos(glm::radians(g_yaw)) * cos(glm::radians(g_pitch));
-	front.y = sin(glm::radians(g_pitch));
-	front.z = sin(glm::radians(g_yaw)) * cos(glm::radians(g_pitch));
-
-	g_direction = glm::normalize(front);
-
-	if (staticPos)
-	{
-		position = glm::vec3(0.0, 0.0, 1.0);
-	}
-	else
-	{
-		position = g_position;
-	}
-
-	view = glm::lookAt(position, g_direction + position, g_orientation);
-	return view;
-}
 
 void Renderer::drawRenderer()
 {
@@ -220,11 +185,7 @@ void Renderer::drawRenderer()
 
 	glm::vec3 temp1(0.0f, -0.2f, 0.5f); glm::vec3 temp2(0.0028f, 0.0028f, 0.0028f);
 
-	glUseProgram(shaderID);
-	glm::mat4 view = MatView(false);
-	scene.drawModel(shaderID, view, perspective ,g_requinModel, temp1, temp2, g_uniformCouleur, g_intensiteLumiere, g_direction);
-
-	scene.drawSkybox(view, perspective, skyboxID, glm::vec4(1, 1, 1, 1));
+	scene.drawSkybox();
 
 	//swap buffer
 	SDL_GL_SwapWindow(window);
@@ -237,10 +198,10 @@ void Renderer::drawRenderer()
 
 void Renderer::deleteRenderer()
 {
-	glDeleteProgram(shaderID);
+	
 	glDeleteProgram(kochShaderID);
 	glDeleteBuffers(1, &kochBufferID);
-	glDeleteBuffers(1, &bufferID);
+	
 	scene.deleteScene();
 }
 
