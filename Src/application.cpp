@@ -88,7 +88,7 @@ void Application::mainLoop()
 				/* Pass the event data onto PrintKeyInfo() */
 			case SDL_KEYDOWN:
 				if (event.key.keysym.sym == SDLK_ESCAPE)
-					SDL_Quit();
+					quit = 1;
 				else if (event.key.keysym.sym == SDLK_F11)
 					F11Keypress();
 				break;
@@ -99,13 +99,9 @@ void Application::mainLoop()
 			case SDL_QUIT:
 				quit = 1;
 				break;
-
-			//default:
-			//	renderer.drawRenderer();
-			//	break;
 			}
-
 		}
+
 		renderer.drawRenderer();
 	}
 }
@@ -113,6 +109,10 @@ void Application::mainLoop()
 void Application::exit()
 {
 	SDL_Log("<app::exit>");
+
+	// Exit ImGui
+	ImGui_ImplSdlGL3_Shutdown();
+	ImGui::DestroyContext();
 
 	//Destroy Renderer
 	renderer.deleteRenderer();
@@ -125,7 +125,6 @@ void Application::exit()
 
 	//Quit SDL subsystems
 	SDL_Quit();
-
 }
 
 Application::Application()
