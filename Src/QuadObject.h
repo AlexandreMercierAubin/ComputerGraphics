@@ -20,5 +20,4 @@ public:
 	virtual void Draw(glm::mat4 &perspective, glm::mat4 &view);
 	virtual void Delete();
 	QuadObject(std::string texturePath);
-	QuadObject();
 };

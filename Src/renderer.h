@@ -20,6 +20,7 @@
 
 #include "PrimitiveObject.h"
 #include "PrimitiveShader.h"
+#include "QuadShader.h";
 
 class Renderer
 {
@@ -74,6 +75,7 @@ private:
 	PrimitiveObject curseur;
 
 	GLuint primitiveShaderID;
+	GLuint quadShaderID;
 
 	void drawGUI();
 	void drawCursor();

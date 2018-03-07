@@ -42,8 +42,8 @@ void QuadObject::Create(GLuint &Program)
 	glGenBuffers(1, &textureBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, textureBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vTexture), vTexture, GL_STATIC_DRAW);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
 
 	GLuint IBO;
 	glGenBuffers(1, &IBO);
@@ -102,9 +102,4 @@ void QuadObject::Delete()
 QuadObject::QuadObject(std::string texturePath)
 {
 	this->texturePath = texturePath;
-}
-
-QuadObject::QuadObject()
-{
-
 }

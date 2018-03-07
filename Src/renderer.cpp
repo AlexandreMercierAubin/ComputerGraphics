@@ -47,6 +47,8 @@ void Renderer::initShaders()
 	// Do not remove
 	PrimitiveShader primitiveShader;
 	primitiveShaderID = loader.CreateProgram(primitiveShader);
+	QuadShader quadShader;
+	quadShaderID = loader.CreateProgram(quadShader);
 
 	curseur.Create(primitiveShaderID);
 	curseur.setCouleurRemplissage(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -378,7 +380,17 @@ void Renderer::updateCursor()
 
 void Renderer::importerImage(string fichier)
 {
-	// TO-DO
+	std::ifstream f(fichier);
+	if (!f.good())
+	{
+		cout << "Fichier inexistant" << endl;
+		return;
+	}
+	f.close();
+
+	QuadObject quad(fichier);
+	quad.Create(quadShaderID);
+	scene.addObject(std::make_shared<QuadObject>(quad));
 }
 
 void Renderer::importerModele(string fichier)
