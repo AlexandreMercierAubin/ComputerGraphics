@@ -2,6 +2,7 @@
 #include "SDL2/SDL.h"
 #include "Renderer.h"
 #include <GL/glew.h>
+#include "imgui.h"
 
 class Application
 {

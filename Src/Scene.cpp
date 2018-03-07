@@ -64,7 +64,7 @@ glm::mat4 Scene::MatView(bool staticPos)
 
 void Scene::drawScene()
 {
-	for (auto it = vObject.begin(); it != vObject.end(); ++it)
+	for (auto it = ++vObject.begin(); it != vObject.end(); ++it)
 	{
 		(*it)->Draw(perspective, view);
 	}

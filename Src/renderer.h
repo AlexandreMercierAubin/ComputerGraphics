@@ -8,6 +8,7 @@
 #include "imgui.h"
 #include "imgui_internal.h"
 #include "imconfig.h"
+#include "imgui_impl_sdl_gl3.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -57,4 +58,17 @@ private:
 	GLuint kochBufferColorID;
 	// end of koch test
 
+
+	// Options de dessin
+	glm::vec4 couleurRemplissage;
+	glm::vec4 couleurBordure;
+	int epaisseurBordure = 0;
+	bool utiliserSkybox = true;
+	int formeADessiner = 0; // 0 = point, 1 = ligne, 2 = triangle, 3 = rectangle, 4 = ellipse
+	int typeCurseur = 0; // 0 = par défaut, 1 = ligne, 2 = croix, 3 = triangle, 4 = rectangle, 5 = ellipse
+
+	void drawGUI();
+	void drawCursor();
+	void importerImage(string file);
+	void importerModele(string file);
 };

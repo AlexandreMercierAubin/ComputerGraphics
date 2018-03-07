@@ -35,10 +35,13 @@ void Application::setup()
 void Application::setupWindow(SDL_Window **window, SDL_GLContext &context)
 {
 	//Create window
-	int initialWidth = 600;
-	int initialHeigth = 400;
+	int initialWidth = 1200;
+	int initialHeigth = 800;
 	*window = SDL_CreateWindow("Infographics", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 								initialWidth, initialHeigth, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+
+	// Make window resizable
+	SDL_SetWindowResizable(*window, SDL_TRUE);
 
 	//create the opengl context
 	context = SDL_GL_CreateContext(*window);
@@ -77,11 +80,14 @@ void Application::mainLoop()
 		/* Poll for events */
 		while (SDL_PollEvent(&event)) {
 
+			// ImGui procces event pour écrire dans textbox, etc.
+			ImGui_ImplSdlGL3_ProcessEvent(&event);
+
 			switch (event.type) {
 				/* Keyboard event */
 				/* Pass the event data onto PrintKeyInfo() */
 			case SDL_KEYDOWN:
-				if (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q)
+				if (event.key.keysym.sym == SDLK_ESCAPE)
 					SDL_Quit();
 				else if (event.key.keysym.sym == SDLK_F11)
 					F11Keypress();
@@ -94,13 +100,13 @@ void Application::mainLoop()
 				quit = 1;
 				break;
 
-			default:
-				renderer.drawRenderer();
-				break;
+			//default:
+			//	renderer.drawRenderer();
+			//	break;
 			}
 
 		}
-
+		renderer.drawRenderer();
 	}
 }
 
