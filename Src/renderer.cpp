@@ -225,7 +225,7 @@ void Renderer::resize(const int & w, const int & h)
 
 void Renderer::mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel)
 {
-	if (SDL_GetWindowID(window)==windowID ) 
+	if (SDL_GetWindowID(window)==windowID && (SDL_GetMouseState(nullptr, nullptr) & SDL_BUTTON(SDL_BUTTON_RIGHT))) 
 	{
 		scene.mouseMotion(timestamp, windowID, state, x, y, xRel, yRel);
 		drawRenderer();
