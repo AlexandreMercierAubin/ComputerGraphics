@@ -1,15 +1,6 @@
 #pragma once
 #include "AbstractObject.h"
 
-void AbstractObject::Create(GLuint &Program)
-{
-
-}
-
-void AbstractObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
-{
-
-}
 
 void AbstractObject::uniformColor(GLuint &program, glm::vec4 &uniformColor)
 {
@@ -52,7 +43,7 @@ void AbstractObject::MatRotation(GLuint program, float angle) // matrice de rota
 	glUniformMatrix4fv(MatRotation, 1, GL_TRUE, &rotat[0][0]);
 }
 
-void AbstractObject::MatTrans(GLuint program, float x, float y, float z) // matrice de translation
+void AbstractObject::MatTranslation(GLuint program, float x, float y, float z) // matrice de translation
 {
 	GLuint MatTrans = glGetUniformLocation(program, "matTranslation");
 
@@ -63,13 +54,13 @@ void AbstractObject::MatTrans(GLuint program, float x, float y, float z) // matr
 	glUniformMatrix4fv(MatTrans, 1, GL_FALSE, &trans[0][0]);
 }
 
-void AbstractObject::MatEch(GLuint program, float x, float y, float z) // matrice de translation
+void AbstractObject::MatScale(GLuint program, float x, float y, float z) // matrice de translation
 {
-	GLuint MatEch = glGetUniformLocation(program, "matScale");
+	GLuint MatScale = glGetUniformLocation(program, "matScale");
 
-	glm::mat4 ech;
+	glm::mat4 scl;
 
-	ech = glm::scale(ech, glm::vec3(x, y, z));
+	scl = glm::scale(scl, glm::vec3(x, y, z));
 
-	glUniformMatrix4fv(MatEch, 1, GL_FALSE, &ech[0][0]);
+	glUniformMatrix4fv(MatScale, 1, GL_FALSE, &scl[0][0]);
 }

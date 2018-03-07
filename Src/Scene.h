@@ -41,8 +41,6 @@ private:
 	GLuint skyboxID;
 	GLuint bufferID;
 	GLuint bufferColorID;
-	float g_angleLumiere = glm::radians(270.0f);
-	float g_intensiteLumiere = 1;
 	//end of test
 
 public:

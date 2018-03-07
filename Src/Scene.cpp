@@ -25,7 +25,7 @@ void Scene::setupScene()
 	Core::ShaderLoader loader;
 	ModelShader modelShader;
 	SkyboxShader skyboxShader;
-	//g_requinModel = Model("Resources/megalodon/megalodon.FBX");
+	g_requinModel = Model("Resources/megalodon/megalodon.FBX");
 	shaderID = loader.CreateProgram(modelShader);
 	skyboxID = loader.CreateProgram(skyboxShader);
 	mySkybox.Create(skyboxID);
@@ -63,22 +63,7 @@ glm::mat4 Scene::MatView(bool staticPos)
 
 void Scene::drawModel()
 {
-	//glUseProgram(program);
-	//GLuint MatView = glGetUniformLocation(program, "matView");
-	//glUniformMatrix4fv(MatView, 1, GL_FALSE, &view[0][0]);
-	//GLuint MatPerspective = glGetUniformLocation(program, "matPerspective");
-	//glUniformMatrix4fv(MatPerspective, 1, GL_FALSE, &perspective[0][0]);
 
-
-	//MatRotation(program, 0);
-	//uniformColor(program, color);
-	//uniformLight(program, glm::vec3(1.0, 1.0, 1.0), lightDirection, 0.3f, lightIntensity);
-
-
-	////model
-	//MatTrans(program, (matTranslation).x, (matTranslation).y, (matTranslation).z);
-	//MatEch(program, (matScale).x, (matScale).y, (matScale).z);
-	//model.Draw(program);
 }
 
 

@@ -5,26 +5,42 @@ void SkyboxObject::Create(GLuint &Program)
 {
 	program = Program;
 
-	program = Program;
+	faces =  //default skybox bad because I made it myself and I hate copyright strikes
+	{ "Resources/Skybox/HandMadeSky_bk.tga" ,//rt
+		"Resources/Skybox/HandMadeSky_bk.tga" ,//lf
+		"Resources/Skybox/HandMadeSky_up.tga" ,//up
+		"Resources/Skybox/HandMadeSky_dn.tga",//dn
+		"Resources/Skybox/HandMadeSky_bk.tga" ,//bk
+		"Resources/Skybox/HandMadeSky_bk.tga" };//ft
+
 	GLfloat width, height, depth;
 	width = 100;
 	height = 100;
 	depth = 100;
 
+	color=glm::vec4(1, 1, 1, 1);
+
 	glGenVertexArrays(1, &VertexArray);
 	glBindVertexArray(VertexArray);
 
-	createVerticesCube(width / 2, height / 2, depth / 2);
+	createCube(width, height, depth);
 
 	textureSkybox =  loadCubemap(faces, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_MAG_FILTER);
 
+	glBindVertexArray(0);
+}
+
+void SkyboxObject::createCube(GLfloat width, GLfloat height, GLfloat depth)
+{
+	createVerticesCube(width / 2, height / 2,depth/2);
+	//creeTextureCube();
 
 	//Création et remplissage du buffer d'indices de la base:
 	GLuint IBOBase;
 	glGenBuffers(1, &IBOBase);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBOBase);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices),indices, GL_STATIC_DRAW);
-	glBindVertexArray(0);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 }
 
 void SkyboxObject::createVerticesCube(GLfloat width, GLfloat height, GLfloat depth)
