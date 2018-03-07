@@ -33,6 +33,10 @@ void Scene::setupScene()
 	vObject[1]->Create(shaderID);
 }
 
+void Scene::addObject(shared_ptr<AbstractObject> object) 
+{
+	vObject.push_back(object);
+}
 
 glm::mat4 Scene::MatView(bool staticPos)
 {

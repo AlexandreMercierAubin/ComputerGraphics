@@ -56,4 +56,6 @@ public:
 	void drawSkybox();
 	void drawScene();
 
+	void addObject(shared_ptr<AbstractObject> object);
+
 };
