@@ -91,9 +91,9 @@ GLuint SkyboxObject::loadCubemap(std::vector<char*> faces, GLint wrapS, GLint wr
 		image = Model::loadImage(string(faces[i]));
 		Model::getImageProperties(image, channels, type);
 
-		//Associer l'information de l'image à la texture
+		//link the texture
 		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, channels, image->w, image->h, 0, type, GL_UNSIGNED_BYTE, image->pixels);
-		//Libérer l'image
+		//Free image
 		SDL_FreeSurface(image);
 	}
 

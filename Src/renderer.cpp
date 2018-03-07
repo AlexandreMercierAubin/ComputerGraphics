@@ -185,7 +185,9 @@ void Renderer::drawRenderer()
 
 	//glm::vec3 temp1(0.0f, -0.2f, 0.5f); glm::vec3 temp2(0.0028f, 0.0028f, 0.0028f);
 
+	scene.drawScene();
 	scene.drawSkybox();
+	
 
 	//swap buffer
 	SDL_GL_SwapWindow(window);

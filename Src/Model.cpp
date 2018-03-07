@@ -213,7 +213,7 @@ GLint Model::textureFromFile(const char* path, string directory)
 	return textureID;
 }
 
-//Potential optimisation
+//Potential optimisation mipmapping might be better tho
 //SDL_Surface* loadSurface(std::string path)
 //{
 //	//The final optimized image
