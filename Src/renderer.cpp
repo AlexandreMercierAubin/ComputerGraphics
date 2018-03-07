@@ -30,7 +30,6 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 	srand(static_cast <unsigned> (time(0)));
 	testScale = 0;
 
-
 	// Setup ImGUI
 	ImGui::CreateContext();
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
@@ -44,6 +43,15 @@ void Renderer::initShaders()
 	Core::ShaderLoader loader;
 	KochShader kochShader;
 	kochShaderID = loader.CreateProgram(kochShader);
+	
+	// Do not remove
+	PrimitiveShader primitiveShader;
+	primitiveShaderID = loader.CreateProgram(primitiveShader);
+
+	curseur.Create(primitiveShaderID);
+	curseur.setCouleurRemplissage(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	curseur.setCouleurBordure(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	// End do not remove
 
 
 	glGenBuffers(1, &kochBufferID);
@@ -188,7 +196,9 @@ void Renderer::drawRenderer()
 		scene.drawSkybox();
 
 	drawGUI();
-	drawCursor();
+
+	if (typeCurseur != 0)
+		drawCursor();
 
 	//swap buffer
 	SDL_GL_SwapWindow(window);
@@ -245,8 +255,8 @@ void Renderer::drawGUI()
 
 	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
 	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
-	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 1, 10);
-	ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Ellipse");
+	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
+	ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Quad\0Ellipse\0");
 
 	ImGui::NewLine();
 
@@ -255,7 +265,8 @@ void Renderer::drawGUI()
 
 	ImGui::NewLine();
 
-	ImGui::Combo("Curseur", &typeCurseur, "Defaut\0Ligne\0Croix\0Triangle\0Rectangle\0Ellipse");
+	if (ImGui::Combo("Curseur", &typeCurseur, "Defaut\0Point\0Points\0Croix\0Triangle\0Quad\0"))
+		updateCursor();
 
 	ImGui::End();
 
@@ -266,33 +277,100 @@ void Renderer::drawGUI()
 
 void Renderer::drawCursor()
 {
-	if (typeCurseur == 0)
+	if (typeCurseur == 0) // Défaut
 		SDL_ShowCursor(SDL_ENABLE);
 	else
-	{
 		SDL_ShowCursor(SDL_DISABLE);
 
-		int x = 0;
-		int y = 0;
-		SDL_GetMouseState(&x, &y);
+	int x = 0;
+	int y = 0;
+	int w = 0;
+	int h = 0;
+	SDL_GetMouseState(&x, &y);
+	SDL_GetWindowSize(window, &w, &h);
 
-		switch (typeCurseur)
-		{
-		case 1: // Ligne
-			break;
+	// Conversion en coordonnées centrées sur la fenêtre
+	float halfW = w / 2.0f;
+	float halfH = h / 2.0f;
+	float glX = x / halfW - 1.0f;
+	float glY = -y / halfH + 1.0f;
 
-		case 2: // Croix
-			break;
+	//// Test
+	//PrimitiveObject primitive;
+	//primitive.Create(primitiveShaderID);
+	//primitive.setCouleurRemplissage(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	//primitive.setCouleurBordure(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	//primitive.setEpaisseurBordure(2);
+	//primitive.setTypePrimitive(GL_TRIANGLES);
+	//std::vector<glm::vec3> v = { glm::vec3(glX, glY + 0.2f, 0.0f), glm::vec3(glX - 0.2f, glY - 0.2f, 0.0f), glm::vec3(glX + 0.2f, glY - 0.2f, 0.0f) };
+	//primitive.setVertices(v);
+	//primitive.Draw();
 
-		case 3: // Triangle
-			break;
+	std::vector<glm::vec3> positions;
 
-		case 4: // Rectangle
-			break;
+	switch (typeCurseur)
+	{
+	case 1: // Point
+		positions.push_back(glm::vec3(glX, glY, 0.0f));
+		break;
+		
+	case 2: // Points
+		positions.push_back(glm::vec3(glX, glY, 0.0f));
+		positions.push_back(glm::vec3(glX, glY + 10.0f / halfH, 0.0f));
+		positions.push_back(glm::vec3(glX, glY - 10.0f / halfH, 0.0f));
+		positions.push_back(glm::vec3(glX - 10.0f / halfW, glY, 0.0f));
+		positions.push_back(glm::vec3(glX + 10.0f / halfW, glY, 0.0f));
+		break;
 
-		case 5: // Ellipse
-			break;
-		}
+	case 3: // Croix
+		positions.push_back(glm::vec3(glX, glY + 10.0f / halfH, 0.0f));
+		positions.push_back(glm::vec3(glX, glY - 10.0f / halfH, 0.0f));
+		positions.push_back(glm::vec3(glX - 10.0f / halfW, glY, 0.0f));
+		positions.push_back(glm::vec3(glX + 10.0f / halfW, glY, 0.0f));
+		break;
+
+	case 4: // Triangle
+		positions.push_back(glm::vec3(glX, glY, 0.0f));
+		positions.push_back(glm::vec3(glX, glY - 15.0f / halfH, 0.0f));
+		positions.push_back(glm::vec3(glX + 15.0f / halfW, glY, 0.0f));
+		break;
+
+	case 5: // Quad
+		positions.push_back(glm::vec3(glX, glY, 0.0f));
+		positions.push_back(glm::vec3(glX, glY - 15.0f / halfH, 0.0f));
+		positions.push_back(glm::vec3(glX + 5.0f / halfW, glY - 10.0f / halfH, 0.0f));
+		positions.push_back(glm::vec3(glX + 10.0f / halfW, glY - 10.0f / halfH, 0.0f));
+		break;
+	}
+
+	curseur.setVertices(positions);
+	curseur.Draw();
+}
+
+void Renderer::updateCursor()
+{
+	switch (typeCurseur)
+	{
+	case 1: // Point
+	case 2: // Points
+		curseur.setEpaisseurBordure(3);
+		curseur.setTypePrimitive(GL_POINTS);
+		break;
+
+	case 3: // Croix
+		curseur.setEpaisseurBordure(2);
+		curseur.setTypePrimitive(GL_LINES);
+		break;
+
+	case 4: // Triangle
+		curseur.setEpaisseurBordure(1);
+		curseur.setTypePrimitive(GL_TRIANGLES);
+		break;
+
+	case 5: // Quad
+		curseur.setEpaisseurBordure(1);
+		curseur.setTypePrimitive(GL_TRIANGLE_FAN);
+		break;
 	}
 }
 
