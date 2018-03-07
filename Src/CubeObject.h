@@ -33,5 +33,6 @@ public:
 	GLuint loadCubemap(std::vector<char*> faces, GLint wrapS, GLint wrapT, GLint minFilter, GLint magFilter);
 	virtual void Create(GLuint &Program);
 	virtual void Draw(glm::mat4 &perspective, glm::mat4 &view);
+	virtual void Delete();
 	//virtual void SetColor();
 };

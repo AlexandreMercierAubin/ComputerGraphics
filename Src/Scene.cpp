@@ -10,6 +10,7 @@ Scene::~Scene(void)
 
 void Scene::setupScene()
 {
+	
 	direction = glm::vec3(0.0, 0.0, 1.0);
 	uniformCouleur = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
@@ -28,8 +29,8 @@ void Scene::setupScene()
 	g_requinModel = Model("Resources/megalodon/megalodon.FBX");
 	shaderID = loader.CreateProgram(modelShader);
 	skyboxID = loader.CreateProgram(skyboxShader);
-	mySkybox.Create(skyboxID);
-	quad.Create(shaderID);
+	vObject[0]->Create(skyboxID);
+	vObject[1]->Create(shaderID);
 }
 
 
@@ -61,15 +62,18 @@ glm::mat4 Scene::MatView(bool staticPos)
 }
 
 
-void Scene::drawModel()
+void Scene::drawScene()
 {
-
+	for (unsigned int i = 1; i < vObject.size(); ++i) 
+	{
+		vObject[i]->Draw(perspective,view);
+	}
 }
 
 
 void Scene::drawSkybox()
 {
-	mySkybox.Draw(perspective,view);
+	vObject[0]->Draw(perspective,view);
 }
 
 
@@ -77,6 +81,14 @@ void Scene::deleteScene()
 {
 	glDeleteProgram(shaderID);
 	glDeleteBuffers(1, &bufferID);
-	
+	glDeleteProgram(skyboxID);
+
+	//deletes vObject safely
+	for (auto  it = vObject.begin(); it != vObject.end(); ++it)
+	{
+		(*it)->Delete();
+		delete (*it);
+	}
+	vObject.clear();
 }
 

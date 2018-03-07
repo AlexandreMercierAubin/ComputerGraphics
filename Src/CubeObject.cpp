@@ -109,3 +109,8 @@ GLuint CubeObject::loadCubemap(std::vector<char*> faces, GLint wrapS, GLint wrap
 
 	return textureID; //retourne l'objet texture créé
 }
+
+void CubeObject::Delete()
+{
+	glDeleteVertexArrays(1, &VertexArray);
+}

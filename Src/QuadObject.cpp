@@ -32,3 +32,8 @@ void QuadObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 	glDrawElements(GL_TRIANGLES, 6 , GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
+
+void QuadObject::Delete()
+{
+	glDeleteVertexArrays(1, &VertexArray);
+}

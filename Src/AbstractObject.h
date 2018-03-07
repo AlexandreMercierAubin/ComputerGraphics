@@ -7,8 +7,9 @@ class AbstractObject
 public:
 	virtual void Create(GLuint &Program) {}
 	virtual void Draw(glm::mat4 &perspective, glm::mat4 &view) {}
+	virtual void Delete() {}
 	//virtual void SetColor(glm::vec4 color);
-
+	virtual ~AbstractObject() {};
 protected: 
 
 	virtual void uniformLight(GLuint &program, glm::vec3 &color, glm::vec3 &direction, float ambientIntensity, float diffuseIntensity);
@@ -24,4 +25,5 @@ protected:
 		float diffuseIntensity;
 		glm::vec3 direction;
 	};
+	
 };

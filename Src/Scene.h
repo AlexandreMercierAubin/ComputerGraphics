@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <vector>
 #include "QuadObject.h"
+#include "AbstractObject.h"
 #include "SkyboxObject.h"
 #include "CubeObject.h"
 #include "ShaderLoader.h"
@@ -20,6 +21,8 @@ private:
 
 	struct objetMonde;
 
+	
+
 	glm::mat4 MatView(bool staticPos);
 	glm::mat4 perspective;
 	glm::mat4 view;
@@ -33,8 +36,7 @@ private:
 	GLfloat pitch;
 
 	//temp test change for an array for scene graph
-	QuadObject quad;
-	SkyboxObject mySkybox;
+	
 	CubeObject cube;
 	Model g_requinModel;
 	GLuint shaderID;
@@ -42,7 +44,7 @@ private:
 	GLuint bufferID;
 	GLuint bufferColorID;
 	//end of test
-
+	std::vector<AbstractObject*> vObject ={new SkyboxObject(),new QuadObject()};
 public:
 	Scene(void);
 	~Scene(void);
@@ -52,6 +54,6 @@ public:
 	void deleteScene();
 
 	void drawSkybox();
-	void drawModel();
+	void drawScene();
 
 };
