@@ -35,10 +35,13 @@ void Application::setup()
 void Application::setupWindow(SDL_Window **window, SDL_GLContext &context)
 {
 	//Create window
-	int initialWidth = 600;
-	int initialHeigth = 400;
+	int initialWidth = 1200;
+	int initialHeigth = 800;
 	*window = SDL_CreateWindow("Infographics", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 								initialWidth, initialHeigth, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+
+	// Make window resizable
+	SDL_SetWindowResizable(*window, SDL_TRUE);
 
 	//create the opengl context
 	context = SDL_GL_CreateContext(*window);

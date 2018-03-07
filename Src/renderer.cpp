@@ -20,6 +20,8 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 
 	initShaders();
 
+	sdlRenderer = SDL_GetRenderer(window);
+
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
@@ -41,9 +43,6 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
 	ImGui_ImplSdlGL3_Init(window);
 	ImGui::StyleColorsDark();
-
-	//couleurBordure = new float[4] {0.0f, 0.0f, 0.0f, 0.0f};
-	//couleurRemplissage = new float[4] {0.0f, 0.0f, 0.0f, 0.0f};
 }
 
 void Renderer::initShaders()
@@ -228,6 +227,7 @@ void Renderer::drawRenderer()
 		scene.drawSkybox(view, perspective, skyboxID, glm::vec4(1, 1, 1, 1));
 
 	drawGUI();
+	drawCursor();
 
 	//swap buffer
 	SDL_GL_SwapWindow(window);
@@ -292,11 +292,47 @@ void Renderer::drawGUI()
 	ImGui::Checkbox("Utiliser skybox", &utiliserSkybox);
 	ImGui::ColorEdit3("Arriere-plan", &BackgroundColor.r);
 
+	ImGui::NewLine();
+
+	ImGui::Combo("Curseur", &typeCurseur, "Defaut\0Ligne\0Croix\0Triangle\0Rectangle\0Ellipse");
+
 	ImGui::End();
 
 	// Render
 	ImGui::Render();
 	ImGui_ImplSdlGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void Renderer::drawCursor()
+{
+	if (typeCurseur == 0)
+		SDL_ShowCursor(SDL_ENABLE);
+	else
+	{
+		SDL_ShowCursor(SDL_DISABLE);
+
+		int x = 0;
+		int y = 0;
+		SDL_GetMouseState(&x, &y);
+
+		switch (typeCurseur)
+		{
+		case 1: // Ligne
+			break;
+
+		case 2: // Croix
+			break;
+
+		case 3: // Triangle
+			break;
+
+		case 4: // Rectangle
+			break;
+
+		case 5: // Ellipse
+			break;
+		}
+	}
 }
 
 void Renderer::importerImage(string fichier)

@@ -74,8 +74,10 @@ private:
 	int epaisseurBordure = 0;
 	bool utiliserSkybox = true;
 	int formeADessiner = 0; // 0 = point, 1 = ligne, 2 = triangle, 3 = rectangle, 4 = ellipse
+	int typeCurseur = 0; // 0 = par défaut, 1 = ligne, 2 = croix, 3 = triangle, 4 = rectangle, 5 = ellipse
 
 	void drawGUI();
+	void drawCursor();
 	void importerImage(string file);
 	void importerModele(string file);
 };
