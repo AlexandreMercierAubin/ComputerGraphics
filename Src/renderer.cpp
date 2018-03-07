@@ -174,7 +174,7 @@ void Renderer::drawRenderer()
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 
-	glLineWidth(epaisseurBordure);
+	glLineWidth((GLfloat)epaisseurBordure);
 	glDrawArrays(GL_LINES, 0, Lines.size());
 
 	glDisableVertexAttribArray(0);
