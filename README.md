@@ -1,4 +1,6 @@
 # Infographics
+[![Build Status](https://travis-ci.com/AlexandreMercierAubin/Infographics.svg?token=Zestff4zq7SEf2MxvRrD&branch=master)](https://travis-ci.com/AlexandreMercierAubin/Infographics)
+
 University project repository
 
 ## WIN32
