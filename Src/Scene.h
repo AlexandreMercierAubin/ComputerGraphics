@@ -44,7 +44,7 @@ private:
 	GLuint bufferID;
 	GLuint bufferColorID;
 	//end of test
-	std::vector<AbstractObject*> vObject ={new SkyboxObject(),new QuadObject()};
+	std::vector<std::shared_ptr<AbstractObject>> vObject ={make_shared<SkyboxObject>(),make_shared<QuadObject>()};
 public:
 	Scene(void);
 	~Scene(void);

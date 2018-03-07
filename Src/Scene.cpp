@@ -64,9 +64,9 @@ glm::mat4 Scene::MatView(bool staticPos)
 
 void Scene::drawScene()
 {
-	for (unsigned int i = 1; i < vObject.size(); ++i) 
+	for (auto it = vObject.begin(); it != vObject.end(); ++it)
 	{
-		vObject[i]->Draw(perspective,view);
+		(*it)->Draw(perspective, view);
 	}
 }
 
@@ -87,7 +87,6 @@ void Scene::deleteScene()
 	for (auto  it = vObject.begin(); it != vObject.end(); ++it)
 	{
 		(*it)->Delete();
-		delete (*it);
 	}
 	vObject.clear();
 }
