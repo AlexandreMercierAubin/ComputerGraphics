@@ -75,6 +75,24 @@ void Scene::drawScene()
 	}
 }
 
+void Scene::mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel)
+{
+	yaw += xRel;
+	if (pitch + yRel*sensitivity > 89)
+	{
+		pitch = 89;
+	}
+	else if (pitch + yRel * sensitivity< -89)
+	{
+		pitch = -89;
+	}
+	else
+	{
+		pitch += yRel;
+	}
+	view = MatView(false);
+}
+
 
 void Scene::drawSkybox()
 {

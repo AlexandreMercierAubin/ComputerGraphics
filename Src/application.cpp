@@ -99,6 +99,10 @@ void Application::mainLoop()
 			case SDL_KEYUP:
 				break;
 
+			case SDL_MOUSEMOTION:
+				renderer.mouseMotion(event.motion.timestamp, event.motion.windowID, event.motion.state, event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel);
+				break;
+
 			case SDL_QUIT:
 				quit = 1;
 				break;
