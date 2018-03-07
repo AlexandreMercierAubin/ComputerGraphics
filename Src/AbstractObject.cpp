@@ -29,16 +29,17 @@ void AbstractObject::uniformLight(GLuint &program, glm::vec3 &color, glm::vec3 &
 		&light.direction[0]);
 }
 
-void AbstractObject::MatRotation(GLuint program, float angle) // matrice de rotation
+void AbstractObject::MatRotation(GLuint program, glm::vec3 &r) // matrice de rotation
 {
+	//x:pitch y:yaw z:roll
 	GLuint matRotation = glGetUniformLocation(program, "matRotation");
 
 	glm::mat4 rotat;// rotation Y
 
-	rotat[0][0] = cosf(angle);  rotat[0][1] = 0.0f; rotat[0][2] = sinf(angle);	rotat[0][3] = 0.0f;
-	rotat[1][0] = 0.0f;		    rotat[1][1] = 1.0f; rotat[1][2] = 0.0f;			rotat[1][3] = 0.0f;
-	rotat[2][0] = -sinf(angle); rotat[2][1] = 0.0f; rotat[2][2] = cosf(angle);	rotat[2][3] = 0.0f;
-	rotat[3][0] = 0.0f;			rotat[3][1] = 0.0f; rotat[3][2] = 0.0f;			rotat[3][3] = 1.0f;
+	rotat[0][0] = cosf(r.z)*cosf(r.y)-sinf(r.z)*sinf(r.x)*sinf(r.y);  rotat[0][1] = -sinf(r.z)*cosf(r.x);		rotat[0][2] = cosf(r.z)*sinf(r.y)+sinf(r.z)*sinf(r.x)*cosf(r.y);	rotat[0][3] = 0.0f;
+	rotat[1][0] = sinf(r.z)*cosf(r.y)+cosf(r.z)*sinf(r.x)*sinf(r.y);  rotat[1][1] = cosf(r.z)*cosf(r.x);		rotat[1][2] = sinf(r.z)*sinf(r.y)-cosf(r.z)*sinf(r.x)*cosf(r.y);	rotat[1][3] = 0.0f;
+	rotat[2][0] = -cosf(r.x)*sinf(r.y);								  rotat[2][1] = sinf(r.x);					rotat[2][2] = cosf(r.x)*cosf(r.y);									rotat[2][3] = 0.0f;
+	rotat[3][0] = 0.0f;												  rotat[3][1] = 0.0f;						rotat[3][2] = 0.0f;													rotat[3][3] = 1.0f;
 
 	glUniformMatrix4fv(matRotation, 1, GL_TRUE, &rotat[0][0]);
 }

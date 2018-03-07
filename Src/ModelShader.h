@@ -56,10 +56,10 @@ in vec3 in_normale;
 in vec2 texCoord;
  
 uniform mat4 matView;
+uniform mat4 matTranslation;
 uniform mat4 matPerspective;
 uniform mat4 matRotation;
 uniform mat4 matScale;
-uniform mat4 matTranslation;
 
 out vec3 normale;
 out vec2 TexCoord;
@@ -67,7 +67,7 @@ out vec2 TexCoord;
 void main()
 {
 
-  gl_Position =  matPerspective*matView*matTranslation*matRotation*matScale*vec4(position, 1.0);//
+  gl_Position =  matPerspective*matView*matTranslation*matRotation*matScale*(vec4(position, 1.0));//
   normale = (matTranslation*matRotation*matScale*vec4(in_normale, 0)).xyz;
   TexCoord = vec2(texCoord.x,texCoord.y);
 

@@ -47,9 +47,9 @@ glm::mat4 Scene::MatView(bool staticPos)
 
 	position.y = 0;
 
-	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	front.y = sin(glm::radians(pitch));
-	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	front.x = cos(glm::radians(yaw)) * cos(glm::radians(-pitch));
+	front.y = sin(glm::radians(-pitch));
+	front.z = sin(glm::radians(yaw)) * cos(glm::radians(-pitch));
 
 	direction = glm::normalize(front);
 
