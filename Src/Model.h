@@ -23,7 +23,7 @@ using namespace std;
 class Model
 {
 public:	
-	Model();
+	Model(){}
 	// Constructor, expects a filepath to a 3D Model.
 	Model(GLchar* path);
 

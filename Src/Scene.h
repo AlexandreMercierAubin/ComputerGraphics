@@ -12,6 +12,7 @@
 #include "ShaderLoader.h"
 #include "ModelShader.h"
 #include "SkyboxShader.h"
+#include "ModelObject.h"
 
 class Scene
 {
@@ -44,7 +45,7 @@ private:
 	GLuint bufferID;
 	GLuint bufferColorID;
 	//end of test
-	std::vector<std::shared_ptr<AbstractObject>> vObject ={make_shared<SkyboxObject>(),make_shared<QuadObject>()};
+	std::vector<std::shared_ptr<AbstractObject>> vObject ={make_shared<SkyboxObject>(),make_shared<ModelObject>()};
 public:
 	Scene(void);
 	~Scene(void);

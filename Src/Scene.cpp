@@ -26,7 +26,7 @@ void Scene::setupScene()
 	Core::ShaderLoader loader;
 	ModelShader modelShader;
 	SkyboxShader skyboxShader;
-	g_requinModel = Model("Resources/megalodon/megalodon.FBX");
+	
 	shaderID = loader.CreateProgram(modelShader);
 	skyboxID = loader.CreateProgram(skyboxShader);
 	vObject[0]->Create(skyboxID);

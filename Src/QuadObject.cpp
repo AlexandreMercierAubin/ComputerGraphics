@@ -76,8 +76,8 @@ void QuadObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 {
 	glUseProgram(program);
 
-	MatTranslation(program, 0.0f, 0.0f, 0.0f);
-	MatScale(program, 1, 1, 1);
+	MatTranslation(program, glm::vec3(0.0f, 0.0f, 0.0f));
+	MatScale(program, glm::vec3(1, 1, 1));
 	uniformColor(program, color);
 
 	GLuint MatView = glGetUniformLocation(program, "matView");

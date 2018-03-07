@@ -15,8 +15,8 @@ protected:
 	virtual void uniformLight(GLuint &program, glm::vec3 &color, glm::vec3 &direction, float ambientIntensity, float diffuseIntensity);
 	virtual void uniformColor(GLuint &program, glm::vec4 &uniformColor);
 	virtual void MatRotation(GLuint program, float angle);
-	virtual void MatTranslation(GLuint program, float x, float y, float z);
-	virtual void MatScale(GLuint program, float x, float y, float z);
+	virtual void MatTranslation(GLuint program, const glm::vec3 &position);
+	virtual void MatScale(GLuint program, const glm::vec3 &scale);
 
 	struct Light
 	{
