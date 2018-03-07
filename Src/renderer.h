@@ -62,7 +62,7 @@ private:
 	// Options de dessin
 	glm::vec4 couleurRemplissage;
 	glm::vec4 couleurBordure;
-	int epaisseurBordure = 0;
+	int epaisseurBordure = 1;
 	bool utiliserSkybox = true;
 	int formeADessiner = 0; // 0 = point, 1 = ligne, 2 = triangle, 3 = rectangle, 4 = ellipse
 	int typeCurseur = 0; // 0 = par défaut, 1 = ligne, 2 = croix, 3 = triangle, 4 = rectangle, 5 = ellipse
