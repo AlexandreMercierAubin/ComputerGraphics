@@ -27,7 +27,10 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthFunc(GL_LEQUAL);
 
-	BackgroundColor=glm::vec3(0.0, 0.0, 1.0);
+	BackgroundColor = glm::vec3(0.0f, 0.0f, 0.0f);
+	couleurRemplissage = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	couleurBordure = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
 	srand(static_cast <unsigned> (time(0)));
 	testScale = 0;
 
@@ -38,6 +41,9 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
 	ImGui_ImplSdlGL3_Init(window);
 	ImGui::StyleColorsDark();
+
+	//couleurBordure = new float[4] {0.0f, 0.0f, 0.0f, 0.0f};
+	//couleurRemplissage = new float[4] {0.0f, 0.0f, 0.0f, 0.0f};
 }
 
 void Renderer::initShaders()
@@ -218,7 +224,8 @@ void Renderer::drawRenderer()
 	glm::mat4 view = MatView(false);
 	scene.drawModel(shaderID, view, perspective ,g_requinModel, temp1, temp2, g_uniformCouleur, g_intensiteLumiere, g_direction);
 
-	scene.drawSkybox(view, perspective, skyboxID, glm::vec4(1, 1, 1, 1));
+	if (utiliserSkybox)
+		scene.drawSkybox(view, perspective, skyboxID, glm::vec4(1, 1, 1, 1));
 
 	drawGUI();
 
@@ -254,25 +261,50 @@ void Renderer::screenShot(int x, int y, int w, int h, const char * filename)
 void Renderer::drawGUI()
 {
 	ImGui_ImplSdlGL3_NewFrame(window);
-	ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
 
-	ImGui::Begin("Params");
+	// ********** Importer **********
 
-	static char fichier[1000] = "Test";
-	ImGui::InputText("", fichier, IM_ARRAYSIZE(fichier));
+	ImGui::Begin("Importer");
 
-	ImGui::SameLine();
+	static char fichier[1000] = "";
+	ImGui::InputText("Fichier", fichier, IM_ARRAYSIZE(fichier));
+
 	if (ImGui::Button("Importer image"))
 		importerImage(string(fichier));
 
+	ImGui::SameLine();
+	if (ImGui::Button("Importer modele 3D"))
+		importerModele(string(fichier));
+
 	ImGui::End();
 
-	// ImGui render
+	// ********** Options de dessin **********
+
+	ImGui::Begin("Options de dessin");
+
+	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
+	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
+	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 1, 10);
+	ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Ellipse");
+
+	ImGui::NewLine();
+
+	ImGui::Checkbox("Utiliser skybox", &utiliserSkybox);
+	ImGui::ColorEdit3("Arriere-plan", &BackgroundColor.r);
+
+	ImGui::End();
+
+	// Render
 	ImGui::Render();
 	ImGui_ImplSdlGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void Renderer::importerImage(string fichier)
+{
+	// TO-DO
+}
+
+void Renderer::importerModele(string fichier)
 {
 	// TO-DO
 }

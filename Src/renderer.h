@@ -68,6 +68,14 @@ private:
 	float g_angleLumiere = glm::radians(270.0f);
 	float g_intensiteLumiere = 1;
 
+	// Options de dessin
+	glm::vec4 couleurRemplissage;
+	glm::vec4 couleurBordure;
+	int epaisseurBordure = 0;
+	bool utiliserSkybox = true;
+	int formeADessiner = 0; // 0 = point, 1 = ligne, 2 = triangle, 3 = rectangle, 4 = ellipse
+
 	void drawGUI();
 	void importerImage(string file);
+	void importerModele(string file);
 };
