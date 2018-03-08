@@ -190,12 +190,6 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 
-	// Afficher ou non le curseur de Windows selon le curseur sélectionné
-	if (typeCurseur == 0)
-		SDL_ShowCursor(SDL_ENABLE);
-	else
-		SDL_ShowCursor(SDL_DISABLE);
-
 	//glm::vec3 temp1(0.0f, -0.2f, 0.5f); glm::vec3 temp2(0.0028f, 0.0028f, 0.0028f);
 	scene.refreshScene(flags);
 	scene.drawScene();
@@ -205,8 +199,14 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 
 	drawGUI();
 
-	if (typeCurseur != 0)
+	// Affiche le curseur sélectionné
+	if (typeCurseur == 0)
+		SDL_ShowCursor(SDL_ENABLE);
+	else
+	{
+		SDL_ShowCursor(SDL_DISABLE);
 		drawCursor();
+	}
 
 	//swap buffer
 	SDL_GL_SwapWindow(window);
@@ -298,7 +298,6 @@ void Renderer::drawGUI()
 
 void Renderer::drawCursor()
 {
-
 	int x = 0;
 	int y = 0;
 	int w = 0;
