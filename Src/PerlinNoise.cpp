@@ -8,7 +8,7 @@ float PerlinNoiseValue(float x, float y, float res)
 {
     float tempX,tempY;
     int x0,y0,ii,jj,gi0,gi1,gi2,gi3;
-    float unit = 1.0f/sqrt(2);
+    float unit = 1.0f/sqrt(2.0f);
     float tmp,s,t,u,v,Cx,Cy,Li1,Li2;
     float gradient2[][2] = {{unit,unit},{-unit,unit},{unit,-unit},{-unit,-unit},{1,0},{-1,0},{0,1},{0,-1}};
 
