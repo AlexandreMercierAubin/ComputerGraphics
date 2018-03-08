@@ -15,6 +15,7 @@ private:
 		0,3,1
 	};
 	std::string texturePath;
+	bool imageOK = false;
 public:
 	virtual void Create(GLuint &Program);
 	virtual void Draw(glm::mat4 &perspective, glm::mat4 &view);

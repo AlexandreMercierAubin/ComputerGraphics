@@ -277,7 +277,7 @@ void Renderer::drawGUI()
 	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
 	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
 	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
-	ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Quad\0Ellipse\0");
+	ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0");
 
 	ImGui::NewLine();
 
@@ -399,3 +399,13 @@ void Renderer::importerModele(string fichier)
 	// TO-DO
 }
 
+void Renderer::ajouterPtDessin(int x, int y)
+{
+	int w, h;
+	SDL_GetWindowSize(window, &w, &h);
+
+	float glX = x / (w / 2.0f) - 1.0f;
+	float glY = -y / (h / 2.0f) + 1.0f;
+
+
+}
