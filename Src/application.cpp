@@ -1,14 +1,9 @@
 #pragma once
 #include "Application.h"
 
-//Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-
 
 void Application::setup()
 {
-	renderer = Renderer();
 
 	//The window we'll be rendering to
 	window = NULL;
@@ -32,6 +27,7 @@ void Application::setup()
 	else
 	{
 		renderer.setupRenderer(window, &context);
+
 	}
 
 }
@@ -39,16 +35,21 @@ void Application::setup()
 void Application::setupWindow(SDL_Window **window, SDL_GLContext &context)
 {
 	//Create window
+	int initialWidth = 1200;
+	int initialHeigth = 800;
 	*window = SDL_CreateWindow("Infographics", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-								SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+								initialWidth, initialHeigth, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+
+	// Make window resizable
+	SDL_SetWindowResizable(*window, SDL_TRUE);
 
 	//create the opengl context
 	context = SDL_GL_CreateContext(*window);
 
 
 	//set the gl version to be loaded
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 	/* Turn on double buffering with a 24bit Z buffer.
@@ -59,7 +60,17 @@ void Application::setupWindow(SDL_Window **window, SDL_GLContext &context)
 	SDL_GL_SetSwapInterval(1);
 }
 
-void Application::draw()
+void Application::F11Keypress() 
+{
+	int width;
+	int height;
+
+	SDL_GetWindowSize(window, &width, &height);
+	renderer.screenShot(0, 0, width, height, "test.bmp");
+
+}
+
+void Application::mainLoop()
 {
 	SDL_Event event;
 	int quit = 0;
@@ -69,34 +80,60 @@ void Application::draw()
 		/* Poll for events */
 		while (SDL_PollEvent(&event)) {
 
+			// ImGui procces event pour écrire dans textbox, etc.
+			ImGui_ImplSdlGL3_ProcessEvent(&event);
+
 			switch (event.type) {
 				/* Keyboard event */
 				/* Pass the event data onto PrintKeyInfo() */
 			case SDL_KEYDOWN:
-				if (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q)
-					SDL_Quit();
+				if (event.key.keysym.sym == SDLK_ESCAPE)
+					quit = 1;
+				else if (event.key.keysym.sym == SDLK_F11)
+					F11Keypress();
 				break;
 
+			case SDL_WINDOWEVENT:
+				windowEvents(&event);
+
 			case SDL_KEYUP:
+				break;
+
+			case SDL_MOUSEMOTION:
+				renderer.mouseMotion(event.motion.timestamp, event.motion.windowID, event.motion.state, event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel);
 				break;
 
 			case SDL_QUIT:
 				quit = 1;
 				break;
-
-			default:
-				renderer.drawRenderer();
-				break;
 			}
-
 		}
 
+		renderer.drawRenderer();
+	}
+}
+
+void Application::windowEvents(const SDL_Event * event)
+{
+	switch (event->window.event)
+	{
+	case SDL_WINDOWEVENT_SIZE_CHANGED:
+		renderer.resize(event->window.data1, event->window.data2);
+		break;
+
+	case SDL_WINDOWEVENT_RESIZED:
+		renderer.resize(event->window.data1, event->window.data2);
+		break;
 	}
 }
 
 void Application::exit()
 {
 	SDL_Log("<app::exit>");
+
+	// Exit ImGui
+	ImGui_ImplSdlGL3_Shutdown();
+	ImGui::DestroyContext();
 
 	//Destroy Renderer
 	renderer.deleteRenderer();
@@ -109,7 +146,6 @@ void Application::exit()
 
 	//Quit SDL subsystems
 	SDL_Quit();
-
 }
 
 Application::Application()
