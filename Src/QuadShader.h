@@ -6,14 +6,14 @@ class QuadShader : public AbstractShader
 	std::string fshader =
 R"(#version 430 core
 
+uniform sampler2D text;
 in vec2 texCoords;
-in vec4 Color;
 out vec4 color;
-uniform sampler2D tex;
 
 void main()
 {
-	color = texture(tex, texCoords) * Color;
+	color = texture2D(text, texCoords);
+	//color = vec4(texCoords.x, texCoords.y, 0.0, 1.0);
 }
 
 )";
@@ -22,19 +22,15 @@ void main()
 R"(#version 430 core
 
 layout(location = 0) in vec3 in_pos;
-layout(location = 1) in vec4 in_color;
-layout(location = 2) in vec2 in_texCoords;
 uniform mat4 matView;
 uniform mat4 matPerspective;
 
 out vec2 texCoords;
-out vec4 Color;
 
 void main()
 {
 	gl_Position = matPerspective * matView * vec4(in_pos, 1.0);
-	texCoords = in_texCoords;
-	Color = in_color;
+	texCoords = vec2((in_pos.x + 0.25) * 2, (in_pos.y - 0.25) * -2);
 }
 
 )";
