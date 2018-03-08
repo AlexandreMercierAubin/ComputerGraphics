@@ -11,8 +11,8 @@ private:
 	glm::vec4 color;
 	int angle;
 	const unsigned int indices[6] = {
-		0,1,2,//face
-		0,3,2
+		2,3,0,//face
+		0,3,1
 	};
 public:
 	virtual void Create(GLuint &Program);

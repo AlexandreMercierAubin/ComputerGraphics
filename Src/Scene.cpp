@@ -26,11 +26,14 @@ void Scene::setupScene()
 	Core::ShaderLoader loader;
 	ModelShader modelShader;
 	SkyboxShader skyboxShader;
+	SimpleTexShader texShader;
 	
 	shaderID = loader.CreateProgram(modelShader);
 	skyboxID = loader.CreateProgram(skyboxShader);
+	GLuint texShaderID = loader.CreateProgram(texShader);
 	vObject[0]->Create(skyboxID);
 	vObject[1]->Create(shaderID);
+	vObject[2]->Create(texShaderID);
 }
 
 void Scene::addObject(shared_ptr<AbstractObject> object) 

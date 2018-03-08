@@ -9,7 +9,7 @@ void ModelObject::Create(GLuint &Program)
 	color = glm::vec4(1, 1, 1, 1);
 	position = glm::vec3(0.0f,0.0f,0.0f);
 	scale = glm::vec3(0.0028f, 0.0028f, 0.0028f);
-	ambientIntensity = 0.3f;
+	ambientIntensity = 0.9f;
 	diffuseIntensity = 0.9f;
 	model = Model("Resources/megalodon/megalodon.FBX");
 }
