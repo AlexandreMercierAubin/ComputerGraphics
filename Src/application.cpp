@@ -103,7 +103,9 @@ void Application::mainLoop()
 				if (event.button.button == SDL_BUTTON_LEFT)
 				{
 					keyFlags.flagLeftMouse = false;
-					renderer.ajouterPtDessin(event.button.x, event.button.y);
+
+					if (!ImGui::GetIO().WantCaptureMouse)
+						renderer.ajouterPtDessin(event.button.x, event.button.y);
 				}
 				else if (event.button.button == SDL_BUTTON_RIGHT)
 					keyFlags.flagRightMouse = false;

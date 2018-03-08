@@ -277,7 +277,8 @@ void Renderer::drawGUI()
 	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
 	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
 	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
-	ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0");
+	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0"))
+		ptsDessin.clear();
 
 	ImGui::NewLine();
 
@@ -407,5 +408,55 @@ void Renderer::ajouterPtDessin(int x, int y)
 	float glX = x / (w / 2.0f) - 1.0f;
 	float glY = -y / (h / 2.0f) + 1.0f;
 
+	ptsDessin.push_back(glm::vec3(glX, glY, 0.0f));
 
+	// Type de primitive
+	GLenum typePrimitive = -1;
+	switch (formeADessiner)
+	{
+	case 0: // Point
+		typePrimitive = GL_POINTS;
+		break;
+
+	case 1: // Ligne
+		if (ptsDessin.size() >= 2)
+			typePrimitive = GL_LINES;
+
+	case 2: // Triangle
+		if (ptsDessin.size() >= 3)
+			typePrimitive = GL_TRIANGLES;
+		break;
+
+	case 3: // Rectangle
+		if (ptsDessin.size() >= 2)
+			typePrimitive = GL_TRIANGLE_FAN;
+		break;
+
+	case 4: // Quad
+		if (ptsDessin.size() >= 4)
+			typePrimitive = GL_TRIANGLE_FAN;
+		break;
+	}
+
+	// Ajout de primitive
+	if (typePrimitive != -1)
+	{
+		PrimitiveObject primitive;
+		primitive.Create(primitiveShaderID);
+		primitive.setCouleurBordure(couleurBordure);
+		primitive.setCouleurRemplissage(couleurRemplissage);
+		primitive.setEpaisseurBordure(epaisseurBordure);
+		primitive.setTypePrimitive(typePrimitive);
+
+		// Lorsqu'on dessine un rectangle, on donne les coordonnées de 2 sommets opposés
+		// On doit donc ajouter 2 sommets au dessin
+		if (formeADessiner == 3)
+			ptsDessin = { ptsDessin[0], glm::vec3(ptsDessin[0].x, ptsDessin[1].y, 0.0f), ptsDessin[1], glm::vec3(ptsDessin[1].x, ptsDessin[0].y, 0.0f) };
+
+		primitive.setVertices(ptsDessin);
+
+		scene.addObject(std::make_shared<PrimitiveObject>(primitive));
+
+		ptsDessin.clear();
+	}
 }

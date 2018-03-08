@@ -14,8 +14,10 @@ private:
 
 public:
 	virtual void Create(GLuint &program);
-	virtual void Draw();
+	virtual void Draw(glm::mat4 &perspective, glm::mat4 &view);
 	virtual void Delete();
+
+	void Draw();
 
 	void setVertices(std::vector<glm::vec3> vertices);
 	void setCouleurRemplissage(glm::vec4 couleur);
