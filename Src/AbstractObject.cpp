@@ -41,7 +41,7 @@ void AbstractObject::MatRotation(GLuint program, glm::vec3 &r) // matrice de rot
 	rotat[2][0] = -cosf(r.x)*sinf(r.y);								  rotat[2][1] = sinf(r.x);					rotat[2][2] = cosf(r.x)*cosf(r.y);									rotat[2][3] = 0.0f;
 	rotat[3][0] = 0.0f;												  rotat[3][1] = 0.0f;						rotat[3][2] = 0.0f;													rotat[3][3] = 1.0f;
 
-	glUniformMatrix4fv(matRotation, 1, GL_TRUE, &rotat[0][0]);
+	glUniformMatrix4fv(matRotation, 1, GL_FALSE, &rotat[0][0]);
 }
 
 void AbstractObject::MatTranslation(GLuint program,const glm::vec3 &position) // matrice de translation
@@ -64,9 +64,9 @@ void AbstractObject::MatScale(GLuint program, const glm::vec3 &scale) // matrice
 
 	glm::mat4 scl;
 
-	scl[0][0] = 1.0f*scale.x; scl[0][1] = 0.0f;			scl[0][2] = 0.0f;			scl[0][3] = 0.0f;
-	scl[1][0] = 0.0f;		  scl[1][1] = 1.0f*scale.y; scl[1][2] = 0.0f;			scl[1][3] = 0.0f;
-	scl[2][0] = 0.0f;		  scl[2][1] = 0.0f;			scl[2][2] = 1.0f*scale.z;	scl[2][3] = 0.0f;
+	scl[0][0] = scale.x;	  scl[0][1] = 0.0f;			scl[0][2] = 0.0f;			scl[0][3] = 0.0f;
+	scl[1][0] = 0.0f;		  scl[1][1] = scale.y;		scl[1][2] = 0.0f;			scl[1][3] = 0.0f;
+	scl[2][0] = 0.0f;		  scl[2][1] = 0.0f;			scl[2][2] = scale.z;		scl[2][3] = 0.0f;
 	scl[3][0] = 0.0f;		  scl[3][1] = 0.0f;			scl[3][2] = 0.0f;			scl[3][3] = 1.0f;
 
 	glUniformMatrix4fv(matScale, 1, GL_FALSE, &scl[0][0]);

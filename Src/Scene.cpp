@@ -38,6 +38,30 @@ void Scene::addObject(shared_ptr<AbstractObject> object)
 	vObject.push_back(object);
 }
 
+void Scene::refreshScene(KeyFlags flags)
+{
+	if (flags.flagUp)
+	{
+		position += mouvementSpeed * direction;
+	}
+	if (flags.flagDown)
+	{
+		position -= mouvementSpeed * direction;
+	}
+	if (flags.flagLeft)
+	{
+		glm::vec3 Droite = glm::cross(direction, orientation);
+		position -= mouvementSpeed * glm::normalize(Droite);
+	}
+	if (flags.flagRight)
+	{
+		glm::vec3 Droite = glm::cross(direction, orientation);
+		position += mouvementSpeed * glm::normalize(Droite);
+
+	}
+	view = MatView(false);
+}
+
 
 glm::mat4 Scene::MatView(bool staticPos)
 {

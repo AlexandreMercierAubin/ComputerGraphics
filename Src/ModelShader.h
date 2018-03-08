@@ -40,11 +40,10 @@ void main(void)
 	  diffuseColor = vec4(0, 0, 0, 1);
   }
 
-  color= texture(texture_diffuse, TexCoord)*(vAmbient + diffuseColor)*vColor;//vec4(1,0,0,1)
+  color= texture(texture_diffuse, TexCoord)*(vAmbient + diffuseColor)*vColor;
 }
 
 )";
-	/*  */
 
 
 
@@ -68,7 +67,7 @@ void main()
 {
 
   gl_Position =  matPerspective*matView*matTranslation*matRotation*matScale*(vec4(position, 1.0));//
-  normale = (matTranslation*matRotation*matScale*vec4(in_normale, 0)).xyz;
+  normale = (matTranslation*matRotation*matScale*(vec4(in_normale, 0))).xyz;
   TexCoord = vec2(texCoord.x,texCoord.y);
 
 }

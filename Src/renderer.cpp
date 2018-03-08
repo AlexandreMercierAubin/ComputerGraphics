@@ -152,7 +152,7 @@ void Renderer::MatTranslation() // matrice de translation
 }
 
 
-void Renderer::drawRenderer()
+void Renderer::drawRenderer(Scene::KeyFlags &flags)
 {
 	glUseProgram(kochShaderID);
 
@@ -181,7 +181,7 @@ void Renderer::drawRenderer()
 	glDisableVertexAttribArray(1);
 
 	//glm::vec3 temp1(0.0f, -0.2f, 0.5f); glm::vec3 temp2(0.0028f, 0.0028f, 0.0028f);
-
+	scene.refreshScene(flags);
 	scene.drawScene();
 	
 	if (utiliserSkybox)
@@ -211,12 +211,12 @@ void Renderer::resize(const int & w, const int & h)
 	glViewport(0, 0, w, h);
 }
 
-void Renderer::mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel)
+void Renderer::mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel ,Scene::KeyFlags flags)
 {
 	if (SDL_GetWindowID(window)==windowID ) 
 	{
 		scene.mouseMotion(timestamp, windowID, state, x, y, xRel, yRel);
-		drawRenderer();
+		drawRenderer(flags);
 	}
 }
 
