@@ -9,12 +9,12 @@ R"(#version 430 core
 in vec3 TexCoords;
 out vec4 color;
 uniform samplerCube skybox;
-uniform vec4 Color;
+uniform vec4 vColor;
 
 void main()
 {
 
-	color = texture(skybox, TexCoords)*Color;
+	color = texture(skybox, TexCoords)*vColor;
 
 }
 
@@ -25,7 +25,7 @@ void main()
 
 	std::string vshader =
 R"(#version 430 core 
-layout(location = 0) in vec3 position;
+in vec3 position;
 uniform mat4 matPerspective;
 uniform mat4 matView;
 out vec3 TexCoords;

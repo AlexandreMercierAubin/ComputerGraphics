@@ -4,6 +4,12 @@
 
 void Application::setup()
 {
+	keyFlags.flagDown = false;
+	keyFlags.flagUp = false;
+	keyFlags.flagRight = false;
+	keyFlags.flagLeft = false;
+	keyFlags.flagLeftMouse = false;
+	keyFlags.flagRightMouse = false;
 
 	//The window we'll be rendering to
 	window = NULL;
@@ -86,21 +92,34 @@ void Application::mainLoop()
 			switch (event.type) {
 				/* Keyboard event */
 				/* Pass the event data onto PrintKeyInfo() */
+			case SDL_MOUSEBUTTONDOWN:
+				if (event.button.button == SDL_BUTTON_LEFT)
+					keyFlags.flagLeftMouse = true;
+				else if (event.button.button = SDL_BUTTON_RIGHT)
+					keyFlags.flagRightMouse = true;
+				break;
+
+			case SDL_MOUSEBUTTONUP:
+				if (event.button.button == SDL_BUTTON_LEFT)
+					keyFlags.flagLeftMouse = false;
+				else if (event.button.button == SDL_BUTTON_RIGHT)
+					keyFlags.flagRightMouse = false;
+				break;
+
 			case SDL_KEYDOWN:
-				if (event.key.keysym.sym == SDLK_ESCAPE)
-					quit = 1;
-				else if (event.key.keysym.sym == SDLK_F11)
-					F11Keypress();
+				keydownEvent(event,quit);
 				break;
 
 			case SDL_WINDOWEVENT:
-				windowEvents(&event);
+				windowEvents(event);
+				break;
 
 			case SDL_KEYUP:
+				keyupEvent(event);
 				break;
 
 			case SDL_MOUSEMOTION:
-				renderer.mouseMotion(event.motion.timestamp, event.motion.windowID, event.motion.state, event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel);
+				renderer.mouseMotion(event.motion.timestamp, event.motion.windowID, event.motion.state, event.motion.x, event.motion.y, event.motion.xrel, event.motion.yrel, keyFlags);
 				break;
 
 			case SDL_QUIT:
@@ -109,20 +128,64 @@ void Application::mainLoop()
 			}
 		}
 
-		renderer.drawRenderer();
+		renderer.drawRenderer(keyFlags);
 	}
 }
 
-void Application::windowEvents(const SDL_Event * event)
+void Application::keydownEvent(const SDL_Event &event, int &quit)
 {
-	switch (event->window.event)
+	switch (event.key.keysym.sym) 
+	{
+	case SDLK_ESCAPE:
+		quit = 1;
+		break;
+	case SDLK_F11:
+		F11Keypress();
+		break;
+	case SDLK_UP:
+		keyFlags.flagUp = true;
+		break;
+	case SDLK_DOWN:
+		keyFlags.flagDown = true;
+		break;
+	case SDLK_LEFT:
+		keyFlags.flagLeft = true;
+		break;
+	case SDLK_RIGHT:
+		keyFlags.flagRight = true;
+		break;
+	}
+}
+
+void Application::keyupEvent(const SDL_Event &event)
+{
+	switch (event.key.keysym.sym)
+	{
+	case SDLK_UP:
+		keyFlags.flagUp = false;
+		break;
+	case SDLK_DOWN:
+		keyFlags.flagDown = false;
+		break;
+	case SDLK_LEFT:
+		keyFlags.flagLeft = false;
+		break;
+	case SDLK_RIGHT:
+		keyFlags.flagRight = false;
+		break;
+	}
+}
+
+void Application::windowEvents(const SDL_Event &event)
+{
+	switch (event.window.event)
 	{
 	case SDL_WINDOWEVENT_SIZE_CHANGED:
-		renderer.resize(event->window.data1, event->window.data2);
+		renderer.resize(event.window.data1, event.window.data2);
 		break;
 
 	case SDL_WINDOWEVENT_RESIZED:
-		renderer.resize(event->window.data1, event->window.data2);
+		renderer.resize(event.window.data1, event.window.data2);
 		break;
 	}
 }

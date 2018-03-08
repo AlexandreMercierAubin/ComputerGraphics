@@ -12,4 +12,9 @@ public:
 private:
 	GLuint program;
 	glm::vec4 color;
+	glm::vec3 position;
+	glm::vec3 scale;
+	Model model;
+	float diffuseIntensity;
+	float ambientIntensity;
 };

@@ -18,14 +18,18 @@
 #include "ShaderLoader.h"
 #include "Scene.h"
 
+#include "PrimitiveObject.h"
+#include "PrimitiveShader.h"
+#include "SimpleTexShader.h";
+
 class Renderer
 {
 public:
 	void setupRenderer(SDL_Window * window, SDL_GLContext *context);
-	void drawRenderer();
+	void drawRenderer(Scene::KeyFlags &flags);
 	void deleteRenderer();
 	void resize(const int &w,const int &h);
-	void mouseMotion(const unsigned int &timestamp,const unsigned int &windowID, const unsigned int &state, const int &x, const int &y, const int &xRel, const int &yRel);
+	void mouseMotion(const unsigned int &timestamp,const unsigned int &windowID, const unsigned int &state, const int &x, const int &y, const int &xRel, const int &yRel,Scene::KeyFlags flags);
 
 	void screenShot(int x, int y, int w, int h, const char * filename);
 
@@ -64,13 +68,18 @@ private:
 	// Options de dessin
 	glm::vec4 couleurRemplissage;
 	glm::vec4 couleurBordure;
-	int epaisseurBordure = 1;
+	int epaisseurBordure = 0;
 	bool utiliserSkybox = true;
-	int formeADessiner = 0; // 0 = point, 1 = ligne, 2 = triangle, 3 = rectangle, 4 = ellipse
-	int typeCurseur = 0; // 0 = par défaut, 1 = ligne, 2 = croix, 3 = triangle, 4 = rectangle, 5 = ellipse
+	int formeADessiner = 0; // 0 = point, 1 = ligne, 2 = triangle, 3 = quad, 4 = ellipse
+	int typeCurseur = 0; // 0 = par défaut, 1 = point, 2 = points, 3 = croix, 4 = triangle, 5 = quad
+	PrimitiveObject curseur;
+
+	GLuint primitiveShaderID;
+	GLuint simpleTexShaderID;
 
 	void drawGUI();
 	void drawCursor();
+	void updateCursor();
 	void importerImage(string file);
 	void importerModele(string file);
 };

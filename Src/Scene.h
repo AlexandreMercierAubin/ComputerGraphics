@@ -12,16 +12,17 @@
 #include "ShaderLoader.h"
 #include "ModelShader.h"
 #include "SkyboxShader.h"
+#include "SimpleTexShader.h"
+#include "ModelObject.h"
 
 class Scene
 {
 	
 
 private:
-
 	struct objetMonde;
-
 	float sensitivity=0.2f;
+	float mouvementSpeed = 0.03f;
 
 	glm::mat4 MatView(bool staticPos);
 	glm::mat4 perspective;
@@ -44,7 +45,7 @@ private:
 	GLuint bufferID;
 	GLuint bufferColorID;
 	//end of test
-	std::vector<std::shared_ptr<AbstractObject>> vObject ={make_shared<SkyboxObject>(),make_shared<QuadObject>()};
+	std::vector<std::shared_ptr<AbstractObject>> vObject ={make_shared<SkyboxObject>()};
 public:
 	Scene(void);
 	~Scene(void);
@@ -55,9 +56,15 @@ public:
 
 	void drawSkybox();
 	void drawScene();
+	
 
 	void mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel);
 
 	void addObject(shared_ptr<AbstractObject> object);
 
+	struct KeyFlags
+	{
+		bool flagUp, flagDown, flagLeft, flagRight, flagLeftMouse, flagRightMouse;
+	};
+	void refreshScene(KeyFlags flags);
 };
