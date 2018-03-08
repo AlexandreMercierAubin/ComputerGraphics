@@ -9,8 +9,6 @@ Scene::~Scene(void)
 	glDeleteProgram(shaderID);
 	glDeleteBuffers(1, &bufferID);
 	glDeleteProgram(skyboxID);
-
-	vObject.clear();
 }
 
 void Scene::setupScene()
@@ -37,14 +35,19 @@ void Scene::setupScene()
 	skyboxID = loader.CreateProgram(skyboxShader);
 	GLuint texShaderID = loader.CreateProgram(texShader);
 
-	vObject[0]->Create(skyboxID);
-	vObject[1]->Create(shaderID);
-	vObject[2]->Create(texShaderID);
+	skybox.Create(skyboxID);
+
+	objects.addObject(make_shared<ModelObject>());
+	objects.getObjectAt(0)->Create(shaderID);
+
+	objects.addObject(make_shared<QuadObject>("Resources/Image/Small-mario.png"));
+	objects.getObjectAt(1)->Create(texShaderID);
+
 }
 
 void Scene::addObject(shared_ptr<AbstractObject> object) 
 {
-	vObject.push_back(object);
+	objects.addObject(object);
 }
 
 void Scene::refreshScene(KeyFlags flags)
@@ -105,10 +108,7 @@ glm::mat4 Scene::MatView(bool staticPos)
 
 void Scene::drawScene()
 {
-	for (auto it = ++vObject.begin(); it != vObject.end(); ++it)
-	{
-		(*it)->Draw(perspective, view);
-	}
+	objects.Draw(perspective,view);
 }
 
 void Scene::mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel)
@@ -132,7 +132,7 @@ void Scene::mouseMotion(const unsigned int & timestamp, const unsigned int & win
 
 void Scene::drawSkybox()
 {
-	vObject[0]->Draw(perspective,view);
+	skybox.Draw(perspective,view);
 }
 
 

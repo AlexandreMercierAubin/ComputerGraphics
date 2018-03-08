@@ -15,6 +15,16 @@ void GroupObject::addObject(std::shared_ptr<AbstractObject> object)
 	vObject.push_back(object);
 }
 
+void GroupObject::deleteObjectAt(const int index)
+{
+	vObject.erase(vObject.begin() + index);
+}
+
+std::shared_ptr<AbstractObject> GroupObject::getObjectAt(const int index)
+{
+	return vObject.at(index);
+}
+
 GroupObject::~GroupObject()
 {
 	vObject.clear();
