@@ -4,7 +4,7 @@
 using namespace std;
 
 
-float PerlinNoise(float x, float y, float res)
+float PerlinNoiseValue(float x, float y, float res)
 {
     float tempX,tempY;
     int x0,y0,ii,jj,gi0,gi1,gi2,gi3;

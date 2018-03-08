@@ -2,7 +2,5 @@
 
 class PerlinNoise
 {
-
-public:
-	float PerlinNoise(float x, float y, float res);
+	float PerlinNoiseValue(float x, float y, float res);
 };
