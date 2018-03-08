@@ -3,6 +3,12 @@
 
 void QuadObject::Create(GLuint &Program)
 {
+	if (!imageOK)
+	{
+		cout << "Erreur au chargement de l'image" << endl;
+		return;
+	}
+
 	program = Program;
 	GLfloat width, height, depth;
 	width = 0.5f;
@@ -65,6 +71,9 @@ void QuadObject::Create(GLuint &Program)
 
 void QuadObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 {
+	if (!imageOK)
+		return;
+
 	glUseProgram(program);
 
 	GLuint MatView = glGetUniformLocation(program, "matView");
@@ -87,6 +96,9 @@ void QuadObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 QuadObject::QuadObject(std::string texturePath)
 {
 	this->texturePath = texturePath;
+	SDL_Surface *image = Model::loadImage(texturePath);
+	imageOK = image != nullptr;
+	SDL_FreeSurface(image);
 }
 
 QuadObject::~QuadObject()

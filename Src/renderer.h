@@ -31,6 +31,7 @@ public:
 	void mouseMotion(const unsigned int &timestamp,const unsigned int &windowID, const unsigned int &state, const int &x, const int &y, const int &xRel, const int &yRel,Scene::KeyFlags flags);
 
 	void screenShot(int x, int y, int w, int h, const char * filename);
+	void ajouterPtDessin(int x, int y);
 
 	Scene scene;
 	~Renderer();
@@ -69,9 +70,11 @@ private:
 	// Options de dessin
 	glm::vec4 couleurRemplissage;
 	glm::vec4 couleurBordure;
-	int epaisseurBordure = 0;
+	int epaisseurBordure = 1;
 	bool utiliserSkybox = true;
-	int formeADessiner = 0; // 0 = point, 1 = ligne, 2 = triangle, 3 = quad, 4 = ellipse
+	int formeADessiner = 0; // 0 = point, 1 = ligne, 2 = triangle, 3 = rectangle, 4 = quad
+	std::vector<glm::vec3> ptsDessin;
+
 	int typeCurseur = 0; // 0 = par défaut, 1 = point, 2 = points, 3 = croix, 4 = triangle, 5 = quad
 	PrimitiveObject curseur;
 
