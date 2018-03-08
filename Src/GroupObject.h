@@ -23,6 +23,20 @@ public:
 			return NULL;
 		}
 	}
+
+	template <class abObject>
+	bool isCastableAt(const int index)
+	{
+		if (abObject* casted = dynamic_cast<abObject*>(vObject[index].get()))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	~GroupObject();
 private:
 	std::vector<std::shared_ptr<AbstractObject>> vObject;

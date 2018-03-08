@@ -46,6 +46,9 @@ void Scene::setupScene()
 	objects.addObject(make_shared<GroupObject>());
 	objects.getCastedObjectAt<GroupObject>(2)->addObject(make_shared<QuadObject>("Resources/Image/vodka.png"));
 	objects.getCastedObjectAt<GroupObject>(2)->getObjectAt(0)->Create(texShaderID);
+
+	cout << objects.isCastableAt<GroupObject>(2)<< endl;
+	cout << objects.isCastableAt<QuadObject>(2) << endl;
 }
 
 void Scene::addObject(shared_ptr<AbstractObject> object) 
