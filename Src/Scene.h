@@ -64,7 +64,7 @@ public:
 
 	struct KeyFlags
 	{
-		bool flagUp, flagDown, flagLeft, flagRight;
+		bool flagUp, flagDown, flagLeft, flagRight, flagLeftMouse, flagRightMouse;
 	};
 	void refreshScene(KeyFlags flags);
 };
