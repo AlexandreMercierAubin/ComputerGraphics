@@ -8,6 +8,8 @@ void Application::setup()
 	keyFlags.flagUp = false;
 	keyFlags.flagRight = false;
 	keyFlags.flagLeft = false;
+	keyFlags.flagLeftMouse = false;
+	keyFlags.flagRightMouse = false;
 
 	//The window we'll be rendering to
 	window = NULL;
@@ -90,6 +92,20 @@ void Application::mainLoop()
 			switch (event.type) {
 				/* Keyboard event */
 				/* Pass the event data onto PrintKeyInfo() */
+			case SDL_MOUSEBUTTONDOWN:
+				if (event.button.button == SDL_BUTTON_LEFT)
+					keyFlags.flagLeftMouse = true;
+				else if (event.button.button = SDL_BUTTON_RIGHT)
+					keyFlags.flagRightMouse = true;
+				break;
+
+			case SDL_MOUSEBUTTONUP:
+				if (event.button.button == SDL_BUTTON_LEFT)
+					keyFlags.flagLeftMouse = false;
+				else if (event.button.button == SDL_BUTTON_RIGHT)
+					keyFlags.flagRightMouse = false;
+				break;
+
 			case SDL_KEYDOWN:
 				keydownEvent(event,quit);
 				break;

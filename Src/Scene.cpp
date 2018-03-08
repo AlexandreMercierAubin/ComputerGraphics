@@ -40,24 +40,27 @@ void Scene::addObject(shared_ptr<AbstractObject> object)
 
 void Scene::refreshScene(KeyFlags flags)
 {
-	if (flags.flagUp)
+	if (flags.flagRightMouse)
 	{
-		position += mouvementSpeed * direction;
-	}
-	if (flags.flagDown)
-	{
-		position -= mouvementSpeed * direction;
-	}
-	if (flags.flagLeft)
-	{
-		glm::vec3 Droite = glm::cross(direction, orientation);
-		position -= mouvementSpeed * glm::normalize(Droite);
-	}
-	if (flags.flagRight)
-	{
-		glm::vec3 Droite = glm::cross(direction, orientation);
-		position += mouvementSpeed * glm::normalize(Droite);
+		if (flags.flagUp)
+		{
+			position += mouvementSpeed * direction;
+		}
+		if (flags.flagDown)
+		{
+			position -= mouvementSpeed * direction;
+		}
+		if (flags.flagLeft)
+		{
+			glm::vec3 Droite = glm::cross(direction, orientation);
+			position -= mouvementSpeed * glm::normalize(Droite);
+		}
+		if (flags.flagRight)
+		{
+			glm::vec3 Droite = glm::cross(direction, orientation);
+			position += mouvementSpeed * glm::normalize(Droite);
 
+		}
 	}
 	view = MatView(false);
 }
