@@ -26,7 +26,8 @@ void Scene::setupScene()
 	Core::ShaderLoader loader;
 	ModelShader modelShader;
 	SkyboxShader skyboxShader;
-	g_requinModel = Model("Resources/megalodon/megalodon.FBX");
+	SimpleTexShader texShader;
+	
 	shaderID = loader.CreateProgram(modelShader);
 	skyboxID = loader.CreateProgram(skyboxShader);
 	vObject[0]->Create(skyboxID);
@@ -35,6 +36,30 @@ void Scene::setupScene()
 void Scene::addObject(shared_ptr<AbstractObject> object) 
 {
 	vObject.push_back(object);
+}
+
+void Scene::refreshScene(KeyFlags flags)
+{
+	if (flags.flagUp)
+	{
+		position += mouvementSpeed * direction;
+	}
+	if (flags.flagDown)
+	{
+		position -= mouvementSpeed * direction;
+	}
+	if (flags.flagLeft)
+	{
+		glm::vec3 Droite = glm::cross(direction, orientation);
+		position -= mouvementSpeed * glm::normalize(Droite);
+	}
+	if (flags.flagRight)
+	{
+		glm::vec3 Droite = glm::cross(direction, orientation);
+		position += mouvementSpeed * glm::normalize(Droite);
+
+	}
+	view = MatView(false);
 }
 
 
@@ -46,9 +71,9 @@ glm::mat4 Scene::MatView(bool staticPos)
 
 	position.y = 0;
 
-	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	front.y = sin(glm::radians(pitch));
-	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	front.x = cos(glm::radians(yaw)) * cos(glm::radians(-pitch));
+	front.y = sin(glm::radians(-pitch));
+	front.z = sin(glm::radians(yaw)) * cos(glm::radians(-pitch));
 
 	direction = glm::normalize(front);
 

@@ -4,7 +4,7 @@
 
 void AbstractObject::uniformColor(GLuint &program, glm::vec4 &uniformColor)
 {
-	GLuint vecCouleur = glGetUniformLocation(program, "Color");
+	GLuint vecCouleur = glGetUniformLocation(program, "vColor");
 	glUniform4fv(vecCouleur, 1, &uniformColor[0]);
 }
 
@@ -29,38 +29,45 @@ void AbstractObject::uniformLight(GLuint &program, glm::vec3 &color, glm::vec3 &
 		&light.direction[0]);
 }
 
-void AbstractObject::MatRotation(GLuint program, float angle) // matrice de rotation
+void AbstractObject::MatRotation(GLuint program, glm::vec3 &r) // matrice de rotation
 {
-	GLuint MatRotation = glGetUniformLocation(program, "matRotation");
+	//x:pitch y:yaw z:roll
+	GLuint matRotation = glGetUniformLocation(program, "matRotation");
 
 	glm::mat4 rotat;// rotation Y
 
-	rotat[0][0] = cosf(angle); rotat[0][1] = 0.0f; rotat[0][2] = sinf(angle); rotat[0][3] = 0.0f;
-	rotat[1][0] = 0.0f; rotat[1][1] = 1.0f; rotat[1][2] = 0.0f; rotat[1][3] = 0.0f;
-	rotat[2][0] = -sinf(angle); rotat[2][1] = 0.0f; rotat[2][2] = cosf(angle); rotat[2][3] = 0.0f;
-	rotat[3][0] = 0.0f; rotat[3][1] = 0.0f; rotat[3][2] = 0.0f; rotat[3][3] = 1.0f;
+	rotat[0][0] = cosf(r.z)*cosf(r.y)-sinf(r.z)*sinf(r.x)*sinf(r.y);  rotat[0][1] = -sinf(r.z)*cosf(r.x);		rotat[0][2] = cosf(r.z)*sinf(r.y)+sinf(r.z)*sinf(r.x)*cosf(r.y);	rotat[0][3] = 0.0f;
+	rotat[1][0] = sinf(r.z)*cosf(r.y)+cosf(r.z)*sinf(r.x)*sinf(r.y);  rotat[1][1] = cosf(r.z)*cosf(r.x);		rotat[1][2] = sinf(r.z)*sinf(r.y)-cosf(r.z)*sinf(r.x)*cosf(r.y);	rotat[1][3] = 0.0f;
+	rotat[2][0] = -cosf(r.x)*sinf(r.y);								  rotat[2][1] = sinf(r.x);					rotat[2][2] = cosf(r.x)*cosf(r.y);									rotat[2][3] = 0.0f;
+	rotat[3][0] = 0.0f;												  rotat[3][1] = 0.0f;						rotat[3][2] = 0.0f;													rotat[3][3] = 1.0f;
 
-	glUniformMatrix4fv(MatRotation, 1, GL_TRUE, &rotat[0][0]);
+	glUniformMatrix4fv(matRotation, 1, GL_FALSE, &rotat[0][0]);
 }
 
-void AbstractObject::MatTranslation(GLuint program, float x, float y, float z) // matrice de translation
+void AbstractObject::MatTranslation(GLuint program,const glm::vec3 &position) // matrice de translation
 {
-	GLuint MatTrans = glGetUniformLocation(program, "matTranslation");
+	GLuint matTrans = glGetUniformLocation(program, "matTranslation");
 
 	glm::mat4 trans;
 
-	trans = glm::translate(trans, glm::vec3(x, y, z));
+	trans[0][0] = 1.0f; trans[0][1] = 0.0f; trans[0][2] = 0.0f; trans[0][3] = position.x;
+	trans[1][0] = 0.0f; trans[1][1] = 1.0f; trans[1][2] = 0.0f; trans[1][3] = position.y;
+	trans[2][0] = 0.0f; trans[2][1] = 0.0f; trans[2][2] = 1.0f; trans[2][3] = position.z;
+	trans[3][0] = 0.0f; trans[3][1] = 0.0f; trans[3][2] = 0.0f; trans[3][3] = 1.0f;
 
-	glUniformMatrix4fv(MatTrans, 1, GL_FALSE, &trans[0][0]);
+	glUniformMatrix4fv(matTrans, 1, GL_FALSE, &trans[0][0]);
 }
 
-void AbstractObject::MatScale(GLuint program, float x, float y, float z) // matrice de translation
+void AbstractObject::MatScale(GLuint program, const glm::vec3 &scale) // matrice de translation
 {
-	GLuint MatScale = glGetUniformLocation(program, "matScale");
+	GLuint matScale = glGetUniformLocation(program, "matScale");
 
 	glm::mat4 scl;
 
-	scl = glm::scale(scl, glm::vec3(x, y, z));
+	scl[0][0] = scale.x;	  scl[0][1] = 0.0f;			scl[0][2] = 0.0f;			scl[0][3] = 0.0f;
+	scl[1][0] = 0.0f;		  scl[1][1] = scale.y;		scl[1][2] = 0.0f;			scl[1][3] = 0.0f;
+	scl[2][0] = 0.0f;		  scl[2][1] = 0.0f;			scl[2][2] = scale.z;		scl[2][3] = 0.0f;
+	scl[3][0] = 0.0f;		  scl[3][1] = 0.0f;			scl[3][2] = 0.0f;			scl[3][3] = 1.0f;
 
-	glUniformMatrix4fv(MatScale, 1, GL_FALSE, &scl[0][0]);
+	glUniformMatrix4fv(matScale, 1, GL_FALSE, &scl[0][0]);
 }

@@ -1,11 +1,6 @@
 #pragma once
 #include "Model.h"
 
-
-/*  Functions   */
-// Default Constructor
-	
-Model::Model(){}
 // Constructor, expects a filepath to a 3D Model.
 Model::Model(GLchar* path)
 {
@@ -194,12 +189,12 @@ GLint Model::textureFromFile(const char* path, string directory)
 	GLenum texture_format;
 	GLint nOfColors;
 	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
 
 	SDL_Surface* image = loadImage(filename);
 	getImageProperties(image, nOfColors, texture_format);
 
 	// Assign texture to ID
-	glBindTexture(GL_TEXTURE_2D, textureID);
 	glTexImage2D(GL_TEXTURE_2D, 0, nOfColors, image->w, image->h, 0, texture_format, GL_UNSIGNED_BYTE, image->pixels);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
