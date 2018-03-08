@@ -30,10 +30,7 @@ void Scene::setupScene()
 	
 	shaderID = loader.CreateProgram(modelShader);
 	skyboxID = loader.CreateProgram(skyboxShader);
-	GLuint texShaderID = loader.CreateProgram(texShader);
 	vObject[0]->Create(skyboxID);
-	vObject[1]->Create(shaderID);
-	vObject[2]->Create(texShaderID);
 }
 
 void Scene::addObject(shared_ptr<AbstractObject> object) 
