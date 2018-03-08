@@ -199,8 +199,14 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 
 	drawGUI();
 
-	if (typeCurseur != 0)
+	// Affiche le curseur sélectionné
+	if (typeCurseur == 0)
+		SDL_ShowCursor(SDL_ENABLE);
+	else
+	{
+		SDL_ShowCursor(SDL_DISABLE);
 		drawCursor();
+	}
 
 	//swap buffer
 	SDL_GL_SwapWindow(window);
@@ -289,11 +295,6 @@ void Renderer::drawGUI()
 
 void Renderer::drawCursor()
 {
-	if (typeCurseur == 0) // Défaut
-		SDL_ShowCursor(SDL_ENABLE);
-	else
-		SDL_ShowCursor(SDL_DISABLE);
-
 	int x = 0;
 	int y = 0;
 	int w = 0;

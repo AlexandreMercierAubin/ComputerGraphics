@@ -6,11 +6,11 @@ class PrimitiveShader : public AbstractShader
 	std::string fshader =
 R"(#version 430 core
 out vec4 color;
-uniform vec4 Color;
+uniform vec4 vColor;
 
 void main()
 {
-	color = Color;
+	color = vColor;
 }
 
 )";
