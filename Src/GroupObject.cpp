@@ -25,7 +25,9 @@ std::shared_ptr<AbstractObject> GroupObject::getObjectAt(const int index)
 	return vObject.at(index);
 }
 
+
 GroupObject::~GroupObject()
 {
 	vObject.clear();
 }
+

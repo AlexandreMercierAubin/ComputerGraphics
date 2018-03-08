@@ -44,12 +44,8 @@ void Scene::setupScene()
 	objects.getObjectAt(1)->Create(texShaderID);
 
 	objects.addObject(make_shared<GroupObject>());
-	if (GroupObject* c = dynamic_cast<GroupObject*>(objects.getObjectAt(2).get()))
-	{
-		c->addObject(make_shared<QuadObject>("Resources/Image/vodka.png"));
-		c->getObjectAt(0)->Create(texShaderID);
-	}
-
+	objects.getCastedObjectAt<GroupObject>(2)->addObject(make_shared<QuadObject>("Resources/Image/vodka.png"));
+	objects.getCastedObjectAt<GroupObject>(2)->getObjectAt(0)->Create(texShaderID);
 }
 
 void Scene::addObject(shared_ptr<AbstractObject> object) 
