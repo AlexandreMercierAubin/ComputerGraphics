@@ -198,9 +198,6 @@ void Application::exit()
 	ImGui_ImplSdlGL3_Shutdown();
 	ImGui::DestroyContext();
 
-	//Destroy Renderer
-	renderer.deleteRenderer();
-
 	//Destroy window
 	SDL_DestroyWindow(window);
 

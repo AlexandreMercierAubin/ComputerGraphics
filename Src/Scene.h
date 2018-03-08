@@ -45,7 +45,7 @@ private:
 	GLuint bufferID;
 	GLuint bufferColorID;
 	//end of test
-	std::vector<std::shared_ptr<AbstractObject>> vObject ={make_shared<SkyboxObject>()};
+	std::vector<std::shared_ptr<AbstractObject>> vObject ={make_shared<SkyboxObject>(),make_shared<ModelObject>(),make_shared<QuadObject>("Resources/Image/Small-mario.png")};
 public:
 	Scene(void);
 	~Scene(void);

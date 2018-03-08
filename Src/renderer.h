@@ -20,20 +20,21 @@
 
 #include "PrimitiveObject.h"
 #include "PrimitiveShader.h"
-#include "SimpleTexShader.h";
+#include "SimpleTexShader.h"
 
 class Renderer
 {
 public:
 	void setupRenderer(SDL_Window * window, SDL_GLContext *context);
 	void drawRenderer(Scene::KeyFlags &flags);
-	void deleteRenderer();
 	void resize(const int &w,const int &h);
 	void mouseMotion(const unsigned int &timestamp,const unsigned int &windowID, const unsigned int &state, const int &x, const int &y, const int &xRel, const int &yRel,Scene::KeyFlags flags);
 
 	void screenShot(int x, int y, int w, int h, const char * filename);
 
 	Scene scene;
+	~Renderer();
+
 private:
 	SDL_Window * window;
 	SDL_GLContext gl;

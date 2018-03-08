@@ -209,15 +209,6 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 }
 
 
-void Renderer::deleteRenderer()
-{
-	
-	glDeleteProgram(kochShaderID);
-	glDeleteBuffers(1, &kochBufferID);
-	
-	scene.deleteScene();
-}
-
 void Renderer::resize(const int & w, const int & h)
 {
 	glViewport(0, 0, w, h);
@@ -242,6 +233,12 @@ void Renderer::screenShot(int x, int y, int w, int h, const char * filename)
 
 	SDL_FreeSurface(surf);
 	delete[] pixels;
+}
+
+Renderer::~Renderer()
+{
+	glDeleteProgram(kochShaderID);
+	glDeleteBuffers(1, &kochBufferID);
 }
 
 void Renderer::drawGUI()

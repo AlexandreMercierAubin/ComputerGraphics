@@ -33,8 +33,3 @@ void ModelObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 
 	model.Draw(program);
 }
-
-void ModelObject::Delete() 
-{
-
-}

@@ -44,7 +44,7 @@ void PrimitiveObject::Draw()
 	glBindVertexArray(0);
 }
 
-void PrimitiveObject::Delete()
+PrimitiveObject::~PrimitiveObject()
 {
 	glDeleteVertexArrays(1, &vertexArray);
 }

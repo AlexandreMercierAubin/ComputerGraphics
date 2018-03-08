@@ -6,6 +6,11 @@ Scene::Scene(void)
 
 Scene::~Scene(void)
 {
+	glDeleteProgram(shaderID);
+	glDeleteBuffers(1, &bufferID);
+	glDeleteProgram(skyboxID);
+
+	vObject.clear();
 }
 
 void Scene::setupScene()
@@ -30,7 +35,11 @@ void Scene::setupScene()
 	
 	shaderID = loader.CreateProgram(modelShader);
 	skyboxID = loader.CreateProgram(skyboxShader);
+	GLuint texShaderID = loader.CreateProgram(texShader);
+
 	vObject[0]->Create(skyboxID);
+	vObject[1]->Create(shaderID);
+	vObject[2]->Create(texShaderID);
 }
 
 void Scene::addObject(shared_ptr<AbstractObject> object) 
@@ -127,17 +136,5 @@ void Scene::drawSkybox()
 }
 
 
-void Scene::deleteScene()
-{
-	glDeleteProgram(shaderID);
-	glDeleteBuffers(1, &bufferID);
-	glDeleteProgram(skyboxID);
 
-	//deletes vObject safely
-	for (auto  it = vObject.begin(); it != vObject.end(); ++it)
-	{
-		(*it)->Delete();
-	}
-	vObject.clear();
-}
 

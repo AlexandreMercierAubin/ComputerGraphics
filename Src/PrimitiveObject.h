@@ -15,7 +15,7 @@ private:
 public:
 	virtual void Create(GLuint &program);
 	virtual void Draw();
-	virtual void Delete();
+	~PrimitiveObject();
 
 	void setVertices(std::vector<glm::vec3> vertices);
 	void setCouleurRemplissage(glm::vec4 couleur);

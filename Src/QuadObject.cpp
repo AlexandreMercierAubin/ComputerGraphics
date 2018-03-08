@@ -83,12 +83,13 @@ void QuadObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 
 }
 
-void QuadObject::Delete()
-{
-	glDeleteVertexArrays(1, &VertexArray);
-}
 
 QuadObject::QuadObject(std::string texturePath)
 {
 	this->texturePath = texturePath;
+}
+
+QuadObject::~QuadObject()
+{
+	glDeleteVertexArrays(1, &VertexArray);
 }

@@ -158,11 +158,21 @@ SDL_Surface * Model::loadImage(string filename)
 {
 	SDL_Surface* image = NULL;
 	image = IMG_Load(filename.c_str());
+	if (image == NULL) 
+	{
+		cout << "Unable to load image." << endl;
+	}
 	return image;
 }
 
 void  Model::getImageProperties(SDL_Surface *image, GLint &nOfColors,GLenum &texture_format)
 {
+	if (image == NULL) 
+	{
+		cout << "can't get properties of a null image" << endl;
+		return;
+	}
+
 	nOfColors = image->format->BytesPerPixel;
 	if (nOfColors == 4)     // contains an alpha channel 
 	{
