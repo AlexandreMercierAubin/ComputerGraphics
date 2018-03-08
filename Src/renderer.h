@@ -71,7 +71,7 @@ private:
 	glm::vec4 couleurBordure;
 	int epaisseurBordure = 1;
 	bool utiliserSkybox = true;
-	int formeADessiner = 0; // 0 = point, 1 = ligne, 2 = triangle, 3 = rectangle, 4 = quad
+	int formeADessiner = 0; // 0 = point, 1 = ligne, 2 = triangle, 3 = rectangle, 4 = quad, 5 = smiley, 6 = étoile
 	std::vector<glm::vec3> ptsDessin;
 
 	int typeCurseur = 0; // 0 = par défaut, 1 = point, 2 = points, 3 = croix, 4 = triangle, 5 = quad
@@ -85,4 +85,7 @@ private:
 	void updateCursor();
 	void importerImage(string file);
 	void importerModele(string file);
+
+	void ajouterSmiley();
+	void ajouterEtoile();
 };

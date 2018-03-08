@@ -277,7 +277,7 @@ void Renderer::drawGUI()
 	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
 	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
 	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
-	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0"))
+	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0"))
 		ptsDessin.clear();
 
 	ImGui::NewLine();
@@ -421,6 +421,7 @@ void Renderer::ajouterPtDessin(int x, int y)
 	case 1: // Ligne
 		if (ptsDessin.size() >= 2)
 			typePrimitive = GL_LINES;
+		break;
 
 	case 2: // Triangle
 		if (ptsDessin.size() >= 3)
@@ -435,6 +436,16 @@ void Renderer::ajouterPtDessin(int x, int y)
 	case 4: // Quad
 		if (ptsDessin.size() >= 4)
 			typePrimitive = GL_TRIANGLE_FAN;
+		break;
+
+	case 5: // Smiley
+		if (ptsDessin.size() >= 2)
+			ajouterSmiley();
+		break;
+
+	case 6: // Étoile
+		if (ptsDessin.size() >= 2)
+			ajouterEtoile();
 		break;
 	}
 
@@ -459,4 +470,97 @@ void Renderer::ajouterPtDessin(int x, int y)
 
 		ptsDessin.clear();
 	}
+}
+
+void Renderer::ajouterSmiley()
+{
+	const int nbPrimitives = 4;
+	PrimitiveObject primitives[nbPrimitives];
+
+	for (int i = 0; i < nbPrimitives; i++)
+	{
+		primitives[i].Create(primitiveShaderID);
+		primitives[i].setCouleurBordure(couleurBordure);
+
+		if (i == 0)
+			primitives[i].setCouleurRemplissage(couleurRemplissage);
+		else
+			primitives[i].setCouleurRemplissage(couleurBordure);
+
+		primitives[i].setEpaisseurBordure(epaisseurBordure);
+		primitives[i].setTypePrimitive(GL_TRIANGLE_FAN);
+	}
+
+	glm::vec3 topLeft = { min(ptsDessin[0].x, ptsDessin[1].x), max(ptsDessin[0].y, ptsDessin[1].y), 0.0f };
+	glm::vec3 botRight = { max(ptsDessin[0].x, ptsDessin[1].x), min(ptsDessin[0].y, ptsDessin[1].y), 0.0f };
+	float w = botRight.x - topLeft.x;
+	float h = topLeft.y - botRight.y;
+
+	std::vector<glm::vec3> vertices;
+
+	// Carré principal
+	vertices = { topLeft, glm::vec3(topLeft.x, botRight.y, 0.0f), botRight, glm::vec3(botRight.x, topLeft.y, 0.0f) };
+	primitives[0].setVertices(vertices);
+
+	// Oeil gauche
+	vertices = { 
+		glm::vec3(topLeft.x + 0.125f * w, topLeft.y - 0.125f * h, 0.0f),
+		glm::vec3(topLeft.x + 0.125f * w, topLeft.y - 0.375f * h, 0.0f),
+		glm::vec3(topLeft.x + 0.375f * w, topLeft.y - 0.375f * h, 0.0f),
+		glm::vec3(topLeft.x + 0.375f * w, topLeft.y - 0.125f * h, 0.0f)
+	};
+	primitives[1].setVertices(vertices);
+
+	// Oeil droit
+	vertices = {
+		glm::vec3(botRight.x - 0.375f * w, topLeft.y - 0.125f * h, 0.0f),
+		glm::vec3(botRight.x - 0.375f * w, topLeft.y - 0.375f * h, 0.0f),
+		glm::vec3(botRight.x - 0.125f * w, topLeft.y - 0.375f * h, 0.0f),
+		glm::vec3(botRight.x - 0.125f * w, topLeft.y - 0.125f * h, 0.0f)
+	};
+	primitives[2].setVertices(vertices);
+
+	// Sourire
+	vertices = {
+		glm::vec3(topLeft.x + 0.125f * w, botRight.y + 0.375f * h, 0.0f),
+		glm::vec3(topLeft.x + 0.25f * w, botRight.y + 0.125f * h, 0.0f),
+		glm::vec3(botRight.x - 0.25f * w, botRight.y + 0.125f * h, 0.0f),
+		glm::vec3(botRight.x - 0.125f * w, botRight.y + 0.375f * h, 0.0f)
+	};
+	primitives[3].setVertices(vertices);
+
+	for (int i = 0; i < nbPrimitives; i++)
+		scene.addObject(std::make_shared<PrimitiveObject>(primitives[i]));
+
+	ptsDessin.clear();
+}
+
+void Renderer::ajouterEtoile()
+{
+	PrimitiveObject primitive;
+	primitive.Create(primitiveShaderID);
+	primitive.setCouleurBordure(couleurBordure);
+	primitive.setEpaisseurBordure(epaisseurBordure);
+	primitive.setTypePrimitive(GL_LINES);
+	
+	glm::vec3 topLeft = { min(ptsDessin[0].x, ptsDessin[1].x), max(ptsDessin[0].y, ptsDessin[1].y), 0.0f };
+	glm::vec3 botRight = { max(ptsDessin[0].x, ptsDessin[1].x), min(ptsDessin[0].y, ptsDessin[1].y), 0.0f };
+	float w = botRight.x - topLeft.x;
+	float h = topLeft.y - botRight.y;
+
+	std::vector<glm::vec3> vertices;
+	vertices.push_back(topLeft);
+	vertices.push_back(botRight);
+	vertices.push_back(glm::vec3(topLeft.x + 0.5f * w, topLeft.y, 0.0f));
+	vertices.push_back(glm::vec3(topLeft.x + 0.5f * w, botRight.y, 0.0f));
+	vertices.push_back(glm::vec3(botRight.x, topLeft.y, 0.0f));
+	vertices.push_back(glm::vec3(topLeft.x, botRight.y, 0.0f));
+	vertices.push_back(glm::vec3(botRight.x, botRight.y + 0.5f * h, 0.0f));
+	vertices.push_back(glm::vec3(topLeft.x, botRight.y + 0.5f * h, 0.0f));
+
+	primitive.setVertices(vertices);
+
+	scene.addObject(std::make_shared<PrimitiveObject>(primitive));
+
+	ptsDessin.clear();
 }
