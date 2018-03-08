@@ -43,9 +43,9 @@ void PrimitiveObject::Draw()
 	if (epaisseurBordure > 0)
 	{
 		if (typePrimitive == GL_POINTS)
-			glPointSize(epaisseurBordure);
+			glPointSize((GLfloat)epaisseurBordure);
 		else
-			glLineWidth(epaisseurBordure);
+			glLineWidth((GLfloat)epaisseurBordure);
 
 		uniformColor(program, couleurBordure);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
