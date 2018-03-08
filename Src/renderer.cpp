@@ -192,10 +192,13 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 
 	//glm::vec3 temp1(0.0f, -0.2f, 0.5f); glm::vec3 temp2(0.0028f, 0.0028f, 0.0028f);
 	scene.refreshScene(flags);
-	scene.drawScene();
-	
+
 	if (utiliserSkybox)
 		scene.drawSkybox();
+
+	scene.drawScene();
+	
+
 
 	drawGUI();
 
