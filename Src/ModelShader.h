@@ -8,7 +8,7 @@ class ModelShader : public AbstractShader
 R"(#version 430 core
 
 
-in vec3 normale;
+in vec3 normal;
 in vec2 TexCoord;
 out vec4 color;
 
@@ -28,7 +28,7 @@ uniform Light structLight;
 void main(void)
 {
   vec4 vAmbient = vec4(structLight.color * structLight.ambientIntensity, 1);
-  float diffuseFactor = dot(normalize(normale), -structLight.direction);               
+  float diffuseFactor = dot(normalize(normal), -structLight.direction);               
 
   vec4 diffuseColor;
   if (diffuseFactor > 0) 
@@ -60,14 +60,14 @@ uniform mat4 matPerspective;
 uniform mat4 matRotation;
 uniform mat4 matScale;
 
-out vec3 normale;
+out vec3 normal;
 out vec2 TexCoord;
 
 void main()
 {
 
-  gl_Position =  matPerspective*matView*matTranslation*matRotation*matScale*(vec4(position, 1.0));//
-  normale = (matTranslation*matRotation*matScale*(vec4(in_normale, 0))).xyz;
+  gl_Position =  matPerspective*matView*matTranslation*matRotation*matScale*(vec4(position, 1.0));
+  normal = (matTranslation*matRotation*matScale*(vec4(in_normale, 0))).xyz;
   TexCoord = vec2(texCoord.x,texCoord.y);
 
 }
