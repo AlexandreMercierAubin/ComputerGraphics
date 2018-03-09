@@ -11,7 +11,7 @@ void CubeObject::Create(GLuint &Program)
 	height = 0.5;
 	depth = 0.5;
 
-	color = glm::vec4(1, 1, 1, 1);
+	color = glm::vec4(1, 0, 1, 1);
 
 	glGenVertexArrays(1, &VertexArray);
 	glBindVertexArray(VertexArray);
@@ -65,6 +65,10 @@ void CubeObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 	GLuint MatPerspective = glGetUniformLocation(program, "matPerspective");
 	glUniformMatrix4fv(MatPerspective, 1, GL_FALSE, &perspective[0][0]);
 	
+	MatRotation(program, glm::vec3(0, 0, 0));
+	MatTranslation(program, glm::vec3(0, 0, 0));
+	MatScale(program, glm::vec3(1, 1, 1));
+
 	//Dessiner le cube
 	glBindVertexArray(VertexArray);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
