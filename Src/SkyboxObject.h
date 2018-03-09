@@ -9,7 +9,6 @@ private:
 	glm::vec3 vertices[8];
 	glm::vec2 textureCube[8];
 	glm::vec4 color;
-	GLuint program;
 
 	GLuint loadCubemap(std::vector<char*> faces, GLint wrapS, GLint wrapT, GLint minFilter, GLint magFilter);
 	void createVerticesCube( GLfloat width, GLfloat height, GLfloat depth);
