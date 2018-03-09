@@ -386,11 +386,10 @@ void Renderer::drawGUI()
 		if (ImGui::DragFloat3("Rotation (deg)", &currentRotation.x, 0.1f, -359.9f, 359.9f, "%.1f"))
 			addRotation(currentRotation - oldRotation);
 
+		glm::vec3 oldScale = currentScale;
 		glm::vec3 newScale = currentScale;
 		if (ImGui::DragFloat3("Echelle", &newScale.x, 0.001f, 0.001f, 1000.0f, "%.3f"))
 		{
-			glm::vec3 diff = newScale - currentScale;
-
 			if (proportionalResizing)
 			{
 				float diff = (newScale.x / currentScale.x) * (newScale.y / currentScale.y) * (newScale.z / currentScale.z);
@@ -399,7 +398,7 @@ void Renderer::drawGUI()
 			else
 				currentScale = newScale;
 
-			addScale(diff);
+			addScale(currentScale - oldScale);
 		}
 		ImGui::Checkbox("Redimensionnement proportionnel", &proportionalResizing);
 	}
