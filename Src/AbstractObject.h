@@ -22,6 +22,7 @@ protected:
 	virtual void uniformColor(GLuint &program, glm::vec4 &uniformColor);
 	virtual void MatRotation(const GLuint &program, const glm::vec3 &r);
 	virtual void MatRotationDegree(const GLuint &program, const glm::vec3 &r);
+	virtual void MatRotationQuaternion(const GLuint &program, const glm::quat &r);
 	virtual void MatTranslation(GLuint program, const glm::vec3 &position);
 	virtual void MatScale(GLuint program, const glm::vec3 &scale);
 
