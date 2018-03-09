@@ -35,13 +35,20 @@ void PrimitiveObject::Draw()
 	glUseProgram(program);
 	glBindVertexArray(vertexArray);
 
+	GLuint vertexbuffer;
+	glGenBuffers(1, &vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
 	GLenum modeBordure = typePrimitive;
 
 	// Dessiner intérieur
 	if (typePrimitive != GL_POINTS && typePrimitive != GL_LINES)
 	{
 		uniformColor(program, couleurRemplissage);
-		glDrawArrays(typePrimitive, 0, nbVertex);
+		glDrawArrays(typePrimitive, 0, vertices.size());
 		modeBordure = GL_LINE_LOOP;
 	}
 
@@ -55,7 +62,7 @@ void PrimitiveObject::Draw()
 
 		uniformColor(program, couleurBordure);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glDrawArrays(modeBordure, 0, nbVertex);
+		glDrawArrays(modeBordure, 0, vertices.size());
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
@@ -69,19 +76,7 @@ PrimitiveObject::~PrimitiveObject()
 
 void PrimitiveObject::setVertices(std::vector<glm::vec3> vertices)
 {
-	nbVertex = vertices.size();
-
-	//Créer, remplir et activer le buffer de sommets
-	glBindVertexArray(vertexArray);
-
-	GLuint vertexbuffer;
-	glGenBuffers(1, &vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, nbVertex * sizeof(glm::vec3), vertices.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(0);
-
-	glBindVertexArray(0);
+	this->vertices = vertices;
 }
 
 void PrimitiveObject::setCouleurRemplissage(glm::vec4 couleur)

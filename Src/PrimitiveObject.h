@@ -10,7 +10,7 @@ private:
 	glm::vec4 couleurBordure;
 	int epaisseurBordure;
 	GLenum typePrimitive;
-	int nbVertex = 0;
+	std::vector<glm::vec3> vertices;
 
 public:
 	virtual void Create(GLuint &program);
