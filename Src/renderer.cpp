@@ -266,9 +266,21 @@ void Renderer::drawGUI()
 	if (ImGui::Button("Importer image"))
 		importerImage(string(fichier));
 
-	ImGui::SameLine();
 	if (ImGui::Button("Importer modele 3D"))
 		importModel(string(fichier));
+
+	if (ImGui::Button("Capture d'ecran"))
+	{
+		string fileName = fichier;
+		if (fileName == "")
+			fileName = "Screenshot.bmp";
+		else if (fileName.substr(fileName.length() - 4) != ".bmp")
+			fileName += ".bmp";
+
+		int w, h;
+		SDL_GetWindowSize(window, &w, &h);
+		screenShot(0, 0, w, h, fileName.c_str());
+	}
 
 	ImGui::End();
 

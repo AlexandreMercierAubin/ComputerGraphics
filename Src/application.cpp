@@ -72,7 +72,7 @@ void Application::F11Keypress()
 	int height;
 
 	SDL_GetWindowSize(window, &width, &height);
-	renderer.screenShot(0, 0, width, height, "test.bmp");
+	renderer.screenShot(0, 0, width, height, "Screenshot.bmp");
 
 }
 
