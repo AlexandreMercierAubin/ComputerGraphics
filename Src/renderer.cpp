@@ -30,6 +30,10 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 	srand(static_cast <unsigned> (time(0)));
 	testScale = 0;
 
+	currentTranslation = glm::vec3(0.0f, 0.0f, 0.0f);
+	currentRotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	currentScale = glm::vec3(1.0f, 1.0f, 1.0f);
+
 	// Setup ImGUI
 	ImGui::CreateContext();
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
@@ -246,16 +250,57 @@ void Renderer::drawGUI()
 	bool nodeOpen = ImGui::TreeNodeEx("Racine", nodeFlags);
 	if (ImGui::IsItemClicked())
 	{
-		if (!ImGui::GetIO().KeyCtrl)
+		if (nodeSelected && ImGui::GetIO().KeyCtrl)
+		{
+			deselectNode(root);
+			root->setSelected(false);
+		}
+		else if (nodeSelected && !ImGui::GetIO().KeyCtrl)
+		{
 			deselectAllNodes();
-
-		root->setSelected(!nodeSelected);
-		selectedNodes.push_back(std::make_pair(root, nullptr));
+			root->setSelected(false);
+		}
+		else if (!nodeSelected && ImGui::GetIO().KeyCtrl)
+		{
+			root->setSelected(true);
+			selectedNodes.push_back(std::make_pair(root, nullptr));
+		}
+		else
+		{
+			deselectAllNodes();
+			root->setSelected(true);
+			selectedNodes.push_back(std::make_pair(root, nullptr));
+		}
 	}
 	if (nodeOpen)
 	{
 		drawTreeRecursive(root);
 		ImGui::TreePop();
+	}
+
+	ImGui::End();
+
+	// ********** Transformations **********
+
+	ImGui::Begin("Transformations");
+
+	if (selectedNodes.size() > 0)
+	{
+		ImGui::DragFloat3("Translation", &currentTranslation.x, 0.1f, -1000.0f, 1000.0f, "%.1f");
+		ImGui::DragFloat3("Rotation (deg)", &currentRotation.x, 0.1f, -359.9f, 359.9f, "%.1f");
+
+		glm::vec3 scale = currentScale;
+		if (ImGui::DragFloat3("Echelle", &scale.x, 0.001f, 0.0f, 10.0f, "%.3f"))
+		{
+			if (proportionalResizing)
+			{
+				float diff = (scale.x / currentScale.x) * (scale.y / currentScale.y) * (scale.z / currentScale.z);
+				currentScale = glm::vec3(currentScale.x * diff, currentScale.y * diff, currentScale.z * diff);
+			}
+			else
+				currentScale = scale;
+		}
+		ImGui::Checkbox("Redimensionnement proportionnel", &proportionalResizing);
 	}
 
 	ImGui::End();
@@ -288,11 +333,27 @@ void Renderer::drawTreeRecursive(std::shared_ptr<GroupObject> objects)
 		bool nodeOpen = ImGui::TreeNodeEx(obj.get(), flags, obj->getName().c_str());
 		if (ImGui::IsItemClicked())
 		{
-			if (!ImGui::GetIO().KeyCtrl)
+			if (nodeSelected && ImGui::GetIO().KeyCtrl)
+			{
+				deselectNode(obj);
+				obj->setSelected(false);
+			}
+			else if (nodeSelected && !ImGui::GetIO().KeyCtrl)
+			{
 				deselectAllNodes();
-
-			obj->setSelected(!nodeSelected);
-			selectedNodes.push_back(std::make_pair(obj, objects));
+				obj->setSelected(false);
+			}
+			else if (!nodeSelected && ImGui::GetIO().KeyCtrl)
+			{
+				obj->setSelected(true);
+				selectedNodes.push_back(std::make_pair(obj, objects));
+			}
+			else
+			{
+				deselectAllNodes();
+				obj->setSelected(true);
+				selectedNodes.push_back(std::make_pair(obj, objects));
+			}
 		}
 		if (nodeOpen && isGroup)
 		{
@@ -391,6 +452,18 @@ void Renderer::deselectAllNodes()
 		pair.first->setSelected(false);
 
 	selectedNodes.clear();
+}
+
+void Renderer::deselectNode(std::shared_ptr<AbstractObject> obj)
+{
+	for (auto it = selectedNodes.begin(); it != selectedNodes.end(); ++it)
+	{
+		if (it->first == obj)
+		{
+			selectedNodes.erase(it);
+			return;
+		}
+	}
 }
 
 std::shared_ptr<GroupObject> Renderer::castToGroupObject(std::shared_ptr<AbstractObject> obj)

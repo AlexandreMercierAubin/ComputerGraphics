@@ -70,9 +70,15 @@ private:
 	GLuint GPShaderID;
 	GLuint modelShaderID;
 
+	glm::vec3 currentTranslation;
+	glm::vec3 currentRotation;
+	glm::vec3 currentScale;
+	bool proportionalResizing = true;
+
 	std::vector<std::pair<std::shared_ptr<AbstractObject>, std::shared_ptr<GroupObject>>> selectedNodes;
 	std::shared_ptr<GroupObject> castToGroupObject(std::shared_ptr<AbstractObject> obj);
 	void deselectAllNodes();
+	void deselectNode(std::shared_ptr<AbstractObject> obj);
 	void groupNodes();
 
 	void drawGUI();
