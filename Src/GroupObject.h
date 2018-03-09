@@ -9,6 +9,7 @@ public:
 	virtual void Draw(glm::mat4 &perspective,glm::mat4 &view);
 	void addObject(std::shared_ptr<AbstractObject> object);
 	void deleteObjectAt(const int index);
+	unsigned int size();
 	std::shared_ptr<AbstractObject> getObjectAt(const int index);
 
 	template <class abObject>
