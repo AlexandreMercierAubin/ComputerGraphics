@@ -49,6 +49,8 @@ void Renderer::initShaders()
 	primitiveShaderID = loader.CreateProgram(primitiveShader);
 	SimpleTexShader simpleTexShader;
 	simpleTexShaderID = loader.CreateProgram(simpleTexShader);
+	ModelShader modelShader;
+	modelShaderID = loader.CreateProgram(modelShader);
 
 	curseur.Create(primitiveShaderID);
 	curseur.setCouleurRemplissage(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -266,7 +268,7 @@ void Renderer::drawGUI()
 
 	ImGui::SameLine();
 	if (ImGui::Button("Importer modele 3D"))
-		importerModele(string(fichier));
+		importModel(string(fichier));
 
 	ImGui::End();
 
@@ -395,9 +397,21 @@ void Renderer::importerImage(string fichier)
 	scene.addObject(std::make_shared<QuadObject>(quad));
 }
 
-void Renderer::importerModele(string fichier)
+void Renderer::importModel(string file)
 {
-	// TO-DO
+	std::ifstream f(file);
+	if (!f.good())
+	{
+		cout << "File not found" << endl;
+		return;
+	}
+	f.close();
+
+	ModelObject object;
+	object.setModelToCreate(file);
+	object.Create(modelShaderID);
+	scene.addObject(std::make_shared<ModelObject>(object));
+	//Resources/megalodon/megalodon.FBX
 }
 
 void Renderer::ajouterPtDessin(int x, int y)

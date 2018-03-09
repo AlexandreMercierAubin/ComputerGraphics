@@ -1,5 +1,6 @@
 #pragma once
 #include "AbstractObject.h"
+#include "Model.h"
 
 class QuadObject: public AbstractObject
 {

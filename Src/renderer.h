@@ -80,12 +80,13 @@ private:
 
 	GLuint primitiveShaderID;
 	GLuint simpleTexShaderID;
+	GLuint modelShaderID;
 
 	void drawGUI();
 	void drawCursor();
 	void updateCursor();
 	void importerImage(string file);
-	void importerModele(string file);
+	void importModel(string file);
 
 	void ajouterSmiley();
 	void ajouterEtoile();

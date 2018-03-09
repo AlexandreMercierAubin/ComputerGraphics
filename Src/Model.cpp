@@ -2,7 +2,7 @@
 #include "Model.h"
 
 // Constructor, expects a filepath to a 3D Model.
-Model::Model(GLchar* path)
+Model::Model(const string &path)
 {
 	this->loadModel(path);
 }
@@ -16,7 +16,7 @@ void Model::Draw(GLuint shader)
 
 									/*  Functions   */
 									// Loads a Model with supported ASSIMP extensions from file and stores the resulting Meshes in the Meshes vector.
-void Model::loadModel(string path)
+void Model::loadModel(const string &path)
 {
 	// Read file via ASSIMP
 	Assimp::Importer importer;
