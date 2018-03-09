@@ -386,8 +386,20 @@ void Renderer::drawGUI()
 	if (selectedNodes.size() > 0)
 	{
 		ImGui::DragFloat3("Translation", &currentTranslation.x, 0.1f, -1000.0f, 1000.0f, "%.1f");
-		ImGui::DragFloat3("Rotation", &currentRotation.x, 0.1f, -359.9f, 359.9f, "%.1f");
-		ImGui::DragFloat3("Echelle", &currentScale.x, 0.001f, 0.0f, 10.0f, "%.3f");
+		ImGui::DragFloat3("Rotation (deg)", &currentRotation.x, 0.1f, -359.9f, 359.9f, "%.1f");
+
+		glm::vec3 scale = currentScale;
+		if (ImGui::DragFloat3("Echelle", &scale.x, 0.001f, 0.0f, 10.0f, "%.3f"))
+		{
+			if (proportionalResizing)
+			{
+				float diff = (scale.x / currentScale.x) * (scale.y / currentScale.y) * (scale.z / currentScale.z);
+				currentScale = glm::vec3(currentScale.x * diff, currentScale.y * diff, currentScale.z * diff);
+			}
+			else
+				currentScale = scale;
+		}
+		ImGui::Checkbox("Redimensionnement proportionnel", &proportionalResizing);
 	}
 
 	ImGui::End();
