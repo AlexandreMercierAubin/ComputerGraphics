@@ -90,4 +90,6 @@ private:
 
 	void ajouterSmiley();
 	void ajouterEtoile();
+	void addCube();
+	void addSphere();
 };

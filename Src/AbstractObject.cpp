@@ -55,10 +55,10 @@ void AbstractObject::MatTranslation(GLuint program,const glm::vec3 &position) //
 
 	glm::mat4 trans;
 
-	trans[0][0] = 1.0f; trans[0][1] = 0.0f; trans[0][2] = 0.0f; trans[0][3] = position.x;
-	trans[1][0] = 0.0f; trans[1][1] = 1.0f; trans[1][2] = 0.0f; trans[1][3] = position.y;
-	trans[2][0] = 0.0f; trans[2][1] = 0.0f; trans[2][2] = 1.0f; trans[2][3] = position.z;
-	trans[3][0] = 0.0f; trans[3][1] = 0.0f; trans[3][2] = 0.0f; trans[3][3] = 1.0f;
+	trans[0][0] = 1.0f; trans[0][1] = 0.0f; trans[0][2] = 0.0f; trans[0][3] = 0.0f;
+	trans[1][0] = 0.0f; trans[1][1] = 1.0f; trans[1][2] = 0.0f; trans[1][3] = 0.0f;
+	trans[2][0] = 0.0f; trans[2][1] = 0.0f; trans[2][2] = 1.0f; trans[2][3] = 0.0f;
+	trans[3][0] = position.x; trans[3][1] = position.y; trans[3][2] = position.z; trans[3][3] = 1.0f;
 
 	glUniformMatrix4fv(matTrans, 1, GL_FALSE, &trans[0][0]);
 }

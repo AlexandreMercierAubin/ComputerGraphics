@@ -574,13 +574,13 @@ void Renderer::ajouterPtDessin(int x, int y)
 		break;
 
 	case 7:
+		//addCube();
 		scene.addObject(make_shared<CubeObject>());
 		scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
 		break;
 
 	case 8:
-		scene.addObject(make_shared<SphereObject>());
-		scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
+		//addSphere();
 		break;
 
 	}
@@ -606,6 +606,22 @@ void Renderer::ajouterPtDessin(int x, int y)
 
 		ptsDessin.clear();
 	}
+}
+
+void Renderer::addCube() 
+{
+	CubeObject cube;
+	cube.Create(GPShaderID);
+	scene.addObject(make_shared<CubeObject>(cube));
+	ptsDessin.clear();
+}
+
+void Renderer::addSphere()
+{
+	CubeObject sphere;
+	sphere.Create(GPShaderID);
+	scene.addObject(make_shared<CubeObject>(sphere));
+	ptsDessin.clear();
 }
 
 void Renderer::ajouterSmiley()
