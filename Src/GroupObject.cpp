@@ -20,6 +20,11 @@ void GroupObject::deleteObjectAt(const int index)
 	vObject.erase(vObject.begin() + index);
 }
 
+unsigned int GroupObject::size()
+{
+	return vObject.size();
+}
+
 std::shared_ptr<AbstractObject> GroupObject::getObjectAt(const int index)
 {
 	return vObject.at(index);
