@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 #include <assimp/Importer.hpp>
+#include <stack>
 
 #include "imgui.h"
 #include "imgui_internal.h"
