@@ -1,6 +1,8 @@
 #pragma once
 #include "ModelObject.h"
 
+
+
 void ModelObject::Create(GLuint &Program)
 {
 	program = Program;
@@ -11,7 +13,7 @@ void ModelObject::Create(GLuint &Program)
 	scale = glm::vec3(0.0028f, 0.0028f, 0.0028f);
 	ambientIntensity = 0.9f;
 	diffuseIntensity = 0.9f;
-	model = Model("Resources/megalodon/megalodon.FBX");
+	model = Model(modelPath);
 }
 
 void ModelObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
@@ -34,7 +36,7 @@ void ModelObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 	model.Draw(program);
 }
 
-void ModelObject::Delete() 
+void ModelObject::setModelToCreate(string path)
 {
-
+	modelPath = path;
 }

@@ -128,7 +128,7 @@ void SkyboxObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 	glDepthMask(GL_TRUE);
 }
 
-void SkyboxObject::Delete() 
+SkyboxObject::~SkyboxObject()
 {
 	glDeleteVertexArrays(1, &VertexArray);
 }

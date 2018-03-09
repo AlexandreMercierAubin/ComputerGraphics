@@ -27,7 +27,6 @@ class Renderer
 public:
 	void setupRenderer(SDL_Window * window, SDL_GLContext *context);
 	void drawRenderer(Scene::KeyFlags &flags);
-	void deleteRenderer();
 	void resize(const int &w,const int &h);
 	void mouseMotion(const unsigned int &timestamp,const unsigned int &windowID, const unsigned int &state, const int &x, const int &y, const int &xRel, const int &yRel,Scene::KeyFlags flags);
 
@@ -35,6 +34,8 @@ public:
 	void ajouterPtDessin(int x, int y);
 
 	Scene scene;
+	~Renderer();
+
 private:
 	SDL_Window * window;
 	SDL_GLContext gl;
@@ -79,12 +80,13 @@ private:
 
 	GLuint primitiveShaderID;
 	GLuint simpleTexShaderID;
+	GLuint modelShaderID;
 
 	void drawGUI();
 	void drawCursor();
 	void updateCursor();
 	void importerImage(string file);
-	void importerModele(string file);
+	void importModel(string file);
 
 	void ajouterSmiley();
 	void ajouterEtoile();

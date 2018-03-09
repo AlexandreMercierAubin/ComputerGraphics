@@ -43,9 +43,9 @@ void PrimitiveObject::Draw()
 	if (epaisseurBordure > 0)
 	{
 		if (typePrimitive == GL_POINTS)
-			glPointSize(epaisseurBordure);
+			glPointSize((GLfloat)epaisseurBordure);
 		else
-			glLineWidth(epaisseurBordure);
+			glLineWidth((GLfloat)epaisseurBordure);
 
 		uniformColor(program, couleurBordure);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -56,7 +56,7 @@ void PrimitiveObject::Draw()
 	glBindVertexArray(0);
 }
 
-void PrimitiveObject::Delete()
+PrimitiveObject::~PrimitiveObject()
 {
 	glDeleteVertexArrays(1, &vertexArray);
 }

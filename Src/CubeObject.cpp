@@ -72,6 +72,11 @@ void CubeObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 	glBindVertexArray(0);
 }
 
+CubeObject::~CubeObject()
+{
+	glDeleteVertexArrays(1, &VertexArray);
+}
+
 GLuint CubeObject::loadCubemap(std::vector<char*> faces, GLint wrapS, GLint wrapT, GLint minFilter, GLint magFilter)
 {
 	GLuint textureID;
@@ -108,9 +113,4 @@ GLuint CubeObject::loadCubemap(std::vector<char*> faces, GLint wrapS, GLint wrap
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0); //Délie la texture pour éviter d'être corrompue avec une autre
 
 	return textureID; //retourne l'objet texture créé
-}
-
-void CubeObject::Delete()
-{
-	glDeleteVertexArrays(1, &VertexArray);
 }

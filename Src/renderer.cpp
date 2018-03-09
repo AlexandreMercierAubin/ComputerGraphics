@@ -49,6 +49,8 @@ void Renderer::initShaders()
 	primitiveShaderID = loader.CreateProgram(primitiveShader);
 	SimpleTexShader simpleTexShader;
 	simpleTexShaderID = loader.CreateProgram(simpleTexShader);
+	ModelShader modelShader;
+	modelShaderID = loader.CreateProgram(modelShader);
 
 	curseur.Create(primitiveShaderID);
 	curseur.setCouleurRemplissage(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -192,10 +194,13 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 
 	//glm::vec3 temp1(0.0f, -0.2f, 0.5f); glm::vec3 temp2(0.0028f, 0.0028f, 0.0028f);
 	scene.refreshScene(flags);
-	scene.drawScene();
-	
+
 	if (utiliserSkybox)
 		scene.drawSkybox();
+
+	scene.drawScene();
+	
+
 
 	drawGUI();
 
@@ -214,15 +219,6 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 	testScale += 0.05f;
 }
 
-
-void Renderer::deleteRenderer()
-{
-	
-	glDeleteProgram(kochShaderID);
-	glDeleteBuffers(1, &kochBufferID);
-	
-	scene.deleteScene();
-}
 
 void Renderer::resize(const int & w, const int & h)
 {
@@ -250,6 +246,12 @@ void Renderer::screenShot(int x, int y, int w, int h, const char * filename)
 	delete[] pixels;
 }
 
+Renderer::~Renderer()
+{
+	glDeleteProgram(kochShaderID);
+	glDeleteBuffers(1, &kochBufferID);
+}
+
 void Renderer::drawGUI()
 {
 	ImGui_ImplSdlGL3_NewFrame(window);
@@ -266,7 +268,7 @@ void Renderer::drawGUI()
 
 	ImGui::SameLine();
 	if (ImGui::Button("Importer modele 3D"))
-		importerModele(string(fichier));
+		importModel(string(fichier));
 
 	ImGui::End();
 
@@ -395,9 +397,21 @@ void Renderer::importerImage(string fichier)
 	scene.addObject(std::make_shared<QuadObject>(quad));
 }
 
-void Renderer::importerModele(string fichier)
+void Renderer::importModel(string file)
 {
-	// TO-DO
+	std::ifstream f(file);
+	if (!f.good())
+	{
+		cout << "File not found" << endl;
+		return;
+	}
+	f.close();
+
+	ModelObject object;
+	object.setModelToCreate(file);
+	object.Create(modelShaderID);
+	scene.addObject(std::make_shared<ModelObject>(object));
+	//Resources/megalodon/megalodon.FBX
 }
 
 void Renderer::ajouterPtDessin(int x, int y)

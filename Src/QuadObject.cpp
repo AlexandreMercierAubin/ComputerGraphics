@@ -92,10 +92,6 @@ void QuadObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 
 }
 
-void QuadObject::Delete()
-{
-	glDeleteVertexArrays(1, &VertexArray);
-}
 
 QuadObject::QuadObject(std::string texturePath)
 {
@@ -103,4 +99,9 @@ QuadObject::QuadObject(std::string texturePath)
 	SDL_Surface *image = Model::loadImage(texturePath);
 	imageOK = image != nullptr;
 	SDL_FreeSurface(image);
+}
+
+QuadObject::~QuadObject()
+{
+	glDeleteVertexArrays(1, &VertexArray);
 }

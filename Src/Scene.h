@@ -14,6 +14,7 @@
 #include "SkyboxShader.h"
 #include "SimpleTexShader.h"
 #include "ModelObject.h"
+#include "GroupObject.h"
 
 class Scene
 {
@@ -45,19 +46,17 @@ private:
 	GLuint bufferID;
 	GLuint bufferColorID;
 	//end of test
-	std::vector<std::shared_ptr<AbstractObject>> vObject ={make_shared<SkyboxObject>()};
+	GroupObject objects;
+	SkyboxObject skybox;
 public:
 	Scene(void);
 	~Scene(void);
 
 	void setupScene();
 
-	void deleteScene();
-
 	void drawSkybox();
 	void drawScene();
 	
-
 	void mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel);
 
 	void addObject(shared_ptr<AbstractObject> object);

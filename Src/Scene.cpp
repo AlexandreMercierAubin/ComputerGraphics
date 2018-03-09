@@ -6,6 +6,9 @@ Scene::Scene(void)
 
 Scene::~Scene(void)
 {
+	glDeleteProgram(shaderID);
+	glDeleteBuffers(1, &bufferID);
+	glDeleteProgram(skyboxID);
 }
 
 void Scene::setupScene()
@@ -30,12 +33,27 @@ void Scene::setupScene()
 	
 	shaderID = loader.CreateProgram(modelShader);
 	skyboxID = loader.CreateProgram(skyboxShader);
-	vObject[0]->Create(skyboxID);
+	GLuint texShaderID = loader.CreateProgram(texShader);
+
+	skybox.Create(skyboxID);
+
+	objects.addObject(make_shared<ModelObject>());
+	objects.getObjectAt(0)->Create(shaderID);
+
+	objects.addObject(make_shared<QuadObject>("Resources/Image/Small-mario.png"));
+	objects.getObjectAt(1)->Create(texShaderID);
+
+	objects.addObject(make_shared<GroupObject>());
+	objects.getCastedObjectAt<GroupObject>(2)->addObject(make_shared<QuadObject>("Resources/Image/vodka.png"));
+	objects.getCastedObjectAt<GroupObject>(2)->getObjectAt(0)->Create(texShaderID);
+
+	cout << objects.isCastableAt<GroupObject>(2)<< endl;
+	cout << objects.isCastableAt<QuadObject>(2) << endl;
 }
 
 void Scene::addObject(shared_ptr<AbstractObject> object) 
 {
-	vObject.push_back(object);
+	objects.addObject(object);
 }
 
 void Scene::refreshScene(KeyFlags flags)
@@ -96,10 +114,7 @@ glm::mat4 Scene::MatView(bool staticPos)
 
 void Scene::drawScene()
 {
-	for (auto it = ++vObject.begin(); it != vObject.end(); ++it)
-	{
-		(*it)->Draw(perspective, view);
-	}
+	objects.Draw(perspective,view);
 }
 
 void Scene::mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel)
@@ -123,21 +138,9 @@ void Scene::mouseMotion(const unsigned int & timestamp, const unsigned int & win
 
 void Scene::drawSkybox()
 {
-	vObject[0]->Draw(perspective,view);
+	skybox.Draw(perspective,view);
 }
 
 
-void Scene::deleteScene()
-{
-	glDeleteProgram(shaderID);
-	glDeleteBuffers(1, &bufferID);
-	glDeleteProgram(skyboxID);
 
-	//deletes vObject safely
-	for (auto  it = vObject.begin(); it != vObject.end(); ++it)
-	{
-		(*it)->Delete();
-	}
-	vObject.clear();
-}
 
