@@ -42,15 +42,15 @@ void Scene::setupScene()
 	objects->addObject(make_shared<ModelObject>());
 	objects->getObjectAt(0)->Create(shaderID);
 
-	objects->addObject(make_shared<QuadObject>("Resources/Image/Small-mario.png"));
-	objects->getObjectAt(1)->Create(texShaderID);
+	//objects->addObject(make_shared<QuadObject>("Resources/Image/Small-mario.png"));
+	//objects->getObjectAt(1)->Create(texShaderID);
 
-	objects->addObject(make_shared<GroupObject>());
-	objects->getCastedObjectAt<GroupObject>(2)->addObject(make_shared<QuadObject>("Resources/Image/vodka.png"));
-	objects->getCastedObjectAt<GroupObject>(2)->getObjectAt(0)->Create(texShaderID);
+	//objects->addObject(make_shared<GroupObject>());
+	//objects->getCastedObjectAt<GroupObject>(2)->addObject(make_shared<QuadObject>("Resources/Image/vodka.png"));
+	//objects->getCastedObjectAt<GroupObject>(2)->getObjectAt(0)->Create(texShaderID);
 
-	cout << objects->isCastableAt<GroupObject>(2)<< endl;
-	cout << objects->isCastableAt<QuadObject>(2) << endl;
+	//cout << objects->isCastableAt<GroupObject>(2)<< endl;
+	//cout << objects->isCastableAt<QuadObject>(2) << endl;
 }
 
 void Scene::addObject(shared_ptr<AbstractObject> object) 

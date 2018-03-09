@@ -1,6 +1,7 @@
 #pragma once
 #include <glm\glm.hpp>
 #include "Model.h"
+#include<cmath>
 
 class AbstractObject
 {
@@ -19,7 +20,9 @@ protected:
 
 	virtual void uniformLight(GLuint &program, glm::vec3 &color, glm::vec3 &direction, float ambientIntensity, float diffuseIntensity);
 	virtual void uniformColor(GLuint &program, glm::vec4 &uniformColor);
-	virtual void MatRotation(GLuint program, glm::vec3 &r);
+	virtual void MatRotation(const GLuint &program, const glm::vec3 &r);
+	virtual void MatRotationDegree(const GLuint &program, const glm::vec3 &r);
+	virtual void MatRotationQuaternion(const GLuint &program, const glm::quat &r);
 	virtual void MatTranslation(GLuint program, const glm::vec3 &position);
 	virtual void MatScale(GLuint program, const glm::vec3 &scale);
 
