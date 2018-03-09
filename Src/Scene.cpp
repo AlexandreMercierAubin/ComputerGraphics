@@ -37,23 +37,25 @@ void Scene::setupScene()
 
 	skybox.Create(skyboxID);
 
-	objects.addObject(make_shared<ModelObject>());
-	objects.getObjectAt(0)->Create(shaderID);
+	objects = std::make_shared<GroupObject>();
 
-	objects.addObject(make_shared<QuadObject>("Resources/Image/Small-mario.png"));
-	objects.getObjectAt(1)->Create(texShaderID);
+	objects->addObject(make_shared<ModelObject>());
+	objects->getObjectAt(0)->Create(shaderID);
 
-	objects.addObject(make_shared<GroupObject>());
-	objects.getCastedObjectAt<GroupObject>(2)->addObject(make_shared<QuadObject>("Resources/Image/vodka.png"));
-	objects.getCastedObjectAt<GroupObject>(2)->getObjectAt(0)->Create(texShaderID);
+	objects->addObject(make_shared<QuadObject>("Resources/Image/Small-mario.png"));
+	objects->getObjectAt(1)->Create(texShaderID);
 
-	cout << objects.isCastableAt<GroupObject>(2)<< endl;
-	cout << objects.isCastableAt<QuadObject>(2) << endl;
+	objects->addObject(make_shared<GroupObject>());
+	objects->getCastedObjectAt<GroupObject>(2)->addObject(make_shared<QuadObject>("Resources/Image/vodka.png"));
+	objects->getCastedObjectAt<GroupObject>(2)->getObjectAt(0)->Create(texShaderID);
+
+	cout << objects->isCastableAt<GroupObject>(2)<< endl;
+	cout << objects->isCastableAt<QuadObject>(2) << endl;
 }
 
 void Scene::addObject(shared_ptr<AbstractObject> object) 
 {
-	objects.addObject(object);
+	objects->addObject(object);
 }
 
 void Scene::refreshScene(KeyFlags flags)
@@ -114,7 +116,7 @@ glm::mat4 Scene::MatView(bool staticPos)
 
 void Scene::drawScene()
 {
-	objects.Draw(perspective,view);
+	objects->Draw(perspective,view);
 }
 
 void Scene::mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel)
@@ -141,6 +143,7 @@ void Scene::drawSkybox()
 	skybox.Draw(perspective,view);
 }
 
-
-
-
+std::shared_ptr<GroupObject> Scene::getObjects()
+{
+	return objects;
+}

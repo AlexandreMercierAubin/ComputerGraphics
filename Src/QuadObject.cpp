@@ -95,6 +95,8 @@ void QuadObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 
 QuadObject::QuadObject(std::string texturePath)
 {
+	name = "Image (" + texturePath + ")";
+
 	this->texturePath = texturePath;
 	SDL_Surface *image = Model::loadImage(texturePath);
 	imageOK = image != nullptr;

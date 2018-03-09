@@ -46,8 +46,9 @@ private:
 	GLuint bufferID;
 	GLuint bufferColorID;
 	//end of test
-	GroupObject objects;
+	std::shared_ptr<GroupObject> objects;
 	SkyboxObject skybox;
+
 public:
 	Scene(void);
 	~Scene(void);
@@ -66,4 +67,6 @@ public:
 		bool flagUp, flagDown, flagLeft, flagRight, flagLeftMouse, flagRightMouse;
 	};
 	void refreshScene(KeyFlags flags);
+
+	std::shared_ptr<GroupObject> getObjects();
 };

@@ -3,6 +3,7 @@
 
 void SkyboxObject::Create(GLuint &Program)
 {
+	name = "Skybox";
 	program = Program;
 
 	faces =  //default skybox bad because I made it myself and I hate copyright strikes

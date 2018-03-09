@@ -13,9 +13,9 @@ public:
 	std::shared_ptr<AbstractObject> getObjectAt(const int index);
 
 	template <class abObject>
-	abObject* getCastedObjectAt(const int index)
+	std::shared_ptr<abObject> getCastedObjectAt(const int index)
 	{
-		if (abObject* casted = dynamic_cast<abObject*>(vObject[index].get()))
+		if (std::shared_ptr<abObject> casted = dynamic_pointer_cast<abObject>(vObject[index]))
 		{
 			return casted;
 		}
@@ -38,6 +38,7 @@ public:
 		}
 	}
 
+	GroupObject();
 	~GroupObject();
 private:
 	std::vector<std::shared_ptr<AbstractObject>> vObject;
