@@ -236,15 +236,30 @@ void Renderer::mouseMotion(const unsigned int & timestamp, const unsigned int & 
 
 void Renderer::screenShot(int x, int y, int w, int h, const char * filename)
 {
-	unsigned char *pixels = new unsigned char[w*h * 4]; // 4 bytes for RGBA
+	unsigned int size = w * h * 4;
+	unsigned char *pixels = new unsigned char[size]; // 4 bytes for RGBA
+	glReadBuffer(GL_FRONT);
 	glReadPixels(x, y, w, h, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
 
-	SDL_Surface * surf = SDL_CreateRGBSurfaceFrom(pixels, w, h, 8 * 4, w * 4, 0, 0, 0, 0);
+	//vertical flip cause glRead goes backwards for some reason
+	unsigned char *flipPixels=new unsigned char[size];
+	for (int i = 0; i < w; ++i) {
+		for (int j = 0; j < h; ++j) {
+			for (int k = 0; k < 4; ++k) {
+				flipPixels[(i + j * w) * 4 + k] = pixels[(i + (h - 1 - j) * w) * 4 + k];
+			}
+		}
+	}
+
+	SDL_Surface * surf = SDL_CreateRGBSurfaceFrom(flipPixels, w, h, 8 * 4, w * 4, 0, 0, 0, 0);
 	SDL_SaveBMP(surf, filename);
 
 	SDL_FreeSurface(surf);
 	delete[] pixels;
+	delete[] flipPixels;
+	
 }
+
 
 Renderer::~Renderer()
 {
