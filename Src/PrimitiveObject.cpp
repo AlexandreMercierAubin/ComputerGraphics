@@ -2,6 +2,12 @@
 
 void PrimitiveObject::Create(GLuint &program)
 {
+	Create(program, "Primitive");
+}
+
+void PrimitiveObject::Create(GLuint &program, string name)
+{
+	this->name = name;
 	this->program = program;
 
 	couleurRemplissage = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -93,7 +99,7 @@ void PrimitiveObject::setEpaisseurBordure(int valeur)
 	epaisseurBordure = valeur;
 }
 
-void PrimitiveObject::setTypePrimitive(GLenum valeur)
+void PrimitiveObject::setTypePrimitive(GLenum type)
 {
-	typePrimitive = valeur;
+	typePrimitive = type;
 }

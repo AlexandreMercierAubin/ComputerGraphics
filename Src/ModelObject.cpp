@@ -5,6 +5,8 @@
 
 void ModelObject::Create(GLuint &Program)
 {
+	name = "Modele (" + modelPath + ")";
+
 	program = Program;
 
 	//default settings
@@ -39,4 +41,5 @@ void ModelObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 void ModelObject::setModelToCreate(string path)
 {
 	modelPath = path;
+	name = "Modele (" + path + ")";
 }

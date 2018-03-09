@@ -8,7 +8,14 @@ public:
 	virtual void Create(GLuint &Program) {}
 	virtual void Draw(glm::mat4 &perspective, glm::mat4 &view) {}
 	virtual ~AbstractObject() {};
+
+	bool isSelected();
+	void setSelected(bool value);
+	string getName();
+
 protected: 
+
+	string name = "Abstract";
 
 	virtual void uniformLight(GLuint &program, glm::vec3 &color, glm::vec3 &direction, float ambientIntensity, float diffuseIntensity);
 	virtual void uniformColor(GLuint &program, glm::vec4 &uniformColor);
@@ -24,4 +31,6 @@ protected:
 		glm::vec3 direction;
 	};
 	
+private:
+	bool selected = false;
 };

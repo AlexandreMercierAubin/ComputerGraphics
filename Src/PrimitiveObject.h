@@ -17,11 +17,12 @@ public:
 	virtual void Draw(glm::mat4 &perspective, glm::mat4 &view);
 	~PrimitiveObject();
 
+	void Create(GLuint &program, string name);
 	void Draw();
 
 	void setVertices(std::vector<glm::vec3> vertices);
 	void setCouleurRemplissage(glm::vec4 couleur);
 	void setCouleurBordure(glm::vec4 couleur);
 	void setEpaisseurBordure(int valeur);
-	void setTypePrimitive(GLenum valeur);
+	void setTypePrimitive(GLenum type);
 };

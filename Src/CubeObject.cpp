@@ -3,6 +3,8 @@
 
 void CubeObject::Create(GLuint &Program)
 {
+	name = "Cube";
+
 	program = Program;
 	GLfloat width, height, depth;
 	width = 0.5;
