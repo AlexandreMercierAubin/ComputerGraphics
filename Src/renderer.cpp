@@ -324,6 +324,12 @@ void Renderer::drawGUI()
 	// ********** Graphe de scène **********
 
 	ImGui::Begin("Graphe de scene");
+
+	ImGui::Button("Grouper");
+	
+	ImGui::SameLine();
+	if (ImGui::Button("Effacer"))
+		eraseNodes();
 	
 	std::shared_ptr<GroupObject> root = scene.getObjects();
 	bool nodeSelected = false;
@@ -714,4 +720,13 @@ void Renderer::ajouterEtoile()
 	scene.addObject(std::make_shared<PrimitiveObject>(primitive));
 
 	ptsDessin.clear();
+}
+
+void Renderer::eraseNodes()
+{
+	for (auto tuple : selectedNodes)
+	{
+		if (std::get<1>(tuple) != nullptr)
+			std::get<1>(tuple)->deleteObjectAt(std::get<2>(tuple));
+	}
 }
