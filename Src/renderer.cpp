@@ -325,7 +325,8 @@ void Renderer::drawGUI()
 
 	ImGui::Begin("Graphe de scene");
 
-	ImGui::Button("Grouper");
+	if (ImGui::Button("Grouper"))
+		groupNodes();
 	
 	ImGui::SameLine();
 	if (ImGui::Button("Effacer"))
@@ -348,7 +349,7 @@ void Renderer::drawGUI()
 			deselectAllNodes();
 
 		root->setSelected(!nodeSelected);
-		selectedNodes.push_back(std::make_tuple(root, nullptr, 0));
+		selectedNodes.push_back(std::make_pair(root, nullptr));
 	}
 	if (nodeOpen)
 	{
@@ -390,7 +391,7 @@ void Renderer::drawTreeRecursive(std::shared_ptr<GroupObject> objects)
 				deselectAllNodes();
 
 			obj->setSelected(!nodeSelected);
-			selectedNodes.push_back(std::make_tuple(obj, objects, i));
+			selectedNodes.push_back(std::make_pair(obj, objects));
 		}
 		if (nodeOpen && isGroup)
 		{
@@ -485,8 +486,8 @@ void Renderer::updateCursor()
 
 void Renderer::deselectAllNodes()
 {
-	for (auto tuple : selectedNodes)
-		std::get<0>(tuple)->setSelected(false);
+	for (auto pair : selectedNodes)
+		pair.first->setSelected(false);
 
 	selectedNodes.clear();
 }
@@ -724,9 +725,32 @@ void Renderer::ajouterEtoile()
 
 void Renderer::eraseNodes()
 {
-	for (auto tuple : selectedNodes)
+	for (auto pair : selectedNodes)
 	{
-		if (std::get<1>(tuple) != nullptr)
-			std::get<1>(tuple)->deleteObjectAt(std::get<2>(tuple));
+		pair.first->setSelected(false);
+		if (pair.second != nullptr)
+			pair.second->deleteObject(pair.first);
 	}
+	selectedNodes.clear();
+}
+
+void Renderer::groupNodes()
+{
+	if (selectedNodes.size() == 0)
+		return;
+
+	// Add all selected objects to a child group object
+	GroupObject childGroup;
+	for (auto pair : selectedNodes)
+	{
+		if (pair.second == nullptr)
+			return;
+		childGroup.addObject(pair.first);
+	}
+
+	// Add child group object to the first selected object's parent
+	selectedNodes[0].second->addObject(std::make_shared<GroupObject>(childGroup));
+
+	// Erase original nodes
+	eraseNodes();
 }

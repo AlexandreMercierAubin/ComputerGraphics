@@ -85,9 +85,10 @@ private:
 	GLuint simpleTexShaderID;
 	GLuint modelShaderID;
 
-	std::vector<std::tuple<std::shared_ptr<AbstractObject>, std::shared_ptr<GroupObject>, int>> selectedNodes;
-	void deselectAllNodes();
+	std::vector<std::pair<std::shared_ptr<AbstractObject>, std::shared_ptr<GroupObject>>> selectedNodes;
 	std::shared_ptr<GroupObject> castToGroupObject(std::shared_ptr<AbstractObject> obj);
+	void deselectAllNodes();
+	void groupNodes();
 
 	void drawGUI();
 	void drawTreeRecursive(std::shared_ptr<GroupObject> objects);
