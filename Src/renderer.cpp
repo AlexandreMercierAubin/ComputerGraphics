@@ -281,9 +281,21 @@ void Renderer::drawGUI()
 	if (ImGui::Button("Importer image"))
 		importerImage(string(fichier));
 
-	ImGui::SameLine();
 	if (ImGui::Button("Importer modele 3D"))
 		importModel(string(fichier));
+
+	if (ImGui::Button("Capture d'ecran"))
+	{
+		string fileName = fichier;
+		if (fileName == "")
+			fileName = "Screenshot.bmp";
+		else if (fileName.substr(fileName.length() - 4) != ".bmp")
+			fileName += ".bmp";
+
+		int w, h;
+		SDL_GetWindowSize(window, &w, &h);
+		screenShot(0, 0, w, h, fileName.c_str());
+	}
 
 	ImGui::End();
 
@@ -309,9 +321,77 @@ void Renderer::drawGUI()
 
 	ImGui::End();
 
+	// ********** Graphe de scène **********
+
+	ImGui::Begin("Graphe de scene");
+	
+	std::shared_ptr<GroupObject> root = scene.getObjects();
+	bool nodeSelected = false;
+
+	ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow;
+	if (root->isSelected())
+	{
+		nodeFlags |= ImGuiTreeNodeFlags_Selected;
+		nodeSelected = true;
+	}
+	
+	bool nodeOpen = ImGui::TreeNodeEx("Racine", nodeFlags);
+	if (ImGui::IsItemClicked())
+	{
+		if (!ImGui::GetIO().KeyCtrl)
+			deselectAllNodes();
+
+		root->setSelected(!nodeSelected);
+		selectedNodes.push_back(std::make_tuple(root, nullptr, 0));
+	}
+	if (nodeOpen)
+	{
+		drawTreeRecursive(root);
+		ImGui::TreePop();
+	}
+
+	ImGui::End();
+
 	// Render
 	ImGui::Render();
 	ImGui_ImplSdlGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void Renderer::drawTreeRecursive(std::shared_ptr<GroupObject> objects)
+{
+	for (unsigned int i = 0; i < objects->size(); ++i)
+	{
+		std::shared_ptr<AbstractObject> obj = objects->getObjectAt(i);
+		std::shared_ptr<GroupObject> group = castToGroupObject(obj);
+
+		bool isGroup = group != nullptr;
+		bool nodeSelected = false;
+
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+		if (!isGroup)
+			flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+
+		if (obj->isSelected())
+		{
+			flags |= ImGuiTreeNodeFlags_Selected;
+			nodeSelected = true;
+		}
+
+		bool nodeOpen = ImGui::TreeNodeEx(obj.get(), flags, obj->getName().c_str());
+		if (ImGui::IsItemClicked())
+		{
+			if (!ImGui::GetIO().KeyCtrl)
+				deselectAllNodes();
+
+			obj->setSelected(!nodeSelected);
+			selectedNodes.push_back(std::make_tuple(obj, objects, i));
+		}
+		if (nodeOpen && isGroup)
+		{
+			drawTreeRecursive(group);
+			ImGui::TreePop();
+		}
+	}
 }
 
 void Renderer::drawCursor()
@@ -397,6 +477,26 @@ void Renderer::updateCursor()
 	}
 }
 
+void Renderer::deselectAllNodes()
+{
+	for (auto tuple : selectedNodes)
+		std::get<0>(tuple)->setSelected(false);
+
+	selectedNodes.clear();
+}
+
+std::shared_ptr<GroupObject> Renderer::castToGroupObject(std::shared_ptr<AbstractObject> obj)
+{
+	if (std::shared_ptr<GroupObject> casted = dynamic_pointer_cast<GroupObject>(obj))
+	{
+		return casted;
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
 void Renderer::importerImage(string fichier)
 {
 	std::ifstream f(fichier);
@@ -441,30 +541,45 @@ void Renderer::ajouterPtDessin(int x, int y)
 
 	// Type de primitive
 	GLenum typePrimitive = -1;
+	string name = "Primitive";
+
 	switch (formeADessiner)
 	{
 	case 0: // Point
 		typePrimitive = GL_POINTS;
+		name = "Point";
 		break;
 
 	case 1: // Ligne
 		if (ptsDessin.size() >= 2)
+		{
 			typePrimitive = GL_LINES;
+			name = "Ligne";
+		}
 		break;
 
 	case 2: // Triangle
 		if (ptsDessin.size() >= 3)
+		{
 			typePrimitive = GL_TRIANGLES;
+			name = "Triangle";
+		}
 		break;
 
 	case 3: // Rectangle
 		if (ptsDessin.size() >= 2)
+		{
 			typePrimitive = GL_TRIANGLE_FAN;
+			name = "Rectangle";
+		}
 		break;
 
 	case 4: // Quad
 		if (ptsDessin.size() >= 4)
+		{
 			typePrimitive = GL_TRIANGLE_FAN;
+			name = "Quad";
+		}
 		break;
 
 	case 5: // Smiley
@@ -482,7 +597,7 @@ void Renderer::ajouterPtDessin(int x, int y)
 	if (typePrimitive != -1)
 	{
 		PrimitiveObject primitive;
-		primitive.Create(primitiveShaderID);
+		primitive.Create(primitiveShaderID, name);
 		primitive.setCouleurBordure(couleurBordure);
 		primitive.setCouleurRemplissage(couleurRemplissage);
 		primitive.setEpaisseurBordure(epaisseurBordure);
@@ -506,9 +621,13 @@ void Renderer::ajouterSmiley()
 	const int nbPrimitives = 4;
 	PrimitiveObject primitives[nbPrimitives];
 
+	primitives[0].Create(primitiveShaderID, "Smiley");
+	primitives[1].Create(primitiveShaderID, "Oeil gauche");
+	primitives[2].Create(primitiveShaderID, "Oeil droit");
+	primitives[3].Create(primitiveShaderID, "Sourire");
+
 	for (int i = 0; i < nbPrimitives; i++)
 	{
-		primitives[i].Create(primitiveShaderID);
 		primitives[i].setCouleurBordure(couleurBordure);
 
 		if (i == 0)
@@ -558,8 +677,11 @@ void Renderer::ajouterSmiley()
 	};
 	primitives[3].setVertices(vertices);
 
+	GroupObject smiley;
 	for (int i = 0; i < nbPrimitives; i++)
-		scene.addObject(std::make_shared<PrimitiveObject>(primitives[i]));
+		smiley.addObject(std::make_shared<PrimitiveObject>(primitives[i]));
+
+	scene.addObject(std::make_shared<GroupObject>(smiley));
 
 	ptsDessin.clear();
 }
@@ -567,7 +689,7 @@ void Renderer::ajouterSmiley()
 void Renderer::ajouterEtoile()
 {
 	PrimitiveObject primitive;
-	primitive.Create(primitiveShaderID);
+	primitive.Create(primitiveShaderID, "Etoile");
 	primitive.setCouleurBordure(couleurBordure);
 	primitive.setEpaisseurBordure(epaisseurBordure);
 	primitive.setTypePrimitive(GL_LINES);

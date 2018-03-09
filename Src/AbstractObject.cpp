@@ -71,3 +71,18 @@ void AbstractObject::MatScale(GLuint program, const glm::vec3 &scale) // matrice
 
 	glUniformMatrix4fv(matScale, 1, GL_FALSE, &scl[0][0]);
 }
+
+bool AbstractObject::isSelected()
+{
+	return selected;
+}
+
+void AbstractObject::setSelected(bool value)
+{
+	selected = value;
+}
+
+string AbstractObject::getName()
+{
+	return name;
+}
