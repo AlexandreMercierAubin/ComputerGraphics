@@ -11,7 +11,6 @@ public:
 	//virtual void SetColor(glm::vec4 color);
 private:
 	string modelPath = "Resources/Goblin/fbx/Android_Man_Model.fbx";
-	GLuint program;
 	glm::vec4 color;
 	glm::vec3 position;
 	glm::vec3 scale;

@@ -5,7 +5,6 @@ class CubeObject : public AbstractObject
 {
 private:
 	GLuint VertexArray;
-	GLuint program;
 	glm::vec3 vertices[8];
 	glm::vec2 textureCube[8];
 

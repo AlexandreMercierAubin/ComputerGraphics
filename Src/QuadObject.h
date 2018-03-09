@@ -5,7 +5,6 @@
 class QuadObject: public AbstractObject
 {
 private:
-	GLuint program;
 	GLuint VertexArray;
 	GLuint textureID;
 	glm::vec3 vertices[4];
