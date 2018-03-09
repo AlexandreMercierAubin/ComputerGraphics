@@ -159,6 +159,9 @@ void Application::keydownEvent(const SDL_Event &event, int &quit)
 	case SDLK_RIGHT:
 		keyFlags.flagRight = true;
 		break;
+	case SDLK_DELETE:
+		renderer.eraseNodes();
+		break;
 	}
 }
 
