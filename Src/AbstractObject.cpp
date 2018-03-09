@@ -29,7 +29,7 @@ void AbstractObject::uniformLight(GLuint &program, glm::vec3 &color, glm::vec3 &
 		&light.direction[0]);
 }
 
-void AbstractObject::MatRotation(GLuint program, glm::vec3 &r) // matrice de rotation
+void AbstractObject::MatRotation(const GLuint &program,const glm::vec3 &r) // matrice de rotation
 {
 	//x:pitch y:yaw z:roll
 	GLuint matRotation = glGetUniformLocation(program, "matRotation");
@@ -42,6 +42,11 @@ void AbstractObject::MatRotation(GLuint program, glm::vec3 &r) // matrice de rot
 	rotat[3][0] = 0.0f;												  rotat[3][1] = 0.0f;						rotat[3][2] = 0.0f;													rotat[3][3] = 1.0f;
 
 	glUniformMatrix4fv(matRotation, 1, GL_FALSE, &rotat[0][0]);
+}
+
+void AbstractObject::MatRotationDegree(const GLuint &program, const glm::vec3 &r)
+{
+	MatRotation(program, glm::vec3(glm::radians(r.x), glm::radians(r.y), glm::radians(r.z)));
 }
 
 void AbstractObject::MatTranslation(GLuint program,const glm::vec3 &position) // matrice de translation
