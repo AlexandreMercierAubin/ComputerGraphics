@@ -251,25 +251,18 @@ void Renderer::drawGUI()
 	if (ImGui::IsItemClicked())
 	{
 		if (nodeSelected && ImGui::GetIO().KeyCtrl)
-		{
 			deselectNode(root);
-			root->setSelected(false);
-		}
+
 		else if (nodeSelected && !ImGui::GetIO().KeyCtrl)
-		{
 			deselectAllNodes();
-			root->setSelected(false);
-		}
+
 		else if (!nodeSelected && ImGui::GetIO().KeyCtrl)
-		{
-			root->setSelected(true);
-			selectedNodes.push_back(std::make_pair(root, nullptr));
-		}
+			selectNode(root, nullptr);
+
 		else
 		{
 			deselectAllNodes();
-			root->setSelected(true);
-			selectedNodes.push_back(std::make_pair(root, nullptr));
+			selectNode(root, nullptr);
 		}
 	}
 	if (nodeOpen)
@@ -286,19 +279,27 @@ void Renderer::drawGUI()
 
 	if (selectedNodes.size() > 0)
 	{
-		ImGui::DragFloat3("Translation", &currentTranslation.x, 0.1f, -1000.0f, 1000.0f, "%.1f");
-		ImGui::DragFloat3("Rotation (deg)", &currentRotation.x, 0.1f, -359.9f, 359.9f, "%.1f");
+		glm::vec3 oldTranslation = currentTranslation;
+		if (ImGui::DragFloat3("Translation", &currentTranslation.x, 0.1f, -1000.0f, 1000.0f, "%.1f"))
+			addTranslation(currentTranslation - oldTranslation);
 
-		glm::vec3 scale = currentScale;
-		if (ImGui::DragFloat3("Echelle", &scale.x, 0.001f, 0.0f, 10.0f, "%.3f"))
+		glm::vec3 oldRotation = currentRotation;
+		if (ImGui::DragFloat3("Rotation (deg)", &currentRotation.x, 0.1f, -359.9f, 359.9f, "%.1f"))
+			addRotation(currentRotation - oldRotation);
+
+		glm::vec3 oldScale = currentScale;
+		glm::vec3 newScale = currentScale;
+		if (ImGui::DragFloat3("Echelle", &newScale.x, 0.001f, 0.001f, 1000.0f, "%.3f"))
 		{
 			if (proportionalResizing)
 			{
-				float diff = (scale.x / currentScale.x) * (scale.y / currentScale.y) * (scale.z / currentScale.z);
+				float diff = (newScale.x / currentScale.x) * (newScale.y / currentScale.y) * (newScale.z / currentScale.z);
 				currentScale = glm::vec3(currentScale.x * diff, currentScale.y * diff, currentScale.z * diff);
 			}
 			else
-				currentScale = scale;
+				currentScale = newScale;
+
+			addScale(currentScale - oldScale);
 		}
 		ImGui::Checkbox("Redimensionnement proportionnel", &proportionalResizing);
 	}
@@ -334,25 +335,18 @@ void Renderer::drawTreeRecursive(std::shared_ptr<GroupObject> objects)
 		if (ImGui::IsItemClicked())
 		{
 			if (nodeSelected && ImGui::GetIO().KeyCtrl)
-			{
 				deselectNode(obj);
-				obj->setSelected(false);
-			}
+
 			else if (nodeSelected && !ImGui::GetIO().KeyCtrl)
-			{
 				deselectAllNodes();
-				obj->setSelected(false);
-			}
+
 			else if (!nodeSelected && ImGui::GetIO().KeyCtrl)
-			{
-				obj->setSelected(true);
-				selectedNodes.push_back(std::make_pair(obj, objects));
-			}
+				selectNode(obj, objects);
+
 			else
 			{
 				deselectAllNodes();
-				obj->setSelected(true);
-				selectedNodes.push_back(std::make_pair(obj, objects));
+				selectNode(obj, objects);
 			}
 		}
 		if (nodeOpen && isGroup)
@@ -443,38 +437,6 @@ void Renderer::updateCursor()
 		curseur.setEpaisseurBordure(1);
 		curseur.setTypePrimitive(GL_TRIANGLE_FAN);
 		break;
-	}
-}
-
-void Renderer::deselectAllNodes()
-{
-	for (auto pair : selectedNodes)
-		pair.first->setSelected(false);
-
-	selectedNodes.clear();
-}
-
-void Renderer::deselectNode(std::shared_ptr<AbstractObject> obj)
-{
-	for (auto it = selectedNodes.begin(); it != selectedNodes.end(); ++it)
-	{
-		if (it->first == obj)
-		{
-			selectedNodes.erase(it);
-			return;
-		}
-	}
-}
-
-std::shared_ptr<GroupObject> Renderer::castToGroupObject(std::shared_ptr<AbstractObject> obj)
-{
-	if (std::shared_ptr<GroupObject> casted = dynamic_pointer_cast<GroupObject>(obj))
-	{
-		return casted;
-	}
-	else
-	{
-		return nullptr;
 	}
 }
 
@@ -708,6 +670,51 @@ void Renderer::ajouterEtoile()
 	ptsDessin.clear();
 }
 
+void Renderer::deselectAllNodes()
+{
+	for (auto pair : selectedNodes)
+		pair.first->setSelected(false);
+
+	selectedNodes.clear();
+
+	updateTransformations();
+}
+
+void Renderer::deselectNode(std::shared_ptr<AbstractObject> obj)
+{
+	obj->setSelected(false);
+
+	for (auto it = selectedNodes.begin(); it != selectedNodes.end(); ++it)
+	{
+		if (it->first == obj)
+		{
+			selectedNodes.erase(it);
+			return;
+		}
+	}
+
+	updateTransformations();
+}
+
+void Renderer::selectNode(std::shared_ptr<AbstractObject> obj, std::shared_ptr<GroupObject> parent)
+{
+	obj->setSelected(true);
+	selectedNodes.push_back(std::make_pair(obj, parent));
+	updateTransformations();
+}
+
+std::shared_ptr<GroupObject> Renderer::castToGroupObject(std::shared_ptr<AbstractObject> obj)
+{
+	if (std::shared_ptr<GroupObject> casted = dynamic_pointer_cast<GroupObject>(obj))
+	{
+		return casted;
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
 void Renderer::eraseNodes()
 {
 	for (auto pair : selectedNodes)
@@ -738,4 +745,70 @@ void Renderer::groupNodes()
 
 	// Erase original nodes
 	eraseNodes();
+}
+
+void Renderer::addTranslation(const glm::vec3 &v)
+{
+	//for (auto pair : selectedNodes)
+	//{
+	//	std::shared_ptr<AbstractObject> obj = pair.first;
+	//	glm::vec3 old = obj->getTranslation();
+	//	obj->MatTranslation(old + v);
+	//}
+	glm::vec3 old = scene.getObjects()->getObjectAt(0)->getTranslation();
+	scene.getObjects()->getObjectAt(0)->MatTranslation(old + v);
+}
+
+void Renderer::addRotation(const glm::vec3 &v)
+{
+	for (auto pair : selectedNodes)
+	{
+		std::shared_ptr<AbstractObject> obj = pair.first;
+		glm::vec3 old = obj->getRotationDegree();
+		obj->MatRotationDegree(old + v);
+	}
+}
+
+void Renderer::addRotation(const glm::quat &q)
+{
+	for (auto pair : selectedNodes)
+	{
+		std::shared_ptr<AbstractObject> obj = pair.first;
+		glm::quat old = obj->getRotationQuaternion();
+		obj->MatRotationQuaternion(old + q);
+	}
+}
+
+void Renderer::addScale(const glm::vec3 &v)
+{
+	for (auto pair : selectedNodes)
+	{
+		std::shared_ptr<AbstractObject> obj = pair.first;
+		glm::vec3 old = obj->getScale();
+		obj->MatScale(old + v);
+	}
+}
+
+void Renderer::updateTransformations()
+{
+	//if (selectedNodes.size() == 1)
+	//{
+	//	std::shared_ptr<AbstractObject> obj = selectedNodes[0].first;
+
+	//	currentRotation = obj->getRotationDegree();
+	//	currentRotationQuat = obj->getRotationQuaternion();
+	//	currentTranslation = obj->getTranslation();
+	//	currentScale = obj->getScale();
+	//}
+	//else // > 1
+	//{
+	//	currentRotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	//	currentRotationQuat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+	//	currentTranslation = glm::vec3(0.0f, 0.0f, 0.0f);
+	//	currentScale = glm::vec3(1.0f, 1.0f, 1.0f);
+	//}
+	currentRotation = scene.getObjects()->getObjectAt(0)->getRotationDegree();
+	currentRotationQuat = scene.getObjects()->getObjectAt(0)->getRotationQuaternion();
+	currentTranslation = scene.getObjects()->getObjectAt(0)->getTranslation();
+	currentScale = scene.getObjects()->getObjectAt(0)->getScale();
 }
