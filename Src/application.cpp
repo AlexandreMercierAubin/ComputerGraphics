@@ -72,7 +72,7 @@ void Application::F11Keypress()
 	int height;
 
 	SDL_GetWindowSize(window, &width, &height);
-	renderer.screenShot(0, 0, width, height, "test.bmp");
+	renderer.screenShot(0, 0, width, height, "Screenshot.bmp");
 
 }
 
@@ -158,6 +158,9 @@ void Application::keydownEvent(const SDL_Event &event, int &quit)
 		break;
 	case SDLK_RIGHT:
 		keyFlags.flagRight = true;
+		break;
+	case SDLK_DELETE:
+		renderer.eraseNodes();
 		break;
 	}
 }
