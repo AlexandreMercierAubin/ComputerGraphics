@@ -85,15 +85,23 @@ private:
 	GLuint simpleTexShaderID;
 	GLuint modelShaderID;
 
+	// Transformations
 	glm::vec3 currentTranslation;
 	glm::vec3 currentRotation;
+	glm::quat currentRotationQuat;
 	glm::vec3 currentScale;
 	bool proportionalResizing = true;
+	void addTranslation(const glm::vec3 &v);
+	void addRotation(const glm::vec3 &v);
+	void addRotation(const glm::quat &q);
+	void addScale(const glm::vec3 &v);
+	void updateTransformations();
 
 	std::vector<std::pair<std::shared_ptr<AbstractObject>, std::shared_ptr<GroupObject>>> selectedNodes;
 	std::shared_ptr<GroupObject> castToGroupObject(std::shared_ptr<AbstractObject> obj);
 	void deselectAllNodes();
 	void deselectNode(std::shared_ptr<AbstractObject> obj);
+	void selectNode(std::shared_ptr<AbstractObject> obj, std::shared_ptr<GroupObject> parent);
 	void groupNodes();
 
 	void drawGUI();

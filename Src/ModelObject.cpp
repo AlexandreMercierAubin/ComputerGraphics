@@ -27,9 +27,9 @@ void ModelObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 	GLuint MatPerspective = glGetUniformLocation(program, "matPerspective");
 	glUniformMatrix4fv(MatPerspective, 1, GL_FALSE, &perspective[0][0]);
 
-	AbstractObject::MatRotationDegree(program, glm::vec3(0,0,0));//roll*pitch*yaw matrix with angles x,y,z
-	AbstractObject::MatTranslation(program,position);
-	AbstractObject::MatScale(program, scale);
+	AbstractObject::MatRotationDegree(glm::vec3(0,0,0));//roll*pitch*yaw matrix with angles x,y,z
+	AbstractObject::MatTranslation(position);
+	AbstractObject::MatScale(scale);
 
 	AbstractObject::uniformColor(program, color);
 	AbstractObject::uniformLight(program, glm::vec3(1.0, 1.0, 1.0), glm::vec3(0,0,1), ambientIntensity, diffuseIntensity);

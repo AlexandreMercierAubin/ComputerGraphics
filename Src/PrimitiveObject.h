@@ -4,7 +4,6 @@
 class PrimitiveObject : public AbstractObject
 {
 private:
-	GLuint program;
 	GLuint vertexArray;
 	glm::vec4 couleurRemplissage;
 	glm::vec4 couleurBordure;
