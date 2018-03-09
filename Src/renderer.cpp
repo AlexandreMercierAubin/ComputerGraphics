@@ -41,8 +41,6 @@ void Renderer::initShaders()
 {
 	//test, remove that 
 	Core::ShaderLoader loader;
-	KochShader kochShader;
-	kochShaderID = loader.CreateProgram(kochShader);
 	
 	// Do not remove
 	PrimitiveShader primitiveShader;
@@ -51,117 +49,16 @@ void Renderer::initShaders()
 	simpleTexShaderID = loader.CreateProgram(simpleTexShader);
 	ModelShader modelShader;
 	modelShaderID = loader.CreateProgram(modelShader);
+	SimpleGPShader GPShader;
+	GPShaderID = loader.CreateProgram(GPShader);
 
 	curseur.Create(primitiveShaderID);
 	curseur.setCouleurRemplissage(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	curseur.setCouleurBordure(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	// End do not remove
 
-
-	glGenBuffers(1, &kochBufferID);
-	glGenBuffers(1, &kochBufferColorID);
-
-
-	matRotation = glGetUniformLocation(kochShaderID, "matRotation");
-	matScale = glGetUniformLocation(kochShaderID, "matScale");
-	matTranslation = glGetUniformLocation(kochShaderID, "matTranslation");
-
-	float pythagore = sqrtf(pow(0.5f, 2.f) / 2.f);
-	courbeKoch(glm::vec3(-pythagore, pythagore, 0), glm::vec3(pythagore, pythagore, 0), 4);
-	courbeKoch(glm::vec3(pythagore, pythagore, 0), glm::vec3(0, -0.5, 0), 4);
-	courbeKoch(glm::vec3(0, -0.5, 0), glm::vec3(-pythagore, pythagore, 0), 4);
-
-	//glUseProgram(kochShaderID);
-	glUseProgram(kochShaderID);
 }
 
-void Renderer::courbeKoch(glm::vec3 pointDebut, glm::vec3 pointFin, int nbIterations)
-{
-	//fonction qui permet de conserver les points d'une ligne du flocon de Koch
-	std::vector<glm::vec3> ligneTemp;
-
-	//si le nombre d'itérations est expiré
-	if (nbIterations == 0)
-	{
-		// permets de conserver la ligne et de trouver une couleur aléatoire pour cette ligne
-
-		//couleur aléatoire
-		float x = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-		float y = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-		float z = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-
-		//conservation de la couleur
-		Colors.push_back(glm::vec3(x, y, z));
-		Colors.push_back(glm::vec3(x, y, z));
-
-		//conservation de la position
-		Lines.push_back(pointDebut);
-		Lines.push_back(pointFin);
-	}
-	else
-	{
-		//Trouver les 5 points pour dessiner les 4 lignes
-		ligneTemp.push_back(pointDebut);
-		ligneTemp.push_back(glm::vec3(
-			(2.0 * pointDebut.x + pointFin.x) / 3.0,
-			(2.0 * pointDebut.y + pointFin.y) / 3.0,
-			0));//pointB
-
-		ligneTemp.push_back(glm::vec3(
-			(pointDebut.x + pointFin.x) / 2.0 - sqrt(3.0) / 6.0 *(pointFin.y - pointDebut.y),
-			(pointDebut.y + pointFin.y) / 2.0 + sqrt(3.0) / 6.0 *(pointFin.x - pointDebut.x),
-			0));//pointC
-
-		ligneTemp.push_back(glm::vec3(
-			(pointDebut.x + 2.0 * pointFin.x) / 3.0,
-			(pointDebut.y + 2.0 * pointFin.y) / 3.0,
-			0));//pointD
-
-		ligneTemp.push_back(pointFin);
-
-		//Itérer sur les 4 nouvelles lignes trouvées
-		courbeKoch(ligneTemp[0], ligneTemp[1], nbIterations - 1);
-		courbeKoch(ligneTemp[1], ligneTemp[2], nbIterations - 1);
-		courbeKoch(ligneTemp[2], ligneTemp[3], nbIterations - 1);
-		courbeKoch(ligneTemp[3], ligneTemp[4], nbIterations - 1);
-	}
-}
-
-void Renderer::MatScale() // matrice d'échelle
-{
-	glm::mat4 eche;
-
-	eche[0][0] = sinf(testScale)*1.0f; eche[0][1] = 0.0f; eche[0][2] = 0.0f; eche[0][3] = 0.0f;
-	eche[1][0] = 0.0f; eche[1][1] = sinf(testScale)*1.0f; eche[1][2] = 0.0f; eche[1][3] = 0.0f;
-	eche[2][0] = 0.0f; eche[2][1] = 0.0f; eche[2][2] = 1.0f; eche[2][3] = 0.0f;
-	eche[3][0] = 0.0f; eche[3][1] = 0.0f; eche[3][2] = 0.0f; eche[3][3] = 1.0f;
-
-
-	glUniformMatrix4fv(matScale, 1, GL_TRUE, &eche[0][0]);
-}
-
-void Renderer::MatRotation() // matrice de rotation
-{
-	glm::mat4 rotat;
-
-	rotat[0][0] = cosf(testScale); rotat[0][1] = -sinf(testScale); rotat[0][2] = 0.0f; rotat[0][3] = 0.0f;
-	rotat[1][0] = sinf(testScale); rotat[1][1] = cosf(testScale); rotat[1][2] = 0.0f; rotat[1][3] = 0.0f;
-	rotat[2][0] = 0.0f; rotat[2][1] = 0.0f; rotat[2][2] = 1.0f; rotat[2][3] = 0.0f;
-	rotat[3][0] = 0.0f; rotat[3][1] = 0.0f; rotat[3][2] = 0.0f; rotat[3][3] = 1.0f;
-
-
-	glUniformMatrix4fv(matRotation, 1, GL_TRUE, &rotat[0][0]);
-}
-
-void Renderer::MatTranslation() // matrice de translation
-{
-	glm::mat4 trans;
-	trans = glm::mat4(1.0);
-
-
-
-	glUniformMatrix4fv(matTranslation, 1, GL_TRUE, &trans[0][0]);
-}
 
 
 void Renderer::drawRenderer(Scene::KeyFlags &flags)
@@ -263,8 +160,12 @@ void Renderer::screenShot(int x, int y, int w, int h, const char * filename)
 
 Renderer::~Renderer()
 {
-	glDeleteProgram(kochShaderID);
-	glDeleteBuffers(1, &kochBufferID);
+	glDeleteProgram(primitiveShaderID);
+	glDeleteBuffers(1, &primitiveShaderID);
+	glDeleteProgram(simpleTexShaderID);
+	glDeleteBuffers(1, &simpleTexShaderID);
+	glDeleteProgram(modelShaderID);
+	glDeleteBuffers(1, &modelShaderID);
 }
 
 void Renderer::drawGUI()
@@ -306,7 +207,7 @@ void Renderer::drawGUI()
 	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
 	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
 	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
-	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0"))
+	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Sphere"))
 		ptsDessin.clear();
 
 	ImGui::NewLine();
@@ -598,6 +499,17 @@ void Renderer::ajouterPtDessin(int x, int y)
 		if (ptsDessin.size() >= 2)
 			ajouterEtoile();
 		break;
+
+	case 7:
+		scene.addObject(make_shared<CubeObject>());
+		scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
+		break;
+
+	case 8:
+		scene.addObject(make_shared<SphereObject>());
+		scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
+		break;
+
 	}
 
 	// Ajout de primitive

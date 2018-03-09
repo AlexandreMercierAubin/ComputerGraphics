@@ -4,17 +4,15 @@
 class CubeObject : public AbstractObject
 {
 private:
+private:
 	GLuint VertexArray;
-	GLuint program;
 	glm::vec3 vertices[8];
-	glm::vec2 textureCube[8];
+	glm::vec4 color;
+	GLuint program;
 
-	
-	
-
-protected:
 	void createVerticesCube(GLfloat width, GLfloat height, GLfloat depth);
-	void createTextureCube();
+	void createCube(GLfloat width, GLfloat height, GLfloat depth);
+
 	const unsigned int indices[36] = {
 		0,1,3,//left
 		0,2,3,
@@ -29,8 +27,10 @@ protected:
 		0,2,6,//bottom
 		0,4,6
 	};
+
+	std::vector<char*> faces;
+
 public:
-	GLuint loadCubemap(std::vector<char*> faces, GLint wrapS, GLint wrapT, GLint minFilter, GLint magFilter);
 	virtual void Create(GLuint &Program);
 	virtual void Draw(glm::mat4 &perspective, glm::mat4 &view);
 	~CubeObject();
