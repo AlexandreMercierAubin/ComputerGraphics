@@ -5,7 +5,7 @@ project (Infographics C CXX)
 
 #allows the use of ${CMAKE_CURRENT_SOURCE_DIR} variable
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 #Do that to access SDL as an external. No need to do that for Opengl as it is on every OS.
 
@@ -127,10 +127,16 @@ MESSAGE("OpenGL found:" ${OpenGL_FOUND})
 
 set(GLM_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/Externals/glm-0.9.9-a2)
 
-add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD 
 		COMMAND ${CMAKE_COMMAND} -E copy_directory 
 			"${PROJECT_SOURCE_DIR}/Resources"
 			$<TARGET_FILE_DIR:${PROJECT_NAME}>/Resources)
+		
+#This is because visual studio is dumb AF
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD 
+		COMMAND ${CMAKE_COMMAND} -E copy_directory 
+			"${PROJECT_SOURCE_DIR}/Resources"
+			${CMAKE_BINARY_DIR}/Resources)		
 
 
 #include and links the externals
