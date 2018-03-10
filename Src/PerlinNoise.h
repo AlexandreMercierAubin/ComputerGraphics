@@ -96,3 +96,24 @@ void SurfacePerlinNoise(SDL_Surface *surf, int noise)
 		}
 	}
 };
+
+void SurfaceCompositionImagePerlinNoise(SDL_Surface *surf, int noise)
+{
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+
+	for (size_t i = 0; i < surf->w; i++)
+	{
+		
+		for (size_t j = 0; j < surf->h; j++)
+		{
+
+			unsigned int *ptr = (unsigned int*)surf->pixels;
+			int lineoffset = j * (surf->pitch / 4);
+			ptr[lineoffset + i] = ptr[lineoffset + i] * (PerlinNoiseValue(i, j, noise)*255);
+
+			//putpixel(surf, i, j, SDL_MapRGB(surf->format, r ,g ,b));
+		}
+	}
+};

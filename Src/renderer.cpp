@@ -188,6 +188,8 @@ void Renderer::drawGUI()
 
 	if (ImGui::Button("Importer modele 3D"))
 		importModel(string(fichier));
+	if (ImGui::Button("Importer image pour composition"))
+		imageComposition(string(fichier));
 
 	if (ImGui::Button("Capture d'ecran"))
 	{
@@ -511,6 +513,20 @@ void Renderer::imagePerlinNoise(string fichier)
 	scene.addObject(std::make_shared<QuadObject>(fichier,"perlinNoise"));
 	std::shared_ptr<GroupObject> objects= scene.getObjects();
 	objects->getObjectAt(objects->size()-1)->Create(simpleTexShaderID);
+}
+void Renderer::imageComposition(string fichier)
+{
+	std::ifstream f(fichier);
+	if (!f.good())
+	{
+		cout << "Fichier inexistant" << endl;
+		return;
+	}
+	f.close();
+
+	scene.addObject(std::make_shared<QuadObject>(fichier, "composition"));
+	std::shared_ptr<GroupObject> objects = scene.getObjects();
+	objects->getObjectAt(objects->size() - 1)->Create(simpleTexShaderID);
 }
 
 void Renderer::ajouterPtDessin(int x, int y)
@@ -881,12 +897,10 @@ void Renderer::echantillonnageImage(string imageBase,string imageEchantillon)
 	f2.close();
 
 	string s1 = to_string(postionEchantillonnage) + "|";
-	cout << s1 << endl;
 	string s2 = to_string(pourcentageImage) + "|";
-	cout << s2 << endl;
 	imageEchantillon = s1 + imageEchantillon;
 	imageEchantillon = s2 + imageEchantillon;
-	cout << imageEchantillon << endl;
+
 	scene.addObject(std::make_shared<QuadObject>(imageBase, imageEchantillon));
 	std::shared_ptr<GroupObject> objects = scene.getObjects();
 	objects->getObjectAt(objects->size() - 1)->Create(simpleTexShaderID);

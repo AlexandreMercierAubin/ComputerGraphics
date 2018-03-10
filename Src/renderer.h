@@ -100,6 +100,7 @@ private:
 	void importImage(string file);
 	void importModel(string file);
 	void imagePerlinNoise(string file);
+	void imageComposition(string file);
 	void echantillonnageImage(string file,string file2);
 
 	void ajouterSmiley();

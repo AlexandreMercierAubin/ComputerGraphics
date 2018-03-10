@@ -54,6 +54,9 @@ void QuadObject::Create(GLuint &Program)
 	if(texturePath2 == "perlinNoise") {
 		SurfacePerlinNoise(image, 300);
 	}
+	else if (texturePath2 == "composition") {
+		SurfaceCompositionImagePerlinNoise(image, 30);
+	}
 	else if (texturePath2.length() > 0) {
 
 		SurfaceSampling(image, texturePath2);
