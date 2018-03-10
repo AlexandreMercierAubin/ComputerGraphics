@@ -3,7 +3,7 @@
 
 void SBPyramidObject::Create(GLuint &Program)
 {
-	name = "Cube";
+	name = "Pyramide";
 	program = Program;
 
 	GLfloat width, height, depth;
