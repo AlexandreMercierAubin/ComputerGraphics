@@ -29,7 +29,7 @@ void Scene::setupScene()
 	Core::ShaderLoader loader;
 	ModelShader modelShader;
 	SkyboxShader skyboxShader;
-	SimpleTexShader texShader;
+	TexShader texShader;
 	
 	shaderID = loader.CreateProgram(modelShader);
 	skyboxID = loader.CreateProgram(skyboxShader);

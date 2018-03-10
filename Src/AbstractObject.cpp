@@ -143,6 +143,16 @@ glm::vec3 AbstractObject::getScale()
 	return scale;
 }
 
+void AbstractObject::setColor(glm::vec4 Color)
+{
+	color = Color;
+}
+
+glm::vec4 AbstractObject::getColor()
+{
+	return color;
+}
+
 bool AbstractObject::isSelected()
 {
 	return selected;
@@ -157,3 +167,4 @@ string AbstractObject::getName()
 {
 	return name;
 }
+

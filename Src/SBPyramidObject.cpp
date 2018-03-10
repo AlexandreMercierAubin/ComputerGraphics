@@ -1,7 +1,7 @@
 #pragma once
-#include"CubeObject.h"
+#include"SBPyramidObject.h"
 
-void CubeObject::Create(GLuint &Program)
+void SBPyramidObject::Create(GLuint &Program)
 {
 	name = "Cube";
 	program = Program;
@@ -14,14 +14,14 @@ void CubeObject::Create(GLuint &Program)
 	glGenVertexArrays(1, &VertexArray);
 	glBindVertexArray(VertexArray);
 
-	createCube(width, height, depth);
+	createPyramid(width, height, depth);
 
 	glBindVertexArray(0);
 }
 
-void CubeObject::createCube(GLfloat width, GLfloat height, GLfloat depth)
+void SBPyramidObject::createPyramid(GLfloat width, GLfloat height, GLfloat depth)
 {
-	createVerticesCube(width / 2, height / 2, depth / 2);
+	createVerticesPyramid(width / 2, height / 2, depth / 2);
 	//creeTextureCube();
 
 	//Création et remplissage du buffer d'indices de la base:
@@ -32,17 +32,14 @@ void CubeObject::createCube(GLfloat width, GLfloat height, GLfloat depth)
 
 }
 
-void CubeObject::createVerticesCube(GLfloat width, GLfloat height, GLfloat depth)
+void SBPyramidObject::createVerticesPyramid(GLfloat width, GLfloat height, GLfloat depth)
 {
 	//Remplir la variable m_sommetsBase
-	vertices[0] = glm::vec3(0 - width, 0 - height, 0 - depth);
-	vertices[1] = glm::vec3(0 - width, 0 + height, 0 - depth);
+	vertices[0] = glm::vec3(0, 0 + height, 0);
+	vertices[1] = glm::vec3(0 - width, 0 - height, 0 - depth);
 	vertices[2] = glm::vec3(0 - width, 0 - height, 0 + depth);
-	vertices[3] = glm::vec3(0 - width, 0 + height, 0 + depth);
+	vertices[3] = glm::vec3(0 + width, 0 - height, 0 + depth);
 	vertices[4] = glm::vec3(0 + width, 0 - height, 0 - depth);
-	vertices[5] = glm::vec3(0 + width, 0 + height, 0 - depth);
-	vertices[6] = glm::vec3(0 + width, 0 - height, 0 + depth);
-	vertices[7] = glm::vec3(0 + width, 0 + height, 0 + depth);
 
 	//Créer, remplir et activer le buffer de sommets
 	GLuint vertexbuffer;
@@ -54,7 +51,7 @@ void CubeObject::createVerticesCube(GLfloat width, GLfloat height, GLfloat depth
 }
 
 
-void CubeObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
+void SBPyramidObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 {
 	glUseProgram(program);
 	uniformColor(program, color);
@@ -69,12 +66,12 @@ void CubeObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 
 	//Dessiner le cube
 	glBindVertexArray(VertexArray);
-	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, 18, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
 }
 
-CubeObject::~CubeObject()
+SBPyramidObject::~SBPyramidObject()
 {
 	glDeleteVertexArrays(1, &VertexArray);
 }

@@ -20,8 +20,10 @@
 
 #include "PrimitiveObject.h"
 #include "SphereObject.h"
+#include "SBPyramidObject.h"
 #include "PrimitiveShader.h"
 #include "SimpleTexShader.h"
+#include "TexShader.h"
 #include "SimpleGPShader.h"
 
 
@@ -69,6 +71,7 @@ private:
 	GLuint simpleTexShaderID;
 	GLuint GPShaderID;
 	GLuint modelShaderID;
+	GLuint texShaderID;
 
 	// Échantillonnage d’image
 	int postionEchantillonnage = 0; // 0 = Haut-Gauche, 1 = Haut-Milieu, 2 = Milieu-Gauche, 3 = Milieu-Milieu
@@ -106,5 +109,5 @@ private:
 	void ajouterSmiley();
 	void ajouterEtoile();
 	void addCube();
-	void addSphere();
+	void addSBPyramid();
 };
