@@ -10,6 +10,7 @@ void QuadObject::Create(GLuint &Program)
 	}
 
 	program = Program;
+	glUseProgram(program);
 	GLfloat width, height, depth;
 	width = 0.5f;
 	height = 0.5f;
@@ -21,6 +22,27 @@ void QuadObject::Create(GLuint &Program)
 	vertices[1] = glm::vec3(0 + width/2, 0 - height/2, 0 - depth/2);
 	vertices[2] = glm::vec3(0 - width/2, 0 + height/2, 0 - depth/2);
 	vertices[3] = glm::vec3(0 + width/2, 0 + height/2, 0 - depth/2);
+
+	glm::vec2 vTexture[4] = { glm::vec2(0.0f, 1.0f)  , glm::vec2(1.0f, 1.0f), glm::vec2(0.0f, 0.0f) , glm::vec2(1.0f, 0.0f) };
+
+	GLuint vertexbuffer;
+	glGenBuffers(1, &vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	GLuint textureBuffer;
+	glGenBuffers(1, &textureBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, textureBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vTexture), vTexture, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	GLuint IBO;
+	glGenBuffers(1, &IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	GLint channels;
 	GLenum type;
@@ -60,27 +82,10 @@ void QuadObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 	GLuint MatPerspective = glGetUniformLocation(program, "matPerspective");
 	glUniformMatrix4fv(MatPerspective, 1, GL_FALSE, &perspective[0][0]);
 
-	GLuint vertexbuffer;
-	glGenBuffers(1, &vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(0);
+	MatRotationDegree(program, rotationDegree);
+	MatTranslation(program, position);
+	MatScale(program, scale);
 
-	glm::vec2 vTexture[4] = { glm::vec2(0.0f, 1.0f)  , glm::vec2(1.0f, 1.0f), glm::vec2(0.0f, 0.0f) , glm::vec2(1.0f, 0.0f) };
-
-	GLuint textureBuffer;
-	glGenBuffers(1, &textureBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, textureBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vTexture), vTexture, GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(1);
-
-	GLuint IBO;
-	glGenBuffers(1, &IBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	
 	glBindVertexArray(VertexArray);
 	glActiveTexture(0);
 	glBindTexture(GL_TEXTURE_2D, textureID);
@@ -92,12 +97,12 @@ void QuadObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 }
 
 
-QuadObject::QuadObject(std::string texturePath)
+QuadObject::QuadObject(std::string TexturePath)
 {
-	name = "Image (" + texturePath + ")";
+	name = "Image (" + TexturePath + ")";
 
-	this->texturePath = texturePath;
-	SDL_Surface *image = Model::loadImage(texturePath);
+	texturePath = TexturePath;
+	SDL_Surface *image = Model::loadImage(TexturePath);
 	imageOK = image != nullptr;
 	SDL_FreeSurface(image);
 }

@@ -5,10 +5,10 @@ void PrimitiveObject::Create(GLuint &program)
 	Create(program, "Primitive");
 }
 
-void PrimitiveObject::Create(GLuint &program, string name)
+void PrimitiveObject::Create(GLuint &Program, string Name)
 {
-	this->name = name;
-	this->program = program;
+	name = Name;
+	program = Program;
 
 	couleurRemplissage = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	couleurBordure = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
