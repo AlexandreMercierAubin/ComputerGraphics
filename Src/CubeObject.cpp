@@ -11,8 +11,6 @@ void CubeObject::Create(GLuint &Program)
 	height = 0.5;
 	depth = 0.5;
 
-	color = glm::vec4(1, 0, 1, 1);
-
 	glGenVertexArrays(1, &VertexArray);
 	glBindVertexArray(VertexArray);
 
