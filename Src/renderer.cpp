@@ -323,6 +323,11 @@ void Renderer::drawGUI()
 	if (ImGui::Combo("Curseur", &typeCurseur, "Defaut\0Point\0Points\0Croix\0Triangle\0Quad\0"))
 		updateCursor();
 
+	ImGui::NewLine();
+
+	if (ImGui::Button("Afficher Texture PerlinNoise"))
+		importerImagePerlinNoise("Resources/Image/Couleur.png");
+
 	ImGui::End();
 
 	// ********** Graphe de scène **********
@@ -570,6 +575,20 @@ void Renderer::importModel(string file)
 	object.Create(modelShaderID);
 	scene.addObject(std::make_shared<ModelObject>(object));
 	//Resources/megalodon/megalodon.FBX
+}
+void Renderer::importerImagePerlinNoise(string fichier)
+{
+	std::ifstream f(fichier);
+	if (!f.good())
+	{
+		cout << "Fichier inexistant" << endl;
+		return;
+	}
+	f.close();
+
+	QuadObject quad(fichier);
+	quad.Create(simpleTexShaderID,"perlinNoise");
+	scene.addObject(std::make_shared<QuadObject>(quad));
 }
 
 void Renderer::ajouterPtDessin(int x, int y)

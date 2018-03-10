@@ -1,5 +1,7 @@
 #pragma once
 #include"QuadObject.h"
+#include"PerlinNoise.h"
+
 
 void QuadObject::Create(GLuint &Program)
 {
@@ -17,14 +19,15 @@ void QuadObject::Create(GLuint &Program)
 	glGenVertexArrays(1, &VertexArray);
 	glBindVertexArray(VertexArray);
 
-	vertices[0] = glm::vec3(0 - width/2, 0 - height/2, 0 - depth/2);
-	vertices[1] = glm::vec3(0 + width/2, 0 - height/2, 0 - depth/2);
-	vertices[2] = glm::vec3(0 - width/2, 0 + height/2, 0 - depth/2);
-	vertices[3] = glm::vec3(0 + width/2, 0 + height/2, 0 - depth/2);
+	vertices[0] = glm::vec3(0 - width / 2, 0 - height / 2, 0 - depth / 2);
+	vertices[1] = glm::vec3(0 + width / 2, 0 - height / 2, 0 - depth / 2);
+	vertices[2] = glm::vec3(0 - width / 2, 0 + height / 2, 0 - depth / 2);
+	vertices[3] = glm::vec3(0 + width / 2, 0 + height / 2, 0 - depth / 2);
 
 	GLint channels;
 	GLenum type;
 	SDL_Surface *image = Model::loadImage(texturePath);
+
 	Model::getImageProperties(image, channels, type);
 
 	glGenTextures(1, &textureID);
@@ -37,7 +40,7 @@ void QuadObject::Create(GLuint &Program)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, channels, image->w, image->h, 0, type, GL_UNSIGNED_BYTE, image->pixels);
-	
+
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	//Free image
@@ -80,7 +83,7 @@ void QuadObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 	glGenBuffers(1, &IBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	
+
 	glBindVertexArray(VertexArray);
 	glActiveTexture(0);
 	glBindTexture(GL_TEXTURE_2D, textureID);
@@ -105,4 +108,52 @@ QuadObject::QuadObject(std::string texturePath)
 QuadObject::~QuadObject()
 {
 	glDeleteVertexArrays(1, &VertexArray);
+}
+
+void QuadObject::Create(GLuint &Program, string typeSurface)
+{
+	if (!imageOK)
+	{
+		cout << "Erreur au chargement de l'image" << endl;
+		return;
+	}
+
+	program = Program;
+	GLfloat width, height, depth;
+	width = 0.5f;
+	height = 0.5f;
+	depth = 0.001f;
+	glGenVertexArrays(1, &VertexArray);
+	glBindVertexArray(VertexArray);
+
+	vertices[0] = glm::vec3(0 - width / 2, 0 - height / 2, 0 - depth / 2);
+	vertices[1] = glm::vec3(0 + width / 2, 0 - height / 2, 0 - depth / 2);
+	vertices[2] = glm::vec3(0 - width / 2, 0 + height / 2, 0 - depth / 2);
+	vertices[3] = glm::vec3(0 + width / 2, 0 + height / 2, 0 - depth / 2);
+
+	GLint channels;
+	GLenum type;
+	SDL_Surface *image = Model::loadImage(texturePath);
+
+	if (typeSurface == "perlinNoise") {
+		SurfacePerlinNoise(image, 300);
+	}	
+
+	Model::getImageProperties(image, channels, type);
+
+
+
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, channels, image->w, image->h, 0, type, GL_UNSIGNED_BYTE, image->pixels);
+
+	glGenerateMipmap(GL_TEXTURE_2D);
+
+	//Free image
+	SDL_FreeSurface(image);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBindVertexArray(0);
 }

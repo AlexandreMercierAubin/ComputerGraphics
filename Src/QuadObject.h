@@ -18,6 +18,7 @@ private:
 	bool imageOK = false;
 public:
 	virtual void Create(GLuint &Program);
+	virtual void Create(GLuint &Program, string typeSurFace);
 	virtual void Draw(glm::mat4 &perspective, glm::mat4 &view);
 	QuadObject(std::string texturePath);
 	~QuadObject();
