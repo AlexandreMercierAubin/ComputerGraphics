@@ -486,9 +486,9 @@ void Renderer::importerImagePerlinNoise(string fichier)
 	}
 	f.close();
 
-	QuadObject quad(fichier);
-	quad.Create(simpleTexShaderID,"perlinNoise");
-	scene.addObject(std::make_shared<QuadObject>(quad));
+	scene.addObject(std::make_shared<QuadObject>(fichier,"perlinNoise"));
+	std::shared_ptr<GroupObject> objects= scene.getObjects();
+	objects->getObjectAt(objects->size()-1)->Create(simpleTexShaderID);
 }
 
 void Renderer::ajouterPtDessin(int x, int y)

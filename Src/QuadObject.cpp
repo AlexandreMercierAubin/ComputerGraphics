@@ -50,6 +50,10 @@ void QuadObject::Create(GLuint &Program)
 	GLenum type;
 	SDL_Surface *image = Model::loadImage(texturePath);
 
+	if(texturePath2 == "perlinNoise") {
+		SurfacePerlinNoise(image, 300);
+	}
+
 	Model::getImageProperties(image, channels, type);
 
 	glGenTextures(1, &textureID);
@@ -109,56 +113,18 @@ QuadObject::QuadObject(std::string TexturePath)
 	imageOK = image != nullptr;
 	SDL_FreeSurface(image);
 }
+QuadObject::QuadObject(std::string TexturePath, std::string TexturePath2)
+{
+	name = "Image (" + TexturePath + ")";
+
+	texturePath = TexturePath;
+	texturePath2 = TexturePath2;
+	SDL_Surface *image = Model::loadImage(TexturePath);
+	imageOK = image != nullptr;
+	SDL_FreeSurface(image);
+}
 
 QuadObject::~QuadObject()
 {
 	glDeleteVertexArrays(1, &VertexArray);
-}
-
-void QuadObject::Create(GLuint &Program, string typeSurface)
-{
-	if (!imageOK)
-	{
-		cout << "Erreur au chargement de l'image" << endl;
-		return;
-	}
-
-	program = Program;
-	GLfloat width, height, depth;
-	width = 0.5f;
-	height = 0.5f;
-	depth = 0.001f;
-	glGenVertexArrays(1, &VertexArray);
-	glBindVertexArray(VertexArray);
-
-	vertices[0] = glm::vec3(0 - width / 2, 0 - height / 2, 0 - depth / 2);
-	vertices[1] = glm::vec3(0 + width / 2, 0 - height / 2, 0 - depth / 2);
-	vertices[2] = glm::vec3(0 - width / 2, 0 + height / 2, 0 - depth / 2);
-	vertices[3] = glm::vec3(0 + width / 2, 0 + height / 2, 0 - depth / 2);
-
-	GLint channels;
-	GLenum type;
-	SDL_Surface *image = Model::loadImage(texturePath);
-
-	if (typeSurface == "perlinNoise") {
-		SurfacePerlinNoise(image, 300);
-	}	
-
-	Model::getImageProperties(image, channels, type);
-
-
-
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_2D, textureID);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, channels, image->w, image->h, 0, type, GL_UNSIGNED_BYTE, image->pixels);
-
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	//Free image
-	SDL_FreeSurface(image);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glBindVertexArray(0);
 }
