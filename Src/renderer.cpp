@@ -765,14 +765,12 @@ void Renderer::groupNodes()
 
 void Renderer::addTranslation(const glm::vec3 &v)
 {
-	//for (auto pair : selectedNodes)
-	//{
-	//	std::shared_ptr<AbstractObject> obj = pair.first;
-	//	glm::vec3 old = obj->getTranslation();
-	//	obj->MatTranslation(old + v);
-	//}
-	glm::vec3 old = scene.getObjects()->getObjectAt(0)->getTranslation();
-	scene.getObjects()->getObjectAt(0)->MatTranslation(old + v);
+	for (auto pair : selectedNodes)
+	{
+		std::shared_ptr<AbstractObject> obj = pair.first;
+		glm::vec3 old = obj->getPosition();
+		obj->setPosition(old + v);
+	}
 }
 
 void Renderer::addRotation(const glm::vec3 &v)
@@ -781,7 +779,7 @@ void Renderer::addRotation(const glm::vec3 &v)
 	{
 		std::shared_ptr<AbstractObject> obj = pair.first;
 		glm::vec3 old = obj->getRotationDegree();
-		obj->MatRotationDegree(old + v);
+		obj->setRotationDegree(old + v);
 	}
 }
 
@@ -791,7 +789,7 @@ void Renderer::addRotation(const glm::quat &q)
 	{
 		std::shared_ptr<AbstractObject> obj = pair.first;
 		glm::quat old = obj->getRotationQuaternion();
-		obj->MatRotationQuaternion(old + q);
+		obj->setRotationQuaternion(old + q);
 	}
 }
 
@@ -801,7 +799,7 @@ void Renderer::addScale(const glm::vec3 &v)
 	{
 		std::shared_ptr<AbstractObject> obj = pair.first;
 		glm::vec3 old = obj->getScale();
-		obj->MatScale(old + v);
+		obj->setScale(old + v);
 	}
 }
 
@@ -824,7 +822,7 @@ void Renderer::updateTransformations()
 	//	currentScale = glm::vec3(1.0f, 1.0f, 1.0f);
 	//}
 	currentRotation = scene.getObjects()->getObjectAt(0)->getRotationDegree();
-	currentRotationQuat = scene.getObjects()->getObjectAt(0)->getRotationQuaternion();
-	currentTranslation = scene.getObjects()->getObjectAt(0)->getTranslation();
+	//currentRotationQuat = scene.getObjects()->getObjectAt(0)->getRotationQuaternion();
+	currentTranslation = scene.getObjects()->getObjectAt(0)->getPosition();
 	currentScale = scene.getObjects()->getObjectAt(0)->getScale();
 }

@@ -8,7 +8,6 @@ private:
 	GLuint VertexArray;
 	glm::vec3 vertices[8];
 	glm::vec4 color;
-	GLuint program;
 
 	void createVerticesCube(GLfloat width, GLfloat height, GLfloat depth);
 	void createCube(GLfloat width, GLfloat height, GLfloat depth);

@@ -65,9 +65,9 @@ void CubeObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 	GLuint MatPerspective = glGetUniformLocation(program, "matPerspective");
 	glUniformMatrix4fv(MatPerspective, 1, GL_FALSE, &perspective[0][0]);
 	
-	MatRotationDegree(program, glm::vec3(0, 90, 0));
-	MatTranslation(program, glm::vec3(1, 1, 0));
-	MatScale(program, glm::vec3(2, 1, 1));
+	MatRotationDegree(program, rotationDegree);
+	MatTranslation(program, position);
+	MatScale(program, scale);
 
 	//Dessiner le cube
 	glBindVertexArray(VertexArray);

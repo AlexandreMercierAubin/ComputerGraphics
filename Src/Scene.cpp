@@ -22,7 +22,7 @@ void Scene::setupScene()
 
 	uniformCouleur = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
-	perspective = MatPerspective(glm::radians(45.0f),1200/800 ,0.1f, 100.0f);
+	perspective = MatPerspective(glm::radians(30.0f),1200/800 ,0.1f, 100.0f);
 	view = MatView(false);
 
 	//test remove when done; change for an abstractobject array
