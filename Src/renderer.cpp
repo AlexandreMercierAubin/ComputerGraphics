@@ -51,6 +51,8 @@ void Renderer::initShaders()
 	primitiveShaderID = loader.CreateProgram(primitiveShader);
 	SimpleTexShader simpleTexShader;
 	simpleTexShaderID = loader.CreateProgram(simpleTexShader);
+	TexShader texShader;
+	texShaderID = loader.CreateProgram(texShader);
 	ModelShader modelShader;
 	modelShaderID = loader.CreateProgram(modelShader);
 	SimpleGPShader GPShader;
@@ -170,6 +172,8 @@ Renderer::~Renderer()
 	glDeleteBuffers(1, &simpleTexShaderID);
 	glDeleteProgram(modelShaderID);
 	glDeleteBuffers(1, &modelShaderID);
+	glDeleteProgram(texShaderID);
+	glDeleteBuffers(1, &texShaderID);
 }
 
 void Renderer::drawGUI()
@@ -452,7 +456,7 @@ void Renderer::importImage(string fichier)
 
 	scene.addObject(std::make_shared<QuadObject>(fichier));
 	std::shared_ptr<GroupObject> objects= scene.getObjects();
-	objects->getObjectAt(objects->size()-1)->Create(simpleTexShaderID);
+	objects->getObjectAt(objects->size()-1)->Create(texShaderID);
 }
 
 void Renderer::importModel(string file)
@@ -572,6 +576,7 @@ void Renderer::addCube()
 {
 	scene.addObject(make_shared<CubeObject>());
 	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->setColor(couleurRemplissage);
 	ptsDessin.clear();
 }
 
@@ -579,6 +584,7 @@ void Renderer::addSBPyramid()
 {
 	scene.addObject(make_shared<SBPyramidObject>());
 	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->setColor(couleurRemplissage);
 	ptsDessin.clear();
 }
 

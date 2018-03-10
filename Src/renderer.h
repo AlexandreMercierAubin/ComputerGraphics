@@ -23,6 +23,7 @@
 #include "SBPyramidObject.h"
 #include "PrimitiveShader.h"
 #include "SimpleTexShader.h"
+#include "TexShader.h"
 #include "SimpleGPShader.h"
 
 
@@ -70,6 +71,7 @@ private:
 	GLuint simpleTexShaderID;
 	GLuint GPShaderID;
 	GLuint modelShaderID;
+	GLuint texShaderID;
 
 	// Transformations
 	glm::vec3 currentTranslation;
