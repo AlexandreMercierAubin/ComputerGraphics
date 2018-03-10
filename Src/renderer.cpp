@@ -227,7 +227,7 @@ void Renderer::drawGUI()
 	ImGui::NewLine();
 
 	if (ImGui::Button("Afficher Texture PerlinNoise"))
-		importerImagePerlinNoise("Resources/Image/Couleur.png");
+		imagePerlinNoise("Resources/Image/Couleur.png");
 
 	ImGui::End();
 
@@ -308,6 +308,28 @@ void Renderer::drawGUI()
 		}
 		ImGui::Checkbox("Redimensionnement proportionnel", &proportionalResizing);
 	}
+
+	ImGui::End();
+
+	// ********** Échantillonnage d’image  **********
+
+	ImGui::Begin("Echantillonnage d’image");
+
+	static char imageBase[1000] = "";
+	static char imageEchantillon[1000] = "";
+
+	ImGui::InputText("image de base", imageBase, IM_ARRAYSIZE(imageBase));
+	ImGui::InputText("image d'echantillonnage", imageEchantillon, IM_ARRAYSIZE(imageEchantillon));
+
+	ImGui::NewLine();
+
+	ImGui::SliderInt("Pourcentage de l'image à incorporer", &pourcentageImage, 0, 100);
+	ImGui::Combo("Position de départ", &postionEchantillonnage, "Haut-Gauche\0Haut-Milieu\0Milieu-Gauche\0Milieu-Milieu\0");
+
+	ImGui::NewLine();
+
+	if (ImGui::Button("Commencer Echantillonnage"))
+		echantillonnageImage(imageBase,imageEchantillon);
 
 	ImGui::End();
 
@@ -476,7 +498,7 @@ void Renderer::importModel(string file)
 	scene.addObject(std::make_shared<ModelObject>(object));
 	//Resources/megalodon/megalodon.FBX
 }
-void Renderer::importerImagePerlinNoise(string fichier)
+void Renderer::imagePerlinNoise(string fichier)
 {
 	std::ifstream f(fichier);
 	if (!f.good())
@@ -838,4 +860,34 @@ void Renderer::updateTransformations()
 		currentTranslation = glm::vec3(0, 0, 0);
 		currentScale = glm::vec3(1, 1, 1);
 	}
+}
+
+void Renderer::echantillonnageImage(string imageBase,string imageEchantillon)
+{
+	std::ifstream f(imageBase);
+	if (!f.good())
+	{
+		cout << "Fichier pour image de base inexistant" << endl;
+		return;
+	}
+	f.close();
+
+	std::ifstream f2(imageEchantillon);
+	if (!f2.good())
+	{
+		cout << "Fichier pour image d'echantillonnage inexistant" << endl;
+		return;
+	}
+	f2.close();
+
+	string s1 = to_string(postionEchantillonnage) + "|";
+	cout << s1 << endl;
+	string s2 = to_string(pourcentageImage) + "|";
+	cout << s2 << endl;
+	imageEchantillon = s1 + imageEchantillon;
+	imageEchantillon = s2 + imageEchantillon;
+	cout << imageEchantillon << endl;
+	scene.addObject(std::make_shared<QuadObject>(imageBase, imageEchantillon));
+	std::shared_ptr<GroupObject> objects = scene.getObjects();
+	objects->getObjectAt(objects->size() - 1)->Create(simpleTexShaderID);
 }

@@ -70,6 +70,10 @@ private:
 	GLuint GPShaderID;
 	GLuint modelShaderID;
 
+	// Échantillonnage d’image
+	int postionEchantillonnage = 0; // 0 = Haut-Gauche, 1 = Haut-Milieu, 2 = Milieu-Gauche, 3 = Milieu-Milieu
+	int pourcentageImage = 0;
+
 	// Transformations
 	glm::vec3 currentTranslation;
 	glm::vec3 currentRotation;
@@ -95,7 +99,8 @@ private:
 	void updateCursor();
 	void importImage(string file);
 	void importModel(string file);
-	void importerImagePerlinNoise(string file);
+	void imagePerlinNoise(string file);
+	void echantillonnageImage(string file,string file2);
 
 	void ajouterSmiley();
 	void ajouterEtoile();

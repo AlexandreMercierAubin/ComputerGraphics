@@ -1,6 +1,7 @@
 #pragma once
 #include"QuadObject.h"
 #include"PerlinNoise.h"
+#include"Echantillonnage.h"
 
 
 void QuadObject::Create(GLuint &Program)
@@ -52,6 +53,10 @@ void QuadObject::Create(GLuint &Program)
 
 	if(texturePath2 == "perlinNoise") {
 		SurfacePerlinNoise(image, 300);
+	}
+	else if (texturePath2.length() > 0) {
+
+		SurfaceSampling(image, texturePath2);
 	}
 
 	Model::getImageProperties(image, channels, type);
