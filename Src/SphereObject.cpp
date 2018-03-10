@@ -1,7 +1,7 @@
 #pragma once
-#include"CubeObject.h"
+#include"SphereObject.h"
 
-void CubeObject::Create(GLuint &Program)
+void SphereObject::Create(GLuint &Program)
 {
 	name = "Cube";
 	program = Program;
@@ -21,7 +21,7 @@ void CubeObject::Create(GLuint &Program)
 	glBindVertexArray(0);
 }
 
-void CubeObject::createCube(GLfloat width, GLfloat height, GLfloat depth)
+void SphereObject::createCube(GLfloat width, GLfloat height, GLfloat depth)
 {
 	createVerticesCube(width / 2, height / 2, depth / 2);
 	//creeTextureCube();
@@ -34,7 +34,7 @@ void CubeObject::createCube(GLfloat width, GLfloat height, GLfloat depth)
 
 }
 
-void CubeObject::createVerticesCube(GLfloat width, GLfloat height, GLfloat depth)
+void SphereObject::createVerticesCube(GLfloat width, GLfloat height, GLfloat depth)
 {
 	//Remplir la variable m_sommetsBase
 	vertices[0] = glm::vec3(0 - width, 0 - height, 0 - depth);
@@ -56,7 +56,7 @@ void CubeObject::createVerticesCube(GLfloat width, GLfloat height, GLfloat depth
 }
 
 
-void CubeObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
+void SphereObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 {
 	glUseProgram(program);
 	uniformColor(program, color);
@@ -65,9 +65,9 @@ void CubeObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 	GLuint MatPerspective = glGetUniformLocation(program, "matPerspective");
 	glUniformMatrix4fv(MatPerspective, 1, GL_FALSE, &perspective[0][0]);
 	
-	MatRotationDegree(program, rotationDegree);
-	MatTranslation(program, position);
-	MatScale(program, scale);
+	MatRotation(program, glm::vec3(0, 0, 0));
+	MatTranslation(program, glm::vec3(0, 0, 0));
+	MatScale(program, glm::vec3(1, 1, 1));
 
 	//Dessiner le cube
 	glBindVertexArray(VertexArray);
@@ -76,7 +76,7 @@ void CubeObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 
 }
 
-CubeObject::~CubeObject()
+SphereObject::~SphereObject()
 {
 	glDeleteVertexArrays(1, &VertexArray);
 }

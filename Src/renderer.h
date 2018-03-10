@@ -15,13 +15,15 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "KochShader.h"
 #include "ShaderLoader.h"
 #include "Scene.h"
 
 #include "PrimitiveObject.h"
+#include "SphereObject.h"
 #include "PrimitiveShader.h"
 #include "SimpleTexShader.h"
+#include "SimpleGPShader.h"
+
 
 class Renderer
 {
@@ -47,35 +49,17 @@ private:
 	glm::vec3 BackgroundColor;
 	std::vector<glm::vec3> Lines; 
 	std::vector<glm::vec3> Colors;
-	
-	GLuint matRotation;
-	GLuint matScale;
-	GLuint matTranslation;
 
 	float testScale;
 
 	void initShaders();
-
-	//for the koch test, remove that when done
-	void MatScale();
-	void MatRotation();
-	void MatTranslation();
-	
-
-	//testfunc
-	void courbeKoch(glm::vec3 pointDebut, glm::vec3 pointFin, int nbIterations);
-	GLuint kochShaderID;
-	GLuint kochBufferID;
-	GLuint kochBufferColorID;
-	// end of koch test
-
 
 	// Options de dessin
 	glm::vec4 couleurRemplissage;
 	glm::vec4 couleurBordure;
 	int epaisseurBordure = 1;
 	bool utiliserSkybox = true;
-	int formeADessiner = 0; // 0 = point, 1 = ligne, 2 = triangle, 3 = rectangle, 4 = quad, 5 = smiley, 6 = étoile, 7 = quad avec PerlinNoise
+	int formeADessiner = 0; // 0 = point, 1 = ligne, 2 = triangle, 3 = rectangle, 4 = quad, 5 = smiley, 6 = étoile , 7 = Cube, 8 = Sphere
 	std::vector<glm::vec3> ptsDessin;
 
 	int typeCurseur = 0; // 0 = par défaut, 1 = point, 2 = points, 3 = croix, 4 = triangle, 5 = quad
@@ -83,6 +67,7 @@ private:
 
 	GLuint primitiveShaderID;
 	GLuint simpleTexShaderID;
+	GLuint GPShaderID;
 	GLuint modelShaderID;
 
 	// Transformations
@@ -108,10 +93,12 @@ private:
 	void drawTreeRecursive(std::shared_ptr<GroupObject> objects);
 	void drawCursor();
 	void updateCursor();
-	void importerImage(string file);
+	void importImage(string file);
 	void importModel(string file);
 	void importerImagePerlinNoise(string file);
 
 	void ajouterSmiley();
 	void ajouterEtoile();
+	void addCube();
+	void addSphere();
 };
