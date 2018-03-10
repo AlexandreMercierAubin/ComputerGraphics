@@ -20,6 +20,7 @@
 
 #include "PrimitiveObject.h"
 #include "SphereObject.h"
+#include "SBPyramidObject.h"
 #include "PrimitiveShader.h"
 #include "SimpleTexShader.h"
 #include "SimpleGPShader.h"
@@ -99,5 +100,5 @@ private:
 	void ajouterSmiley();
 	void ajouterEtoile();
 	void addCube();
-	void addSphere();
+	void addSBPyramid();
 };

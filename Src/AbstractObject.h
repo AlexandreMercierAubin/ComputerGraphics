@@ -18,6 +18,8 @@ public:
 	virtual  glm::quat getRotationQuaternion();
 	virtual void setScale(glm::vec3 scl);
 	virtual  glm::vec3 getScale();
+	virtual void setColor(glm::vec4 Color);
+	virtual glm::vec4 getColor();
 	bool isSelected();
 	void setSelected(bool value);
 	string getName();

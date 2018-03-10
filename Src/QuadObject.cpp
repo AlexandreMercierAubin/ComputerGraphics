@@ -86,6 +86,8 @@ void QuadObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 	MatTranslation(program, position);
 	MatScale(program, scale);
 
+	AbstractObject::uniformColor(program, color);
+
 	glBindVertexArray(VertexArray);
 	glActiveTexture(0);
 	glBindTexture(GL_TEXTURE_2D, textureID);

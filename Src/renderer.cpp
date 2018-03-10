@@ -211,7 +211,7 @@ void Renderer::drawGUI()
 	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
 	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
 	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
-	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Sphere"))
+	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide"))
 		ptsDessin.clear();
 
 	ImGui::NewLine();
@@ -535,14 +535,12 @@ void Renderer::ajouterPtDessin(int x, int y)
 			ajouterEtoile();
 		break;
 
-	case 7:
-		//addCube();
-		scene.addObject(make_shared<CubeObject>());
-		scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
+	case 7://cube
+		addCube();
 		break;
 
-	case 8:
-		//addSphere();
+	case 8://pyramid
+		addSBPyramid();
 		break;
 
 	}
@@ -572,17 +570,15 @@ void Renderer::ajouterPtDessin(int x, int y)
 
 void Renderer::addCube() 
 {
-	CubeObject cube;
-	cube.Create(GPShaderID);
-	scene.addObject(make_shared<CubeObject>(cube));
+	scene.addObject(make_shared<CubeObject>());
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
 	ptsDessin.clear();
 }
 
-void Renderer::addSphere()
+void Renderer::addSBPyramid()
 {
-	CubeObject sphere;
-	sphere.Create(GPShaderID);
-	scene.addObject(make_shared<CubeObject>(sphere));
+	scene.addObject(make_shared<SBPyramidObject>());
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
 	ptsDessin.clear();
 }
 
