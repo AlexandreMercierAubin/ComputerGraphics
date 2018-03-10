@@ -10,6 +10,7 @@ void QuadObject::Create(GLuint &Program)
 	}
 
 	program = Program;
+	glUseProgram(program);
 	GLfloat width, height, depth;
 	width = 0.5f;
 	height = 0.5f;
@@ -96,12 +97,12 @@ void QuadObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 }
 
 
-QuadObject::QuadObject(std::string texturePath)
+QuadObject::QuadObject(std::string TexturePath)
 {
-	name = "Image (" + texturePath + ")";
+	name = "Image (" + TexturePath + ")";
 
-	this->texturePath = texturePath;
-	SDL_Surface *image = Model::loadImage(texturePath);
+	texturePath = TexturePath;
+	SDL_Surface *image = Model::loadImage(TexturePath);
 	imageOK = image != nullptr;
 	SDL_FreeSurface(image);
 }

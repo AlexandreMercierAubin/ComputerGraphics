@@ -184,7 +184,7 @@ void Renderer::drawGUI()
 	ImGui::InputText("Fichier", fichier, IM_ARRAYSIZE(fichier));
 
 	if (ImGui::Button("Importer image"))
-		importerImage(string(fichier));
+		importImage(string(fichier));
 
 	if (ImGui::Button("Importer modele 3D"))
 		importModel(string(fichier));
@@ -440,7 +440,7 @@ void Renderer::updateCursor()
 	}
 }
 
-void Renderer::importerImage(string fichier)
+void Renderer::importImage(string fichier)
 {
 	std::ifstream f(fichier);
 	if (!f.good())
@@ -450,9 +450,9 @@ void Renderer::importerImage(string fichier)
 	}
 	f.close();
 
-	QuadObject quad(fichier);
-	quad.Create(simpleTexShaderID);
-	scene.addObject(std::make_shared<QuadObject>(quad));
+	scene.addObject(std::make_shared<QuadObject>(fichier));
+	std::shared_ptr<GroupObject> objects= scene.getObjects();
+	objects->getObjectAt(objects->size()-1)->Create(simpleTexShaderID);
 }
 
 void Renderer::importModel(string file)

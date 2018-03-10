@@ -93,7 +93,7 @@ private:
 	void drawTreeRecursive(std::shared_ptr<GroupObject> objects);
 	void drawCursor();
 	void updateCursor();
-	void importerImage(string file);
+	void importImage(string file);
 	void importModel(string file);
 
 	void ajouterSmiley();
