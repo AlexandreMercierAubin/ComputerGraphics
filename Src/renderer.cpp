@@ -287,7 +287,7 @@ void Renderer::drawGUI()
 	if (selectedNodes.size() > 0)
 	{
 		glm::vec3 oldTranslation = currentTranslation;
-		if (ImGui::DragFloat3("Translation", &currentTranslation.x, 0.1f, -1000.0f, 1000.0f, "%.1f"))
+		if (ImGui::DragFloat3("Translation", &currentTranslation.x, 0.01f, -1000.0f, 1000.0f, "%.2f"))
 			addTranslation(currentTranslation - oldTranslation);
 
 		glm::vec3 oldRotation = currentRotation;
