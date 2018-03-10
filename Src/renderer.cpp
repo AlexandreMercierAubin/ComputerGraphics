@@ -805,24 +805,18 @@ void Renderer::addScale(const glm::vec3 &v)
 
 void Renderer::updateTransformations()
 {
-	//if (selectedNodes.size() == 1)
-	//{
-	//	std::shared_ptr<AbstractObject> obj = selectedNodes[0].first;
-
-	//	currentRotation = obj->getRotationDegree();
-	//	currentRotationQuat = obj->getRotationQuaternion();
-	//	currentTranslation = obj->getTranslation();
-	//	currentScale = obj->getScale();
-	//}
-	//else // > 1
-	//{
-	//	currentRotation = glm::vec3(0.0f, 0.0f, 0.0f);
-	//	currentRotationQuat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-	//	currentTranslation = glm::vec3(0.0f, 0.0f, 0.0f);
-	//	currentScale = glm::vec3(1.0f, 1.0f, 1.0f);
-	//}
-	currentRotation = scene.getObjects()->getObjectAt(0)->getRotationDegree();
-	//currentRotationQuat = scene.getObjects()->getObjectAt(0)->getRotationQuaternion();
-	currentTranslation = scene.getObjects()->getObjectAt(0)->getPosition();
-	currentScale = scene.getObjects()->getObjectAt(0)->getScale();
+	if (scene.getObjects()->size() > 0) 
+	{
+		currentRotation = scene.getObjects()->getObjectAt(0)->getRotationDegree();
+		currentRotationQuat = scene.getObjects()->getObjectAt(0)->getRotationQuaternion();
+		currentTranslation = scene.getObjects()->getObjectAt(0)->getPosition();
+		currentScale = scene.getObjects()->getObjectAt(0)->getScale();
+	}
+	else 
+	{
+		currentRotation = glm::vec3(0,0,0);
+		currentRotationQuat = glm::quat(1,0,0,0);
+		currentTranslation = glm::vec3(0, 0, 0);
+		currentScale = glm::vec3(1, 1, 1);
+	}
 }
