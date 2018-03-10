@@ -1,13 +1,13 @@
 #pragma once
 #include "AbstractObject.h"
+#include "Model.h"
 
-class CubeObject : public AbstractObject
+class SphereObject : public AbstractObject
 {
 private:
 	GLuint VertexArray;
 	glm::vec3 vertices[8];
 	glm::vec4 color;
-	GLuint program;
 
 	void createVerticesCube(GLfloat width, GLfloat height, GLfloat depth);
 	void createCube(GLfloat width, GLfloat height, GLfloat depth);
@@ -32,6 +32,6 @@ private:
 public:
 	virtual void Create(GLuint &Program);
 	virtual void Draw(glm::mat4 &perspective, glm::mat4 &view);
-	~CubeObject();
+	~SphereObject();
 	//virtual void SetColor();
 };
