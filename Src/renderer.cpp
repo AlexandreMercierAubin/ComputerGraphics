@@ -49,8 +49,6 @@ void Renderer::initShaders()
 	// Do not remove
 	PrimitiveShader primitiveShader;
 	primitiveShaderID = loader.CreateProgram(primitiveShader);
-	SimpleTexShader simpleTexShader;
-	simpleTexShaderID = loader.CreateProgram(simpleTexShader);
 	TexShader texShader;
 	texShaderID = loader.CreateProgram(texShader);
 	ModelShader modelShader;
@@ -168,8 +166,6 @@ Renderer::~Renderer()
 {
 	glDeleteProgram(primitiveShaderID);
 	glDeleteBuffers(1, &primitiveShaderID);
-	glDeleteProgram(simpleTexShaderID);
-	glDeleteBuffers(1, &simpleTexShaderID);
 	glDeleteProgram(modelShaderID);
 	glDeleteBuffers(1, &modelShaderID);
 	glDeleteProgram(texShaderID);
@@ -516,7 +512,7 @@ void Renderer::imagePerlinNoise(string fichier)
 
 	scene.addObject(std::make_shared<QuadObject>(fichier,"perlinNoise"));
 	std::shared_ptr<GroupObject> objects= scene.getObjects();
-	objects->getObjectAt(objects->size()-1)->Create(simpleTexShaderID);
+	objects->getObjectAt(objects->size()-1)->Create(texShaderID);
 }
 void Renderer::imageComposition(string fichier)
 {
@@ -530,7 +526,7 @@ void Renderer::imageComposition(string fichier)
 
 	scene.addObject(std::make_shared<QuadObject>(fichier, "composition"));
 	std::shared_ptr<GroupObject> objects = scene.getObjects();
-	objects->getObjectAt(objects->size() - 1)->Create(simpleTexShaderID);
+	objects->getObjectAt(objects->size() - 1)->Create(texShaderID);
 }
 
 void Renderer::ajouterPtDessin(int x, int y)
@@ -907,5 +903,5 @@ void Renderer::echantillonnageImage(string imageBase,string imageEchantillon)
 
 	scene.addObject(std::make_shared<QuadObject>(imageBase, imageEchantillon));
 	std::shared_ptr<GroupObject> objects = scene.getObjects();
-	objects->getObjectAt(objects->size() - 1)->Create(simpleTexShaderID);
+	objects->getObjectAt(objects->size() - 1)->Create(texShaderID);
 }

@@ -22,7 +22,6 @@
 #include "SphereObject.h"
 #include "SBPyramidObject.h"
 #include "PrimitiveShader.h"
-#include "SimpleTexShader.h"
 #include "TexShader.h"
 #include "SimpleGPShader.h"
 
@@ -68,7 +67,6 @@ private:
 	PrimitiveObject curseur;
 
 	GLuint primitiveShaderID;
-	GLuint simpleTexShaderID;
 	GLuint GPShaderID;
 	GLuint modelShaderID;
 	GLuint texShaderID;
