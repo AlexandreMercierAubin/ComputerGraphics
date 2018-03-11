@@ -293,9 +293,23 @@ void Renderer::drawGUI()
 		if (ImGui::DragFloat3("Translation", &currentTranslation.x, 0.01f, -1000.0f, 1000.0f, "%.2f"))
 			addTranslation(currentTranslation - oldTranslation);
 
-		glm::vec3 oldRotation = currentRotation;
-		if (ImGui::DragFloat3("Rotation (deg)", &currentRotation.x, 0.1f, -359.9f, 359.9f, "%.1f"))
-			addRotation(currentRotation - oldRotation);
+		if (useQuaternion)
+		{
+			glm::vec4 current(currentRotationQuat.w, currentRotationQuat.x, currentRotationQuat.y, currentRotationQuat.z);
+			glm::vec4 old = current;
+
+			if (ImGui::DragFloat4("Rotation (quat)", &current.x, 0.01f, -1000.0f, 1000.0f, "%.2f"))
+			{
+				currentRotationQuat = glm::quat(current.x, current.y, current.z, current.w);
+				addRotation(glm::quat(current.x - old.x, current.y - old.y, current.z - old.z, current.w - old.w));
+			}
+		}
+		else
+		{
+			glm::vec3 oldRotation = currentRotation;
+			if (ImGui::DragFloat3("Rotation (deg)", &currentRotation.x, 0.1f, -359.9f, 359.9f, "%.1f"))
+				addRotation(currentRotation - oldRotation);
+		}
 
 		glm::vec3 oldScale = currentScale;
 		glm::vec3 newScale = currentScale;
@@ -311,7 +325,9 @@ void Renderer::drawGUI()
 
 			addScale(currentScale - oldScale);
 		}
+
 		ImGui::Checkbox("Redimensionnement proportionnel", &proportionalResizing);
+		ImGui::Checkbox("Utiliser les quaternions", &useQuaternion);
 	}
 
 	ImGui::End();
@@ -853,7 +869,7 @@ void Renderer::addRotation(const glm::quat &q)
 	{
 		std::shared_ptr<AbstractObject> obj = pair.first;
 		glm::quat old = obj->getRotationQuaternion();
-		obj->setRotationQuaternion(old + q);
+		obj->setRotationQuaternion(glm::quat(old.w + q.w, old.x + q.x, old.y + q.y, old.z + q.z));
 	}
 }
 

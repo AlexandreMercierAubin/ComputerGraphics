@@ -97,6 +97,7 @@ AbstractObject::AbstractObject()
 {
 	position = glm::vec3(0, 0, 0);
 	rotationDegree = glm::vec3(0, 0, 0);
+	rotationQuat = glm::quat(1, 0, 0, 0);
 	scale = glm::vec3(1, 1, 1);
 	color = glm::vec4(1, 1, 1, 1);
 }

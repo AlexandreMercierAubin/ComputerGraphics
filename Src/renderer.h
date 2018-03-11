@@ -82,6 +82,7 @@ private:
 	glm::quat currentRotationQuat;
 	glm::vec3 currentScale;
 	bool proportionalResizing = true;
+	bool useQuaternion = false;
 	void setColor();
 	void addTranslation(const glm::vec3 &v);
 	void addRotation(const glm::vec3 &v);
