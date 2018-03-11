@@ -324,8 +324,8 @@ void Renderer::drawGUI()
 	static char imageBase[1000] = "";
 	static char imageEchantillon[1000] = "";
 
-	ImGui::InputText("image de base", imageBase, IM_ARRAYSIZE(imageBase));
-	ImGui::InputText("image d'echantillonnage", imageEchantillon, IM_ARRAYSIZE(imageEchantillon));
+	ImGui::InputText("Image de base", imageBase, IM_ARRAYSIZE(imageBase));
+	ImGui::InputText("Image d'echantillonnage", imageEchantillon, IM_ARRAYSIZE(imageEchantillon));
 
 	ImGui::NewLine();
 
