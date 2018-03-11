@@ -174,11 +174,43 @@ Renderer::~Renderer()
 
 void Renderer::drawGUI()
 {
+	int sdlWindowWidth, sdlWindowHeight;
+	SDL_GetWindowSize(window, &sdlWindowWidth, &sdlWindowHeight);
+
 	ImGui_ImplSdlGL3_NewFrame(window);
 
-	// ********** Importer **********
+	// ********** Options de dessin **********
 
-	ImGui::Begin("Importer");
+	ImGui::SetNextWindowPos(ImVec2(2.0f, 2.0f));
+	ImGui::Begin("Options de dessin", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
+	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
+	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
+	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide\0"))
+		ptsDessin.clear();
+
+	ImGui::NewLine();
+
+	ImGui::Checkbox("Utiliser skybox", &utiliserSkybox);
+	ImGui::ColorEdit3("Arriere-plan", &BackgroundColor.r);
+
+	ImGui::NewLine();
+
+	if (ImGui::Combo("Curseur", &typeCurseur, "Defaut\0Point\0Points\0Croix\0Triangle\0Quad\0"))
+		updateCursor();
+
+	ImGui::NewLine();
+
+	if (ImGui::Button("Afficher texture PerlinNoise"))
+		imagePerlinNoise("Resources/Image/Couleur.png");
+
+	ImGui::SetNextWindowPos(ImVec2(2.0f, ImGui::GetCurrentWindow()->Size.y + 5.0f));
+	ImGui::End();
+
+	// ********** Importer / Exporter **********
+
+	ImGui::Begin("Importer / Exporter", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
 	static char fichier[1000] = "";
 	ImGui::InputText("Fichier", fichier, IM_ARRAYSIZE(fichier));
@@ -206,36 +238,11 @@ void Renderer::drawGUI()
 
 	ImGui::End();
 
-	// ********** Options de dessin **********
-
-	ImGui::Begin("Options de dessin");
-
-	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
-	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
-	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
-	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide\0"))
-		ptsDessin.clear();
-
-	ImGui::NewLine();
-
-	ImGui::Checkbox("Utiliser skybox", &utiliserSkybox);
-	ImGui::ColorEdit3("Arriere-plan", &BackgroundColor.r);
-
-	ImGui::NewLine();
-
-	if (ImGui::Combo("Curseur", &typeCurseur, "Defaut\0Point\0Points\0Croix\0Triangle\0Quad\0"))
-		updateCursor();
-
-	ImGui::NewLine();
-
-	if (ImGui::Button("Afficher texture PerlinNoise"))
-		imagePerlinNoise("Resources/Image/Couleur.png");
-
-	ImGui::End();
-
 	// ********** Graphe de scène **********
 
-	ImGui::Begin("Graphe de scene");
+	ImGui::SetNextWindowPos(ImVec2(sdlWindowWidth * 0.75f - 2.0f, 2.0f));
+	ImGui::SetNextWindowSize(ImVec2(sdlWindowWidth * 0.25f, sdlWindowHeight / 4.0f));
+	ImGui::Begin("Graphe de scene", (bool *)0, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
 	if (ImGui::Button("Grouper"))
 		groupNodes();
@@ -278,14 +285,17 @@ void Renderer::drawGUI()
 		ImGui::TreePop();
 	}
 
+	if (selectedNodes.size() > 0)
+		ImGui::SetNextWindowPos(ImVec2(sdlWindowWidth - transformationsWindowWidth - 2.0f, ImGui::GetCurrentWindow()->Size.y + 5.0f));
+
 	ImGui::End();
 
 	// ********** Transformations **********
 
-	ImGui::Begin("Transformations");
-
 	if (selectedNodes.size() > 0)
 	{
+		ImGui::Begin("Transformations", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
 		if (ImGui::ColorEdit4("Couleur", &currentColor.x))
 			setColor();
 
@@ -328,13 +338,15 @@ void Renderer::drawGUI()
 
 		ImGui::Checkbox("Redimensionnement proportionnel", &proportionalResizing);
 		ImGui::Checkbox("Utiliser les quaternions", &useQuaternion);
-	}
 
-	ImGui::End();
+		transformationsWindowWidth = ImGui::GetCurrentWindow()->Size.x;
+		ImGui::End();
+	}
 
 	// ********** Échantillonnage d’image  **********
 
-	ImGui::Begin("Echantillonnage d'image");
+	ImGui::SetNextWindowPos(ImVec2(2.0f, sdlWindowHeight - samplingWindowHeight - 2.0f));
+	ImGui::Begin("Echantillonnage d'image", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
 	static char imageBase[1000] = "";
 	static char imageEchantillon[1000] = "";
@@ -352,6 +364,7 @@ void Renderer::drawGUI()
 	if (ImGui::Button("Commencer Echantillonnage"))
 		echantillonnageImage(imageBase,imageEchantillon);
 
+	samplingWindowHeight = ImGui::GetCurrentWindow()->Size.y;
 	ImGui::End();
 
 	// Render

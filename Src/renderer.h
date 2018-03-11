@@ -51,6 +51,9 @@ private:
 	std::vector<glm::vec3> Lines; 
 	std::vector<glm::vec3> Colors;
 
+	float transformationsWindowWidth = 0;
+	float samplingWindowHeight = 0;
+
 	float testScale;
 
 	void initShaders();
