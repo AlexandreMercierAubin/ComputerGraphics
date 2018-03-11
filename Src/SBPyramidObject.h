@@ -1,33 +1,29 @@
 #pragma once
 #include "AbstractObject.h"
 
-class CubeObject : public AbstractObject
+class SBPyramidObject : public AbstractObject
 {
 private:
 	GLuint VertexArray;
-	glm::vec3 vertices[8];
+	glm::vec3 vertices[5];
 
 	void createVertices(GLfloat width, GLfloat height, GLfloat depth);
 	void createForm(GLfloat width, GLfloat height, GLfloat depth);
 
-	const unsigned int indices[36] = {
-		0,1,3,//left
+	const unsigned int indices[18] = {
+		0,1,2,//top
 		0,2,3,
-		5,7,6,//right
-		5,4,6,
-		0,1,5,//face
-		0,4,5,
-		2,3,7,//back
-		2,6,7,
-		1,3,7,//top
-		1,5,7,
-		0,2,6,//bottom
-		0,4,6
+		0,3,4,
+		0,4,1,
+		1,2,4,
+		2,4,3
 	};
 
+	std::vector<char*> faces;
 
 public:
 	virtual void Create(GLuint &Program);
 	virtual void Draw(glm::mat4 &perspective, glm::mat4 &view);
-	~CubeObject();
+	~SBPyramidObject();
+	//virtual void SetColor();
 };

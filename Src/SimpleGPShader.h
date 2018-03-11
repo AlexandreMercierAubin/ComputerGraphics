@@ -2,19 +2,18 @@
 #include "AbstractShader.h"
 
 
-class SimpleTexShader : public AbstractShader
+class SimpleGPShader : public AbstractShader
 {
 	std::string fshader =
 R"(#version 430 core
 
-in vec2 TexCoord;
 out vec4 color;
 
-uniform sampler2D text;
+uniform vec4 vColor;
 
 void main(void)
 {
-	color = texture(text, TexCoord);
+	color = vColor;
 }
 
 )";
@@ -24,18 +23,18 @@ void main(void)
 
 	std::string vshader =
 R"(#version 430 core                          
-in vec3 in_sommet;
-in vec2 texCoord;
+in vec3 position;
 
 uniform mat4 matView;
+uniform mat4 matTranslation;
 uniform mat4 matPerspective;
+uniform mat4 matRotation;
+uniform mat4 matScale;
 
-out vec2 TexCoord;
 
 void main()
 {
-	gl_Position = matPerspective*matView*vec4(in_sommet, 1.0);
-	TexCoord = vec2(texCoord.x,texCoord.y);
+	gl_Position = matPerspective*matView*matTranslation*matRotation*matScale*vec4(position, 1.0);
 }
 
 )";

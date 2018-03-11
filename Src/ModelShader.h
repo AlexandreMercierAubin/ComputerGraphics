@@ -51,7 +51,7 @@ void main(void)
 R"(#version 430 core      
                     
 in vec3 position;
-in vec3 in_normale;
+in vec3 in_normal;
 in vec2 texCoord;
  
 uniform mat4 matView;
@@ -67,7 +67,7 @@ void main()
 {
 
   gl_Position =  matPerspective*matView*matTranslation*matRotation*matScale*(vec4(position, 1.0));
-  normal = (matTranslation*matRotation*matScale*(vec4(in_normale, 0))).xyz;
+  normal = (matTranslation*matRotation*matScale*(vec4(in_normal, 0))).xyz;
   TexCoord = vec2(texCoord.x,texCoord.y);
 
 }

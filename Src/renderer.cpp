@@ -30,6 +30,10 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 	srand(static_cast <unsigned> (time(0)));
 	testScale = 0;
 
+	currentTranslation = glm::vec3(0.0f, 0.0f, 0.0f);
+	currentRotation = glm::vec3(0.0f, 0.0f, 0.0f);
+	currentScale = glm::vec3(1.0f, 1.0f, 1.0f);
+
 	// Setup ImGUI
 	ImGui::CreateContext();
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
@@ -41,154 +45,53 @@ void Renderer::initShaders()
 {
 	//test, remove that 
 	Core::ShaderLoader loader;
-	KochShader kochShader;
-	kochShaderID = loader.CreateProgram(kochShader);
 	
 	// Do not remove
 	PrimitiveShader primitiveShader;
 	primitiveShaderID = loader.CreateProgram(primitiveShader);
-	SimpleTexShader simpleTexShader;
-	simpleTexShaderID = loader.CreateProgram(simpleTexShader);
+	TexShader texShader;
+	texShaderID = loader.CreateProgram(texShader);
+	ModelShader modelShader;
+	modelShaderID = loader.CreateProgram(modelShader);
+	SimpleGPShader GPShader;
+	GPShaderID = loader.CreateProgram(GPShader);
 
 	curseur.Create(primitiveShaderID);
 	curseur.setCouleurRemplissage(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	curseur.setCouleurBordure(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	// End do not remove
 
-
-	glGenBuffers(1, &kochBufferID);
-	glGenBuffers(1, &kochBufferColorID);
-
-
-	matRotation = glGetUniformLocation(kochShaderID, "matRotation");
-	matScale = glGetUniformLocation(kochShaderID, "matScale");
-	matTranslation = glGetUniformLocation(kochShaderID, "matTranslation");
-
-	float pythagore = sqrtf(pow(0.5f, 2.f) / 2.f);
-	courbeKoch(glm::vec3(-pythagore, pythagore, 0), glm::vec3(pythagore, pythagore, 0), 4);
-	courbeKoch(glm::vec3(pythagore, pythagore, 0), glm::vec3(0, -0.5, 0), 4);
-	courbeKoch(glm::vec3(0, -0.5, 0), glm::vec3(-pythagore, pythagore, 0), 4);
-
-	//glUseProgram(kochShaderID);
-	glUseProgram(kochShaderID);
 }
 
-void Renderer::courbeKoch(glm::vec3 pointDebut, glm::vec3 pointFin, int nbIterations)
-{
-	//fonction qui permet de conserver les points d'une ligne du flocon de Koch
-	std::vector<glm::vec3> ligneTemp;
-
-	//si le nombre d'itérations est expiré
-	if (nbIterations == 0)
-	{
-		// permets de conserver la ligne et de trouver une couleur aléatoire pour cette ligne
-
-		//couleur aléatoire
-		float x = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-		float y = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-		float z = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-
-		//conservation de la couleur
-		Colors.push_back(glm::vec3(x, y, z));
-		Colors.push_back(glm::vec3(x, y, z));
-
-		//conservation de la position
-		Lines.push_back(pointDebut);
-		Lines.push_back(pointFin);
-	}
-	else
-	{
-		//Trouver les 5 points pour dessiner les 4 lignes
-		ligneTemp.push_back(pointDebut);
-		ligneTemp.push_back(glm::vec3(
-			(2.0 * pointDebut.x + pointFin.x) / 3.0,
-			(2.0 * pointDebut.y + pointFin.y) / 3.0,
-			0));//pointB
-
-		ligneTemp.push_back(glm::vec3(
-			(pointDebut.x + pointFin.x) / 2.0 - sqrt(3.0) / 6.0 *(pointFin.y - pointDebut.y),
-			(pointDebut.y + pointFin.y) / 2.0 + sqrt(3.0) / 6.0 *(pointFin.x - pointDebut.x),
-			0));//pointC
-
-		ligneTemp.push_back(glm::vec3(
-			(pointDebut.x + 2.0 * pointFin.x) / 3.0,
-			(pointDebut.y + 2.0 * pointFin.y) / 3.0,
-			0));//pointD
-
-		ligneTemp.push_back(pointFin);
-
-		//Itérer sur les 4 nouvelles lignes trouvées
-		courbeKoch(ligneTemp[0], ligneTemp[1], nbIterations - 1);
-		courbeKoch(ligneTemp[1], ligneTemp[2], nbIterations - 1);
-		courbeKoch(ligneTemp[2], ligneTemp[3], nbIterations - 1);
-		courbeKoch(ligneTemp[3], ligneTemp[4], nbIterations - 1);
-	}
-}
-
-void Renderer::MatScale() // matrice d'échelle
-{
-	glm::mat4 eche;
-
-	eche[0][0] = sinf(testScale)*1.0f; eche[0][1] = 0.0f; eche[0][2] = 0.0f; eche[0][3] = 0.0f;
-	eche[1][0] = 0.0f; eche[1][1] = sinf(testScale)*1.0f; eche[1][2] = 0.0f; eche[1][3] = 0.0f;
-	eche[2][0] = 0.0f; eche[2][1] = 0.0f; eche[2][2] = 1.0f; eche[2][3] = 0.0f;
-	eche[3][0] = 0.0f; eche[3][1] = 0.0f; eche[3][2] = 0.0f; eche[3][3] = 1.0f;
-
-
-	glUniformMatrix4fv(matScale, 1, GL_TRUE, &eche[0][0]);
-}
-
-void Renderer::MatRotation() // matrice de rotation
-{
-	glm::mat4 rotat;
-
-	rotat[0][0] = cosf(testScale); rotat[0][1] = -sinf(testScale); rotat[0][2] = 0.0f; rotat[0][3] = 0.0f;
-	rotat[1][0] = sinf(testScale); rotat[1][1] = cosf(testScale); rotat[1][2] = 0.0f; rotat[1][3] = 0.0f;
-	rotat[2][0] = 0.0f; rotat[2][1] = 0.0f; rotat[2][2] = 1.0f; rotat[2][3] = 0.0f;
-	rotat[3][0] = 0.0f; rotat[3][1] = 0.0f; rotat[3][2] = 0.0f; rotat[3][3] = 1.0f;
-
-
-	glUniformMatrix4fv(matRotation, 1, GL_TRUE, &rotat[0][0]);
-}
-
-void Renderer::MatTranslation() // matrice de translation
-{
-	glm::mat4 trans;
-	trans = glm::mat4(1.0);
-
-
-
-	glUniformMatrix4fv(matTranslation, 1, GL_TRUE, &trans[0][0]);
-}
 
 
 void Renderer::drawRenderer(Scene::KeyFlags &flags)
 {
-	glUseProgram(kochShaderID);
+	/*glUseProgram(kochShaderID);*/
 
 	glClearColor(BackgroundColor[0], BackgroundColor[1], BackgroundColor[2], 0);// background
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	MatRotation();
-	MatScale();
-	MatTranslation();
+	//MatRotation();
+	//MatScale();
+	//MatTranslation();
 
-	glBindBuffer(GL_ARRAY_BUFFER, kochBufferID);
-	glBufferData(GL_ARRAY_BUFFER, Lines.size() * sizeof(glm::vec3), Lines.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	//glBindBuffer(GL_ARRAY_BUFFER, kochBufferID);
+	//glBufferData(GL_ARRAY_BUFFER, Lines.size() * sizeof(glm::vec3), Lines.data(), GL_STATIC_DRAW);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-	glBindBuffer(GL_ARRAY_BUFFER, kochBufferColorID);
-	glBufferData(GL_ARRAY_BUFFER, Colors.size() * sizeof(glm::vec3), Colors.data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	//glBindBuffer(GL_ARRAY_BUFFER, kochBufferColorID);
+	//glBufferData(GL_ARRAY_BUFFER, Colors.size() * sizeof(glm::vec3), Colors.data(), GL_STATIC_DRAW);
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
+	//glEnableVertexAttribArray(0);
+	//glEnableVertexAttribArray(1);
 
-	glLineWidth((GLfloat)epaisseurBordure);
-	glDrawArrays(GL_LINES, 0, Lines.size());
+	//glLineWidth((GLfloat)epaisseurBordure);
+	//glDrawArrays(GL_LINES, 0, Lines.size());
 
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
+	//glDisableVertexAttribArray(0);
+	//glDisableVertexAttribArray(1);
 
 	//glm::vec3 temp1(0.0f, -0.2f, 0.5f); glm::vec3 temp2(0.0028f, 0.0028f, 0.0028f);
 	scene.refreshScene(flags);
@@ -234,50 +137,57 @@ void Renderer::mouseMotion(const unsigned int & timestamp, const unsigned int & 
 
 void Renderer::screenShot(int x, int y, int w, int h, const char * filename)
 {
-	unsigned char *pixels = new unsigned char[w*h * 4]; // 4 bytes for RGBA
+	unsigned int size = w * h * 4;
+	unsigned char *pixels = new unsigned char[size]; // 4 bytes for RGBA
+	glReadBuffer(GL_FRONT);
 	glReadPixels(x, y, w, h, GL_BGRA, GL_UNSIGNED_BYTE, pixels);
 
-	SDL_Surface * surf = SDL_CreateRGBSurfaceFrom(pixels, w, h, 8 * 4, w * 4, 0, 0, 0, 0);
+	//vertical flip cause glRead goes backwards for some reason
+	unsigned char *flipPixels=new unsigned char[size];
+	for (int i = 0; i < w; ++i) {
+		for (int j = 0; j < h; ++j) {
+			for (int k = 0; k < 4; ++k) {
+				flipPixels[(i + j * w) * 4 + k] = pixels[(i + (h - 1 - j) * w) * 4 + k];
+			}
+		}
+	}
+
+	SDL_Surface * surf = SDL_CreateRGBSurfaceFrom(flipPixels, w, h, 8 * 4, w * 4, 0, 0, 0, 0);
 	SDL_SaveBMP(surf, filename);
 
 	SDL_FreeSurface(surf);
 	delete[] pixels;
+	delete[] flipPixels;
+	
 }
+
 
 Renderer::~Renderer()
 {
-	glDeleteProgram(kochShaderID);
-	glDeleteBuffers(1, &kochBufferID);
+	glDeleteProgram(primitiveShaderID);
+	glDeleteBuffers(1, &primitiveShaderID);
+	glDeleteProgram(modelShaderID);
+	glDeleteBuffers(1, &modelShaderID);
+	glDeleteProgram(texShaderID);
+	glDeleteBuffers(1, &texShaderID);
 }
 
 void Renderer::drawGUI()
 {
+	int sdlWindowWidth, sdlWindowHeight;
+	SDL_GetWindowSize(window, &sdlWindowWidth, &sdlWindowHeight);
+
 	ImGui_ImplSdlGL3_NewFrame(window);
-
-	// ********** Importer **********
-
-	ImGui::Begin("Importer");
-
-	static char fichier[1000] = "";
-	ImGui::InputText("Fichier", fichier, IM_ARRAYSIZE(fichier));
-
-	if (ImGui::Button("Importer image"))
-		importerImage(string(fichier));
-
-	ImGui::SameLine();
-	if (ImGui::Button("Importer modele 3D"))
-		importerModele(string(fichier));
-
-	ImGui::End();
 
 	// ********** Options de dessin **********
 
-	ImGui::Begin("Options de dessin");
+	ImGui::SetNextWindowPos(ImVec2(2.0f, 2.0f));
+	ImGui::Begin("Options de dessin", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
 	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
 	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
 	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
-	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0"))
+	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide\0"))
 		ptsDessin.clear();
 
 	ImGui::NewLine();
@@ -290,11 +200,222 @@ void Renderer::drawGUI()
 	if (ImGui::Combo("Curseur", &typeCurseur, "Defaut\0Point\0Points\0Croix\0Triangle\0Quad\0"))
 		updateCursor();
 
+	ImGui::NewLine();
+
+	if (ImGui::Button("Afficher texture PerlinNoise"))
+		imagePerlinNoise("Resources/Image/Couleur.png");
+
+	ImGui::SetNextWindowPos(ImVec2(2.0f, ImGui::GetCurrentWindow()->Size.y + 5.0f));
+	ImGui::End();
+
+	// ********** Importer / Exporter **********
+
+	ImGui::Begin("Importer / Exporter", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+	static char fichier[1000] = "";
+	ImGui::InputText("Fichier", fichier, IM_ARRAYSIZE(fichier));
+
+	if (ImGui::Button("Importer image"))
+		importImage(string(fichier));
+
+	if (ImGui::Button("Importer modele 3D"))
+		importModel(string(fichier));
+	if (ImGui::Button("Importer image pour composition"))
+		imageComposition(string(fichier));
+
+	if (ImGui::Button("Capture d'ecran"))
+	{
+		string fileName = fichier;
+		if (fileName == "")
+			fileName = "Screenshot.bmp";
+		else if (fileName.substr(fileName.length() - 4) != ".bmp")
+			fileName += ".bmp";
+
+		int w, h;
+		SDL_GetWindowSize(window, &w, &h);
+		screenShot(0, 0, w, h, fileName.c_str());
+	}
+
+	ImGui::End();
+
+	// ********** Graphe de scène **********
+
+	ImGui::SetNextWindowPos(ImVec2(sdlWindowWidth * 0.75f - 2.0f, 2.0f));
+	ImGui::SetNextWindowSize(ImVec2(sdlWindowWidth * 0.25f, sdlWindowHeight / 4.0f));
+	ImGui::Begin("Graphe de scene", (bool *)0, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+	if (ImGui::Button("Grouper"))
+		groupNodes();
+	
+	ImGui::SameLine();
+	if (ImGui::Button("Effacer"))
+		eraseNodes();
+	
+	std::shared_ptr<GroupObject> root = scene.getObjects();
+	bool nodeSelected = false;
+
+	ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_OpenOnArrow;
+	if (root->isSelected())
+	{
+		nodeFlags |= ImGuiTreeNodeFlags_Selected;
+		nodeSelected = true;
+	}
+	
+	bool nodeOpen = ImGui::TreeNodeEx("Racine", nodeFlags);
+	if (ImGui::IsItemClicked())
+	{
+		if (nodeSelected && ImGui::GetIO().KeyCtrl)
+			deselectNode(root);
+
+		else if (nodeSelected && !ImGui::GetIO().KeyCtrl)
+			deselectAllNodes();
+
+		else if (!nodeSelected && ImGui::GetIO().KeyCtrl)
+			selectNode(root, nullptr);
+
+		else
+		{
+			deselectAllNodes();
+			selectNode(root, nullptr);
+		}
+	}
+	if (nodeOpen)
+	{
+		drawTreeRecursive(root);
+		ImGui::TreePop();
+	}
+
+	if (selectedNodes.size() > 0)
+		ImGui::SetNextWindowPos(ImVec2(sdlWindowWidth - transformationsWindowWidth - 2.0f, ImGui::GetCurrentWindow()->Size.y + 5.0f));
+
+	ImGui::End();
+
+	// ********** Transformations **********
+
+	if (selectedNodes.size() > 0)
+	{
+		ImGui::Begin("Transformations", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+		if (ImGui::ColorEdit4("Couleur", &currentColor.x))
+			setColor();
+
+		glm::vec3 oldTranslation = currentTranslation;
+		if (ImGui::DragFloat3("Translation", &currentTranslation.x, 0.01f, -1000.0f, 1000.0f, "%.2f"))
+			addTranslation(currentTranslation - oldTranslation);
+
+		if (useQuaternion)
+		{
+			glm::vec4 current(currentRotationQuat.w, currentRotationQuat.x, currentRotationQuat.y, currentRotationQuat.z);
+			glm::vec4 old = current;
+
+			if (ImGui::DragFloat4("Rotation (quat)", &current.x, 0.01f, -1000.0f, 1000.0f, "%.2f"))
+			{
+				currentRotationQuat = glm::quat(current.x, current.y, current.z, current.w);
+				addRotation(glm::quat(current.x - old.x, current.y - old.y, current.z - old.z, current.w - old.w));
+			}
+		}
+		else
+		{
+			glm::vec3 oldRotation = currentRotation;
+			if (ImGui::DragFloat3("Rotation (deg)", &currentRotation.x, 0.1f, -359.9f, 359.9f, "%.1f"))
+				addRotation(currentRotation - oldRotation);
+		}
+
+		glm::vec3 oldScale = currentScale;
+		glm::vec3 newScale = currentScale;
+		if (ImGui::DragFloat3("Echelle", &newScale.x, 0.001f, 0.001f, 1000.0f, "%.3f"))
+		{
+			if (proportionalResizing)
+			{
+				float diff = (newScale.x / currentScale.x) * (newScale.y / currentScale.y) * (newScale.z / currentScale.z);
+				currentScale = glm::vec3(currentScale.x * diff, currentScale.y * diff, currentScale.z * diff);
+			}
+			else
+				currentScale = newScale;
+
+			addScale(currentScale - oldScale);
+		}
+
+		ImGui::Checkbox("Redimensionnement proportionnel", &proportionalResizing);
+		ImGui::Checkbox("Utiliser les quaternions", &useQuaternion);
+
+		transformationsWindowWidth = ImGui::GetCurrentWindow()->Size.x;
+		ImGui::End();
+	}
+
+	// ********** Échantillonnage d’image  **********
+
+	ImGui::SetNextWindowPos(ImVec2(2.0f, sdlWindowHeight - samplingWindowHeight - 2.0f));
+	ImGui::Begin("Echantillonnage d'image", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+	static char imageBase[1000] = "";
+	static char imageEchantillon[1000] = "";
+
+	ImGui::InputText("Image de base", imageBase, IM_ARRAYSIZE(imageBase));
+	ImGui::InputText("Image d'echantillonnage", imageEchantillon, IM_ARRAYSIZE(imageEchantillon));
+
+	ImGui::NewLine();
+
+	ImGui::SliderInt("Pourcentage de l'image a incorporer", &pourcentageImage, 0, 100);
+	ImGui::Combo("Position de depart", &postionEchantillonnage, "Haut-Gauche\0Haut-Milieu\0Milieu-Gauche\0Milieu-Milieu\0");
+
+	ImGui::NewLine();
+
+	if (ImGui::Button("Commencer Echantillonnage"))
+		echantillonnageImage(imageBase,imageEchantillon);
+
+	samplingWindowHeight = ImGui::GetCurrentWindow()->Size.y;
 	ImGui::End();
 
 	// Render
 	ImGui::Render();
 	ImGui_ImplSdlGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void Renderer::drawTreeRecursive(std::shared_ptr<GroupObject> objects)
+{
+	for (unsigned int i = 0; i < objects->size(); ++i)
+	{
+		std::shared_ptr<AbstractObject> obj = objects->getObjectAt(i);
+		std::shared_ptr<GroupObject> group = castToGroupObject(obj);
+
+		bool isGroup = group != nullptr;
+		bool nodeSelected = false;
+
+		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+		if (!isGroup)
+			flags |= ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
+
+		if (obj->isSelected())
+		{
+			flags |= ImGuiTreeNodeFlags_Selected;
+			nodeSelected = true;
+		}
+
+		bool nodeOpen = ImGui::TreeNodeEx(obj.get(), flags, obj->getName().c_str());
+		if (ImGui::IsItemClicked())
+		{
+			if (nodeSelected && ImGui::GetIO().KeyCtrl)
+				deselectNode(obj);
+
+			else if (nodeSelected && !ImGui::GetIO().KeyCtrl)
+				deselectAllNodes();
+
+			else if (!nodeSelected && ImGui::GetIO().KeyCtrl)
+				selectNode(obj, objects);
+
+			else
+			{
+				deselectAllNodes();
+				selectNode(obj, objects);
+			}
+		}
+		if (nodeOpen && isGroup)
+		{
+			drawTreeRecursive(group);
+			ImGui::TreePop();
+		}
+	}
 }
 
 void Renderer::drawCursor()
@@ -380,7 +501,7 @@ void Renderer::updateCursor()
 	}
 }
 
-void Renderer::importerImage(string fichier)
+void Renderer::importImage(string fichier)
 {
 	std::ifstream f(fichier);
 	if (!f.good())
@@ -390,14 +511,54 @@ void Renderer::importerImage(string fichier)
 	}
 	f.close();
 
-	QuadObject quad(fichier);
-	quad.Create(simpleTexShaderID);
-	scene.addObject(std::make_shared<QuadObject>(quad));
+	scene.addObject(std::make_shared<QuadObject>(fichier));
+	std::shared_ptr<GroupObject> objects= scene.getObjects();
+	objects->getObjectAt(objects->size()-1)->Create(texShaderID);
 }
 
-void Renderer::importerModele(string fichier)
+void Renderer::importModel(string file)
 {
-	// TO-DO
+	std::ifstream f(file);
+	if (!f.good())
+	{
+		cout << "File not found" << endl;
+		return;
+	}
+	f.close();
+
+	ModelObject object;
+	object.setModelToCreate(file);
+	object.Create(modelShaderID);
+	scene.addObject(std::make_shared<ModelObject>(object));
+	//Resources/megalodon/megalodon.FBX
+}
+void Renderer::imagePerlinNoise(string fichier)
+{
+	std::ifstream f(fichier);
+	if (!f.good())
+	{
+		cout << "Fichier inexistant" << endl;
+		return;
+	}
+	f.close();
+
+	scene.addObject(std::make_shared<QuadObject>(fichier,"perlinNoise"));
+	std::shared_ptr<GroupObject> objects= scene.getObjects();
+	objects->getObjectAt(objects->size()-1)->Create(texShaderID);
+}
+void Renderer::imageComposition(string fichier)
+{
+	std::ifstream f(fichier);
+	if (!f.good())
+	{
+		cout << "Fichier inexistant" << endl;
+		return;
+	}
+	f.close();
+
+	scene.addObject(std::make_shared<QuadObject>(fichier, "composition"));
+	std::shared_ptr<GroupObject> objects = scene.getObjects();
+	objects->getObjectAt(objects->size() - 1)->Create(texShaderID);
 }
 
 void Renderer::ajouterPtDessin(int x, int y)
@@ -412,51 +573,363 @@ void Renderer::ajouterPtDessin(int x, int y)
 
 	// Type de primitive
 	GLenum typePrimitive = -1;
+	string name = "Primitive";
+
 	switch (formeADessiner)
 	{
 	case 0: // Point
 		typePrimitive = GL_POINTS;
+		name = "Point";
 		break;
 
 	case 1: // Ligne
 		if (ptsDessin.size() >= 2)
+		{
 			typePrimitive = GL_LINES;
+			name = "Ligne";
+		}
+		break;
 
 	case 2: // Triangle
 		if (ptsDessin.size() >= 3)
+		{
 			typePrimitive = GL_TRIANGLES;
+			name = "Triangle";
+		}
 		break;
 
 	case 3: // Rectangle
 		if (ptsDessin.size() >= 2)
+		{
 			typePrimitive = GL_TRIANGLE_FAN;
+			name = "Rectangle";
+		}
 		break;
 
 	case 4: // Quad
 		if (ptsDessin.size() >= 4)
+		{
 			typePrimitive = GL_TRIANGLE_FAN;
+			name = "Quad";
+		}
 		break;
+
+	case 5: // Smiley
+		if (ptsDessin.size() >= 2)
+			ajouterSmiley();
+		break;
+
+	case 6: // Étoile
+		if (ptsDessin.size() >= 2)
+			ajouterEtoile();
+		break;
+
+	case 7://cube
+		addCube();
+		break;
+
+	case 8://pyramid
+		addSBPyramid();
+		break;
+
 	}
 
 	// Ajout de primitive
 	if (typePrimitive != -1)
 	{
-		PrimitiveObject primitive;
-		primitive.Create(primitiveShaderID);
-		primitive.setCouleurBordure(couleurBordure);
-		primitive.setCouleurRemplissage(couleurRemplissage);
-		primitive.setEpaisseurBordure(epaisseurBordure);
-		primitive.setTypePrimitive(typePrimitive);
+		std::shared_ptr<PrimitiveObject> primitive = std::make_shared<PrimitiveObject>();
+		primitive->Create(primitiveShaderID, name);
+		primitive->setCouleurBordure(couleurBordure);
+		primitive->setCouleurRemplissage(couleurRemplissage);
+		primitive->setEpaisseurBordure(epaisseurBordure);
+		primitive->setTypePrimitive(typePrimitive);
 
 		// Lorsqu'on dessine un rectangle, on donne les coordonnées de 2 sommets opposés
 		// On doit donc ajouter 2 sommets au dessin
 		if (formeADessiner == 3)
 			ptsDessin = { ptsDessin[0], glm::vec3(ptsDessin[0].x, ptsDessin[1].y, 0.0f), ptsDessin[1], glm::vec3(ptsDessin[1].x, ptsDessin[0].y, 0.0f) };
 
-		primitive.setVertices(ptsDessin);
+		primitive->setVertices(ptsDessin);
 
-		scene.addObject(std::make_shared<PrimitiveObject>(primitive));
+		scene.addObject(primitive);
 
 		ptsDessin.clear();
 	}
+}
+
+void Renderer::addCube() 
+{
+	scene.addObject(make_shared<CubeObject>());
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->setColor(couleurRemplissage);
+	ptsDessin.clear();
+}
+
+void Renderer::addSBPyramid()
+{
+	scene.addObject(make_shared<SBPyramidObject>());
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->setColor(couleurRemplissage);
+	ptsDessin.clear();
+}
+
+void Renderer::ajouterSmiley()
+{
+	const int nbPrimitives = 4;
+	std::shared_ptr<PrimitiveObject> primitives[nbPrimitives];
+	
+	// Initialisation
+	for (int i = 0; i < nbPrimitives; ++i)
+		primitives[i] = std::make_shared<PrimitiveObject>();
+
+	primitives[0]->Create(primitiveShaderID, "Smiley");
+	primitives[1]->Create(primitiveShaderID, "Oeil gauche");
+	primitives[2]->Create(primitiveShaderID, "Oeil droit");
+	primitives[3]->Create(primitiveShaderID, "Sourire");
+
+	for (int i = 0; i < nbPrimitives; i++)
+	{
+		primitives[i]->setCouleurBordure(couleurBordure);
+
+		if (i == 0)
+			primitives[i]->setCouleurRemplissage(couleurRemplissage);
+		else
+			primitives[i]->setCouleurRemplissage(couleurBordure);
+
+		primitives[i]->setEpaisseurBordure(epaisseurBordure);
+		primitives[i]->setTypePrimitive(GL_TRIANGLE_FAN);
+	}
+
+	glm::vec3 topLeft = { min(ptsDessin[0].x, ptsDessin[1].x), max(ptsDessin[0].y, ptsDessin[1].y), 0.0f };
+	glm::vec3 botRight = { max(ptsDessin[0].x, ptsDessin[1].x), min(ptsDessin[0].y, ptsDessin[1].y), 0.0f };
+	float w = botRight.x - topLeft.x;
+	float h = topLeft.y - botRight.y;
+
+	std::vector<glm::vec3> vertices;
+
+	// Carré principal
+	vertices = { topLeft, glm::vec3(topLeft.x, botRight.y, 0.0f), botRight, glm::vec3(botRight.x, topLeft.y, 0.0f) };
+	primitives[0]->setVertices(vertices);
+
+	// Oeil gauche
+	vertices = { 
+		glm::vec3(topLeft.x + 0.125f * w, topLeft.y - 0.125f * h, 0.0f),
+		glm::vec3(topLeft.x + 0.125f * w, topLeft.y - 0.375f * h, 0.0f),
+		glm::vec3(topLeft.x + 0.375f * w, topLeft.y - 0.375f * h, 0.0f),
+		glm::vec3(topLeft.x + 0.375f * w, topLeft.y - 0.125f * h, 0.0f)
+	};
+	primitives[1]->setVertices(vertices);
+
+	// Oeil droit
+	vertices = {
+		glm::vec3(botRight.x - 0.375f * w, topLeft.y - 0.125f * h, 0.0f),
+		glm::vec3(botRight.x - 0.375f * w, topLeft.y - 0.375f * h, 0.0f),
+		glm::vec3(botRight.x - 0.125f * w, topLeft.y - 0.375f * h, 0.0f),
+		glm::vec3(botRight.x - 0.125f * w, topLeft.y - 0.125f * h, 0.0f)
+	};
+	primitives[2]->setVertices(vertices);
+
+	// Sourire
+	vertices = {
+		glm::vec3(topLeft.x + 0.125f * w, botRight.y + 0.375f * h, 0.0f),
+		glm::vec3(topLeft.x + 0.25f * w, botRight.y + 0.125f * h, 0.0f),
+		glm::vec3(botRight.x - 0.25f * w, botRight.y + 0.125f * h, 0.0f),
+		glm::vec3(botRight.x - 0.125f * w, botRight.y + 0.375f * h, 0.0f)
+	};
+	primitives[3]->setVertices(vertices);
+
+	std::shared_ptr<GroupObject> smiley = std::make_shared<GroupObject>();
+	for (int i = 0; i < nbPrimitives; i++)
+		smiley->addObject(primitives[i]);
+
+	scene.addObject(smiley);
+
+	ptsDessin.clear();
+}
+
+void Renderer::ajouterEtoile()
+{
+	std::shared_ptr<PrimitiveObject> primitive = std::make_shared<PrimitiveObject>();
+	primitive->Create(primitiveShaderID, "Etoile");
+	primitive->setCouleurBordure(couleurBordure);
+	primitive->setEpaisseurBordure(epaisseurBordure);
+	primitive->setTypePrimitive(GL_LINES);
+	
+	glm::vec3 topLeft = { min(ptsDessin[0].x, ptsDessin[1].x), max(ptsDessin[0].y, ptsDessin[1].y), 0.0f };
+	glm::vec3 botRight = { max(ptsDessin[0].x, ptsDessin[1].x), min(ptsDessin[0].y, ptsDessin[1].y), 0.0f };
+	float w = botRight.x - topLeft.x;
+	float h = topLeft.y - botRight.y;
+
+	std::vector<glm::vec3> vertices;
+	vertices.push_back(topLeft);
+	vertices.push_back(botRight);
+	vertices.push_back(glm::vec3(topLeft.x + 0.5f * w, topLeft.y, 0.0f));
+	vertices.push_back(glm::vec3(topLeft.x + 0.5f * w, botRight.y, 0.0f));
+	vertices.push_back(glm::vec3(botRight.x, topLeft.y, 0.0f));
+	vertices.push_back(glm::vec3(topLeft.x, botRight.y, 0.0f));
+	vertices.push_back(glm::vec3(botRight.x, botRight.y + 0.5f * h, 0.0f));
+	vertices.push_back(glm::vec3(topLeft.x, botRight.y + 0.5f * h, 0.0f));
+
+	primitive->setVertices(vertices);
+
+	scene.addObject(primitive);
+
+	ptsDessin.clear();
+}
+
+void Renderer::deselectAllNodes()
+{
+	for (auto pair : selectedNodes)
+		pair.first->setSelected(false);
+
+	selectedNodes.clear();
+
+	updateTransformations();
+}
+
+void Renderer::deselectNode(std::shared_ptr<AbstractObject> obj)
+{
+	obj->setSelected(false);
+
+	for (auto it = selectedNodes.begin(); it != selectedNodes.end(); ++it)
+	{
+		if (it->first == obj)
+		{
+			selectedNodes.erase(it);
+			return;
+		}
+	}
+
+	updateTransformations();
+}
+
+void Renderer::selectNode(std::shared_ptr<AbstractObject> obj, std::shared_ptr<GroupObject> parent)
+{
+	obj->setSelected(true);
+	selectedNodes.push_back(std::make_pair(obj, parent));
+	updateTransformations();
+}
+
+std::shared_ptr<GroupObject> Renderer::castToGroupObject(std::shared_ptr<AbstractObject> obj)
+{
+	if (std::shared_ptr<GroupObject> casted = dynamic_pointer_cast<GroupObject>(obj))
+	{
+		return casted;
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+void Renderer::eraseNodes()
+{
+	for (auto pair : selectedNodes)
+	{
+		pair.first->setSelected(false);
+		if (pair.second != nullptr)
+			pair.second->deleteObject(pair.first);
+	}
+	selectedNodes.clear();
+}
+
+void Renderer::groupNodes()
+{
+	if (selectedNodes.size() == 0)
+		return;
+
+	// Add all selected objects to a child group object
+	GroupObject childGroup;
+	for (auto pair : selectedNodes)
+	{
+		if (pair.second == nullptr)
+			return;
+		childGroup.addObject(pair.first);
+	}
+
+	// Add child group object to the first selected object's parent
+	selectedNodes[0].second->addObject(std::make_shared<GroupObject>(childGroup));
+
+	// Erase original nodes
+	eraseNodes();
+}
+
+void Renderer::setColor()
+{
+	for (auto pair : selectedNodes)
+		pair.first->setColor(currentColor);
+}
+
+void Renderer::addTranslation(const glm::vec3 &v)
+{
+	for (auto pair : selectedNodes)
+		pair.first->addPosition(v);
+}
+
+void Renderer::addRotation(const glm::vec3 &v)
+{
+	for (auto pair : selectedNodes)
+		pair.first->addRotationDegree(v);
+}
+
+void Renderer::addRotation(const glm::quat &q)
+{
+	for (auto pair : selectedNodes)
+		pair.first->addRotationQuaternion(q);
+}
+
+void Renderer::addScale(const glm::vec3 &v)
+{
+	for (auto pair : selectedNodes)
+		pair.first->addScale(v);
+}
+
+void Renderer::updateTransformations()
+{
+	if (selectedNodes.size() == 1) // Un seul sélectionné
+	{
+		std::shared_ptr<AbstractObject> obj = selectedNodes[0].first;
+
+		currentColor = obj->getColor();
+		currentRotation = obj->getRotationDegree();
+		currentRotationQuat = obj->getRotationQuaternion();
+		currentTranslation = obj->getPosition();
+		currentScale = obj->getScale();
+	}
+	else // Aucun ou plusieurs sélectionnés
+	{
+		currentColor = glm::vec4(0, 0, 0, 1);
+		currentRotation = glm::vec3(0,0,0);
+		currentRotationQuat = glm::quat(1,0,0,0);
+		currentTranslation = glm::vec3(0, 0, 0);
+		currentScale = glm::vec3(1, 1, 1);
+	}
+}
+
+void Renderer::echantillonnageImage(string imageBase,string imageEchantillon)
+{
+	std::ifstream f(imageBase);
+	if (!f.good())
+	{
+		cout << "Fichier pour image de base inexistant" << endl;
+		return;
+	}
+	f.close();
+
+	std::ifstream f2(imageEchantillon);
+	if (!f2.good())
+	{
+		cout << "Fichier pour image d'echantillonnage inexistant" << endl;
+		return;
+	}
+	f2.close();
+
+	string s1 = to_string(postionEchantillonnage) + "|";
+	string s2 = to_string(pourcentageImage) + "|";
+	imageEchantillon = s1 + imageEchantillon;
+	imageEchantillon = s2 + imageEchantillon;
+
+	scene.addObject(std::make_shared<QuadObject>(imageBase, imageEchantillon));
+	std::shared_ptr<GroupObject> objects = scene.getObjects();
+	objects->getObjectAt(objects->size() - 1)->Create(texShaderID);
 }

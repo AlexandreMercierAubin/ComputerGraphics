@@ -12,7 +12,7 @@
 #include "ShaderLoader.h"
 #include "ModelShader.h"
 #include "SkyboxShader.h"
-#include "SimpleTexShader.h"
+#include "TexShader.h"
 #include "ModelObject.h"
 #include "GroupObject.h"
 
@@ -46,8 +46,9 @@ private:
 	GLuint bufferID;
 	GLuint bufferColorID;
 	//end of test
-	GroupObject objects;
+	std::shared_ptr<GroupObject> objects;
 	SkyboxObject skybox;
+
 public:
 	Scene(void);
 	~Scene(void);
@@ -57,6 +58,7 @@ public:
 	void drawSkybox();
 	void drawScene();
 	
+	glm::mat4 MatPerspective(const float &angleOfView, const float &aspect, const float &near, const float &far);
 
 	void mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel);
 
@@ -67,4 +69,6 @@ public:
 		bool flagUp, flagDown, flagLeft, flagRight, flagLeftMouse, flagRightMouse;
 	};
 	void refreshScene(KeyFlags flags);
+
+	std::shared_ptr<GroupObject> getObjects();
 };

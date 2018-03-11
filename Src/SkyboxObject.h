@@ -9,11 +9,10 @@ private:
 	glm::vec3 vertices[8];
 	glm::vec2 textureCube[8];
 	glm::vec4 color;
-	GLuint program;
 
 	GLuint loadCubemap(std::vector<char*> faces, GLint wrapS, GLint wrapT, GLint minFilter, GLint magFilter);
-	void createVerticesCube( GLfloat width, GLfloat height, GLfloat depth);
-	void createCube(GLfloat width, GLfloat height, GLfloat depth);
+	void createVertices( GLfloat width, GLfloat height, GLfloat depth);
+	void createForm(GLfloat width, GLfloat height, GLfloat depth);
 
 	const unsigned int indices[36] = {
 		0,1,3,//left
