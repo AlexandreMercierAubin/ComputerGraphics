@@ -51,6 +51,8 @@ void Renderer::initShaders()
 	primitiveShaderID = loader.CreateProgram(primitiveShader);
 	SimpleTexShader simpleTexShader;
 	simpleTexShaderID = loader.CreateProgram(simpleTexShader);
+	TexShader texShader;
+	texShaderID = loader.CreateProgram(texShader);
 	ModelShader modelShader;
 	modelShaderID = loader.CreateProgram(modelShader);
 	SimpleGPShader GPShader;
@@ -170,6 +172,8 @@ Renderer::~Renderer()
 	glDeleteBuffers(1, &simpleTexShaderID);
 	glDeleteProgram(modelShaderID);
 	glDeleteBuffers(1, &modelShaderID);
+	glDeleteProgram(texShaderID);
+	glDeleteBuffers(1, &texShaderID);
 }
 
 void Renderer::drawGUI()
@@ -213,7 +217,7 @@ void Renderer::drawGUI()
 	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
 	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
 	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
-	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Sphere"))
+	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide"))
 		ptsDessin.clear();
 
 	ImGui::NewLine();
@@ -481,7 +485,7 @@ void Renderer::importImage(string fichier)
 
 	scene.addObject(std::make_shared<QuadObject>(fichier));
 	std::shared_ptr<GroupObject> objects= scene.getObjects();
-	objects->getObjectAt(objects->size()-1)->Create(simpleTexShaderID);
+	objects->getObjectAt(objects->size()-1)->Create(texShaderID);
 }
 
 void Renderer::importModel(string file)
@@ -592,14 +596,12 @@ void Renderer::ajouterPtDessin(int x, int y)
 			ajouterEtoile();
 		break;
 
-	case 7:
-		//addCube();
-		scene.addObject(make_shared<CubeObject>());
-		scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
+	case 7://cube
+		addCube();
 		break;
 
-	case 8:
-		//addSphere();
+	case 8://pyramid
+		addSBPyramid();
 		break;
 
 	}
@@ -629,17 +631,17 @@ void Renderer::ajouterPtDessin(int x, int y)
 
 void Renderer::addCube() 
 {
-	CubeObject cube;
-	cube.Create(GPShaderID);
-	scene.addObject(make_shared<CubeObject>(cube));
+	scene.addObject(make_shared<CubeObject>());
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->setColor(couleurRemplissage);
 	ptsDessin.clear();
 }
 
-void Renderer::addSphere()
+void Renderer::addSBPyramid()
 {
-	CubeObject sphere;
-	sphere.Create(GPShaderID);
-	scene.addObject(make_shared<CubeObject>(sphere));
+	scene.addObject(make_shared<SBPyramidObject>());
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->setColor(couleurRemplissage);
 	ptsDessin.clear();
 }
 
