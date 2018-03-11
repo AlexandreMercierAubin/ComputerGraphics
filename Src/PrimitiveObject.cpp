@@ -42,6 +42,10 @@ void PrimitiveObject::Draw()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(0);
 
+	MatRotationDegree(program, rotationDegree);
+	MatTranslation(program, position);
+	MatScale(program, scale);
+
 	GLenum modeBordure = typePrimitive;
 
 	// Dessiner intérieur
