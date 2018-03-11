@@ -10,10 +10,6 @@ public:
 	void setModelToCreate(string path);
 	//virtual void SetColor(glm::vec4 color);
 private:
-	GLuint program;
 	string modelPath = "Resources/Goblin/fbx/Android_Man_Model.fbx";
-
 	Model model;
-	float diffuseIntensity;
-	float ambientIntensity;
 };

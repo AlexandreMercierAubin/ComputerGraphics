@@ -7,8 +7,8 @@ private:
 	GLuint VertexArray;
 	glm::vec3 vertices[8];
 
-	void createVerticesCube(GLfloat width, GLfloat height, GLfloat depth);
-	void createCube(GLfloat width, GLfloat height, GLfloat depth);
+	void createVertices(GLfloat width, GLfloat height, GLfloat depth);
+	void createForm(GLfloat width, GLfloat height, GLfloat depth);
 
 	const unsigned int indices[36] = {
 		0,1,3,//left
@@ -25,7 +25,6 @@ private:
 		0,4,6
 	};
 
-	std::vector<char*> faces;
 
 public:
 	virtual void Create(GLuint &Program);

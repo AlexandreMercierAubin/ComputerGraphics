@@ -14,14 +14,14 @@ void SBPyramidObject::Create(GLuint &Program)
 	glGenVertexArrays(1, &VertexArray);
 	glBindVertexArray(VertexArray);
 
-	createPyramid(width, height, depth);
+	createForm(width, height, depth);
 
 	glBindVertexArray(0);
 }
 
-void SBPyramidObject::createPyramid(GLfloat width, GLfloat height, GLfloat depth)
+void SBPyramidObject::createForm(GLfloat width, GLfloat height, GLfloat depth)
 {
-	createVerticesPyramid(width / 2, height / 2, depth / 2);
+	createVertices(width / 2, height / 2, depth / 2);
 	//creeTextureCube();
 
 	//Création et remplissage du buffer d'indices de la base:
@@ -32,7 +32,7 @@ void SBPyramidObject::createPyramid(GLfloat width, GLfloat height, GLfloat depth
 
 }
 
-void SBPyramidObject::createVerticesPyramid(GLfloat width, GLfloat height, GLfloat depth)
+void SBPyramidObject::createVertices(GLfloat width, GLfloat height, GLfloat depth)
 {
 	//Remplir la variable m_sommetsBase
 	vertices[0] = glm::vec3(0, 0 + height, 0);

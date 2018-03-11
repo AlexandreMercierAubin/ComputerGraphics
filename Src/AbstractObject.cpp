@@ -99,6 +99,8 @@ AbstractObject::AbstractObject()
 	rotationDegree = glm::vec3(0, 0, 0);
 	scale = glm::vec3(1, 1, 1);
 	color = glm::vec4(1, 1, 1, 1);
+	ambientIntensity = 1.0f;
+	diffuseIntensity = 1.0f;
 }
 
 void AbstractObject::setPosition(glm::vec3 pos)
