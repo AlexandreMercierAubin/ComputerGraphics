@@ -49,8 +49,6 @@ void Renderer::initShaders()
 	// Do not remove
 	PrimitiveShader primitiveShader;
 	primitiveShaderID = loader.CreateProgram(primitiveShader);
-	SimpleTexShader simpleTexShader;
-	simpleTexShaderID = loader.CreateProgram(simpleTexShader);
 	TexShader texShader;
 	texShaderID = loader.CreateProgram(texShader);
 	ModelShader modelShader;
@@ -168,8 +166,6 @@ Renderer::~Renderer()
 {
 	glDeleteProgram(primitiveShaderID);
 	glDeleteBuffers(1, &primitiveShaderID);
-	glDeleteProgram(simpleTexShaderID);
-	glDeleteBuffers(1, &simpleTexShaderID);
 	glDeleteProgram(modelShaderID);
 	glDeleteBuffers(1, &modelShaderID);
 	glDeleteProgram(texShaderID);
@@ -178,11 +174,43 @@ Renderer::~Renderer()
 
 void Renderer::drawGUI()
 {
+	int sdlWindowWidth, sdlWindowHeight;
+	SDL_GetWindowSize(window, &sdlWindowWidth, &sdlWindowHeight);
+
 	ImGui_ImplSdlGL3_NewFrame(window);
 
-	// ********** Importer **********
+	// ********** Options de dessin **********
 
-	ImGui::Begin("Importer");
+	ImGui::SetNextWindowPos(ImVec2(2.0f, 2.0f));
+	ImGui::Begin("Options de dessin", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
+	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
+	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
+	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide\0"))
+		ptsDessin.clear();
+
+	ImGui::NewLine();
+
+	ImGui::Checkbox("Utiliser skybox", &utiliserSkybox);
+	ImGui::ColorEdit3("Arriere-plan", &BackgroundColor.r);
+
+	ImGui::NewLine();
+
+	if (ImGui::Combo("Curseur", &typeCurseur, "Defaut\0Point\0Points\0Croix\0Triangle\0Quad\0"))
+		updateCursor();
+
+	ImGui::NewLine();
+
+	if (ImGui::Button("Afficher texture PerlinNoise"))
+		imagePerlinNoise("Resources/Image/Couleur.png");
+
+	ImGui::SetNextWindowPos(ImVec2(2.0f, ImGui::GetCurrentWindow()->Size.y + 5.0f));
+	ImGui::End();
+
+	// ********** Importer / Exporter **********
+
+	ImGui::Begin("Importer / Exporter", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
 	static char fichier[1000] = "";
 	ImGui::InputText("Fichier", fichier, IM_ARRAYSIZE(fichier));
@@ -210,36 +238,11 @@ void Renderer::drawGUI()
 
 	ImGui::End();
 
-	// ********** Options de dessin **********
-
-	ImGui::Begin("Options de dessin");
-
-	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
-	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
-	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
-	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide"))
-		ptsDessin.clear();
-
-	ImGui::NewLine();
-
-	ImGui::Checkbox("Utiliser skybox", &utiliserSkybox);
-	ImGui::ColorEdit3("Arriere-plan", &BackgroundColor.r);
-
-	ImGui::NewLine();
-
-	if (ImGui::Combo("Curseur", &typeCurseur, "Defaut\0Point\0Points\0Croix\0Triangle\0Quad\0"))
-		updateCursor();
-
-	ImGui::NewLine();
-
-	if (ImGui::Button("Afficher texture PerlinNoise"))
-		imagePerlinNoise("Resources/Image/Couleur.png");
-
-	ImGui::End();
-
 	// ********** Graphe de scène **********
 
-	ImGui::Begin("Graphe de scene");
+	ImGui::SetNextWindowPos(ImVec2(sdlWindowWidth * 0.75f - 2.0f, 2.0f));
+	ImGui::SetNextWindowSize(ImVec2(sdlWindowWidth * 0.25f, sdlWindowHeight / 4.0f));
+	ImGui::Begin("Graphe de scene", (bool *)0, ImGuiWindowFlags_HorizontalScrollbar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
 	if (ImGui::Button("Grouper"))
 		groupNodes();
@@ -282,21 +285,41 @@ void Renderer::drawGUI()
 		ImGui::TreePop();
 	}
 
+	if (selectedNodes.size() > 0)
+		ImGui::SetNextWindowPos(ImVec2(sdlWindowWidth - transformationsWindowWidth - 2.0f, ImGui::GetCurrentWindow()->Size.y + 5.0f));
+
 	ImGui::End();
 
 	// ********** Transformations **********
 
-	ImGui::Begin("Transformations");
-
 	if (selectedNodes.size() > 0)
 	{
+		ImGui::Begin("Transformations", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+		if (ImGui::ColorEdit4("Couleur", &currentColor.x))
+			setColor();
+
 		glm::vec3 oldTranslation = currentTranslation;
-		if (ImGui::DragFloat3("Translation", &currentTranslation.x, 0.1f, -1000.0f, 1000.0f, "%.1f"))
+		if (ImGui::DragFloat3("Translation", &currentTranslation.x, 0.01f, -1000.0f, 1000.0f, "%.2f"))
 			addTranslation(currentTranslation - oldTranslation);
 
-		glm::vec3 oldRotation = currentRotation;
-		if (ImGui::DragFloat3("Rotation (deg)", &currentRotation.x, 0.1f, -359.9f, 359.9f, "%.1f"))
-			addRotation(currentRotation - oldRotation);
+		if (useQuaternion)
+		{
+			glm::vec4 current(currentRotationQuat.w, currentRotationQuat.x, currentRotationQuat.y, currentRotationQuat.z);
+			glm::vec4 old = current;
+
+			if (ImGui::DragFloat4("Rotation (quat)", &current.x, 0.01f, -1000.0f, 1000.0f, "%.2f"))
+			{
+				currentRotationQuat = glm::quat(current.x, current.y, current.z, current.w);
+				addRotation(glm::quat(current.x - old.x, current.y - old.y, current.z - old.z, current.w - old.w));
+			}
+		}
+		else
+		{
+			glm::vec3 oldRotation = currentRotation;
+			if (ImGui::DragFloat3("Rotation (deg)", &currentRotation.x, 0.1f, -359.9f, 359.9f, "%.1f"))
+				addRotation(currentRotation - oldRotation);
+		}
 
 		glm::vec3 oldScale = currentScale;
 		glm::vec3 newScale = currentScale;
@@ -312,14 +335,18 @@ void Renderer::drawGUI()
 
 			addScale(currentScale - oldScale);
 		}
-		ImGui::Checkbox("Redimensionnement proportionnel", &proportionalResizing);
-	}
 
-	ImGui::End();
+		ImGui::Checkbox("Redimensionnement proportionnel", &proportionalResizing);
+		ImGui::Checkbox("Utiliser les quaternions", &useQuaternion);
+
+		transformationsWindowWidth = ImGui::GetCurrentWindow()->Size.x;
+		ImGui::End();
+	}
 
 	// ********** Échantillonnage d’image  **********
 
-	ImGui::Begin("Echantillonnage d'image");
+	ImGui::SetNextWindowPos(ImVec2(2.0f, sdlWindowHeight - samplingWindowHeight - 2.0f));
+	ImGui::Begin("Echantillonnage d'image", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
 	static char imageBase[1000] = "";
 	static char imageEchantillon[1000] = "";
@@ -337,6 +364,7 @@ void Renderer::drawGUI()
 	if (ImGui::Button("Commencer Echantillonnage"))
 		echantillonnageImage(imageBase,imageEchantillon);
 
+	samplingWindowHeight = ImGui::GetCurrentWindow()->Size.y;
 	ImGui::End();
 
 	// Render
@@ -516,7 +544,7 @@ void Renderer::imagePerlinNoise(string fichier)
 
 	scene.addObject(std::make_shared<QuadObject>(fichier,"perlinNoise"));
 	std::shared_ptr<GroupObject> objects= scene.getObjects();
-	objects->getObjectAt(objects->size()-1)->Create(simpleTexShaderID);
+	objects->getObjectAt(objects->size()-1)->Create(texShaderID);
 }
 void Renderer::imageComposition(string fichier)
 {
@@ -530,7 +558,7 @@ void Renderer::imageComposition(string fichier)
 
 	scene.addObject(std::make_shared<QuadObject>(fichier, "composition"));
 	std::shared_ptr<GroupObject> objects = scene.getObjects();
-	objects->getObjectAt(objects->size() - 1)->Create(simpleTexShaderID);
+	objects->getObjectAt(objects->size() - 1)->Create(texShaderID);
 }
 
 void Renderer::ajouterPtDessin(int x, int y)
@@ -822,57 +850,51 @@ void Renderer::groupNodes()
 	eraseNodes();
 }
 
+void Renderer::setColor()
+{
+	for (auto pair : selectedNodes)
+		pair.first->setColor(currentColor);
+}
+
 void Renderer::addTranslation(const glm::vec3 &v)
 {
 	for (auto pair : selectedNodes)
-	{
-		std::shared_ptr<AbstractObject> obj = pair.first;
-		glm::vec3 old = obj->getPosition();
-		obj->setPosition(old + v);
-	}
+		pair.first->addPosition(v);
 }
 
 void Renderer::addRotation(const glm::vec3 &v)
 {
 	for (auto pair : selectedNodes)
-	{
-		std::shared_ptr<AbstractObject> obj = pair.first;
-		glm::vec3 old = obj->getRotationDegree();
-		obj->setRotationDegree(old + v);
-	}
+		pair.first->addRotationDegree(v);
 }
 
 void Renderer::addRotation(const glm::quat &q)
 {
 	for (auto pair : selectedNodes)
-	{
-		std::shared_ptr<AbstractObject> obj = pair.first;
-		glm::quat old = obj->getRotationQuaternion();
-		obj->setRotationQuaternion(old + q);
-	}
+		pair.first->addRotationQuaternion(q);
 }
 
 void Renderer::addScale(const glm::vec3 &v)
 {
 	for (auto pair : selectedNodes)
-	{
-		std::shared_ptr<AbstractObject> obj = pair.first;
-		glm::vec3 old = obj->getScale();
-		obj->setScale(old + v);
-	}
+		pair.first->addScale(v);
 }
 
 void Renderer::updateTransformations()
 {
-	if (scene.getObjects()->size() > 0) 
+	if (selectedNodes.size() == 1) // Un seul sélectionné
 	{
-		currentRotation = scene.getObjects()->getObjectAt(0)->getRotationDegree();
-		currentRotationQuat = scene.getObjects()->getObjectAt(0)->getRotationQuaternion();
-		currentTranslation = scene.getObjects()->getObjectAt(0)->getPosition();
-		currentScale = scene.getObjects()->getObjectAt(0)->getScale();
+		std::shared_ptr<AbstractObject> obj = selectedNodes[0].first;
+
+		currentColor = obj->getColor();
+		currentRotation = obj->getRotationDegree();
+		currentRotationQuat = obj->getRotationQuaternion();
+		currentTranslation = obj->getPosition();
+		currentScale = obj->getScale();
 	}
-	else 
+	else // Aucun ou plusieurs sélectionnés
 	{
+		currentColor = glm::vec4(0, 0, 0, 1);
 		currentRotation = glm::vec3(0,0,0);
 		currentRotationQuat = glm::quat(1,0,0,0);
 		currentTranslation = glm::vec3(0, 0, 0);
@@ -905,5 +927,5 @@ void Renderer::echantillonnageImage(string imageBase,string imageEchantillon)
 
 	scene.addObject(std::make_shared<QuadObject>(imageBase, imageEchantillon));
 	std::shared_ptr<GroupObject> objects = scene.getObjects();
-	objects->getObjectAt(objects->size() - 1)->Create(simpleTexShaderID);
+	objects->getObjectAt(objects->size() - 1)->Create(texShaderID);
 }

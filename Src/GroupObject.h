@@ -39,6 +39,16 @@ public:
 		}
 	}
 
+	virtual void setPosition(glm::vec3 pos);
+	virtual void addPosition(const glm::vec3 &pos);
+	virtual void setRotationDegree(glm::vec3 rot);
+	virtual void addRotationDegree(const glm::vec3 &rot);
+	virtual void setRotationQuaternion(glm::quat quat);
+	virtual void addRotationQuaternion(const glm::quat &quat);
+	virtual void setScale(glm::vec3 scl);
+	virtual void addScale(const glm::vec3 &scl);
+	virtual void setColor(glm::vec4 Color);
+
 	GroupObject();
 	~GroupObject();
 private:
