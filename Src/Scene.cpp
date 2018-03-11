@@ -38,13 +38,6 @@ void Scene::setupScene()
 	skybox.Create(skyboxID);
 
 	objects = std::make_shared<GroupObject>();
-
-	objects->addObject(make_shared<ModelObject>());
-	objects->getObjectAt(0)->Create(shaderID);
-
-	objects->addObject(make_shared<QuadObject>("Resources/Image/Small-mario.png"));
-	objects->getObjectAt(1)->Create(texShaderID);
-
 }
 
 void Scene::addObject(shared_ptr<AbstractObject> object) 
