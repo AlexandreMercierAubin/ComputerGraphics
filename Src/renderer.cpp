@@ -864,12 +864,14 @@ void Renderer::addScale(const glm::vec3 &v)
 
 void Renderer::updateTransformations()
 {
-	if (scene.getObjects()->size() > 0) 
+	if (selectedNodes.size() > 0) 
 	{
-		currentRotation = scene.getObjects()->getObjectAt(0)->getRotationDegree();
-		currentRotationQuat = scene.getObjects()->getObjectAt(0)->getRotationQuaternion();
-		currentTranslation = scene.getObjects()->getObjectAt(0)->getPosition();
-		currentScale = scene.getObjects()->getObjectAt(0)->getScale();
+		std::shared_ptr<AbstractObject> obj = selectedNodes[0].first;
+
+		currentRotation = obj->getRotationDegree();
+		currentRotationQuat = obj->getRotationQuaternion();
+		currentTranslation = obj->getPosition();
+		currentScale = obj->getScale();
 	}
 	else 
 	{
