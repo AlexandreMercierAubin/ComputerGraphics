@@ -319,7 +319,7 @@ void Renderer::drawGUI()
 
 	// ********** Échantillonnage d’image  **********
 
-	ImGui::Begin("Echantillonnage d’image");
+	ImGui::Begin("Echantillonnage d'image");
 
 	static char imageBase[1000] = "";
 	static char imageEchantillon[1000] = "";
@@ -329,8 +329,8 @@ void Renderer::drawGUI()
 
 	ImGui::NewLine();
 
-	ImGui::SliderInt("Pourcentage de l'image à incorporer", &pourcentageImage, 0, 100);
-	ImGui::Combo("Position de départ", &postionEchantillonnage, "Haut-Gauche\0Haut-Milieu\0Milieu-Gauche\0Milieu-Milieu\0");
+	ImGui::SliderInt("Pourcentage de l'image a incorporer", &pourcentageImage, 0, 100);
+	ImGui::Combo("Position de depart", &postionEchantillonnage, "Haut-Gauche\0Haut-Milieu\0Milieu-Gauche\0Milieu-Milieu\0");
 
 	ImGui::NewLine();
 
