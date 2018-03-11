@@ -232,7 +232,7 @@ void Renderer::drawGUI()
 
 	ImGui::NewLine();
 
-	if (ImGui::Button("Afficher Texture PerlinNoise"))
+	if (ImGui::Button("Afficher texture PerlinNoise"))
 		imagePerlinNoise("Resources/Image/Couleur.png");
 
 	ImGui::End();
