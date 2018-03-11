@@ -860,7 +860,7 @@ void Renderer::addScale(const glm::vec3 &v)
 
 void Renderer::updateTransformations()
 {
-	if (selectedNodes.size() > 0) 
+	if (selectedNodes.size() == 1) // Un seul sélectionné
 	{
 		std::shared_ptr<AbstractObject> obj = selectedNodes[0].first;
 
@@ -869,7 +869,7 @@ void Renderer::updateTransformations()
 		currentTranslation = obj->getPosition();
 		currentScale = obj->getScale();
 	}
-	else 
+	else // Aucun ou plusieurs sélectionnés
 	{
 		currentRotation = glm::vec3(0,0,0);
 		currentRotationQuat = glm::quat(1,0,0,0);
