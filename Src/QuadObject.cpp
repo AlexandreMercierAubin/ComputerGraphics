@@ -92,6 +92,8 @@ void QuadObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 
 	glUseProgram(program);
 
+	AbstractObject::uniformColor(program, color);
+
 	GLuint MatView = glGetUniformLocation(program, "matView");
 	glUniformMatrix4fv(MatView, 1, GL_FALSE, &view[0][0]);
 	GLuint MatPerspective = glGetUniformLocation(program, "matPerspective");

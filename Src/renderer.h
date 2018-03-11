@@ -76,11 +76,13 @@ private:
 	int pourcentageImage = 0;
 
 	// Transformations
+	glm::vec4 currentColor;
 	glm::vec3 currentTranslation;
 	glm::vec3 currentRotation;
 	glm::quat currentRotationQuat;
 	glm::vec3 currentScale;
 	bool proportionalResizing = true;
+	void setColor();
 	void addTranslation(const glm::vec3 &v);
 	void addRotation(const glm::vec3 &v);
 	void addRotation(const glm::quat &q);

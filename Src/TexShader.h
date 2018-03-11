@@ -11,10 +11,11 @@ in vec2 TexCoord;
 out vec4 color;
 
 uniform sampler2D text;
+uniform vec4 vColor;
 
 void main(void)
 {
-	color = texture(text, TexCoord);
+	color = texture(text, TexCoord)*vColor;
 }
 
 )";

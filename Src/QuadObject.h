@@ -9,7 +9,6 @@ private:
 	GLuint VertexArray;
 	GLuint textureID;
 	glm::vec3 vertices[4];
-	glm::vec4 color;
 	int angle;
 	const unsigned int indices[6] = {
 		2,3,0,//face
