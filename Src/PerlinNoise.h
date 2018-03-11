@@ -79,39 +79,35 @@ float PerlinNoiseValue(float x, float y, float res)
 	return Li1 + Cy * (Li2 - Li1);
 };
 
-void SurfacePerlinNoise(SDL_Surface *surf, int noise)
+void SurfacePerlinNoise(SDL_Surface *surf, float noise)
 {
 	float red, green, blue;
-	float  r = 53;
-	float  g = 122;
-	float  b = 183;
-	for (size_t i = 0; i < surf->w; i++)
+	float  r = 53.0f;
+	float  g = 122.0f;
+	float  b = 183.0f;
+	for (float i = 0; i < surf->w; i++)
 	{
-		for (size_t j = 0; j < surf->h; j++)
+		for (float j = 0; j < surf->h; j++)
 		{
 			red = (r * PerlinNoiseValue(i, j, noise)) + r;
 			green = (g * PerlinNoiseValue(i, j, noise)) + g;
 			blue = (b * PerlinNoiseValue(i, j, noise)) + b;
-			putpixel(surf, i, j, SDL_MapRGB(surf->format, (red <= 255) ? red : 255, (green <= 255) ? green : 255, (blue <= 255) ? blue : 255));
+			putpixel(surf, i, j, SDL_MapRGB(surf->format, (red <= 255.0f) ? (Uint8)red : 255, (green <= 255.0f) ? (Uint8)green : 255, (blue <= 255.0f) ? (Uint8)blue : 255));
 		}
 	}
 };
 
-void SurfaceCompositionImagePerlinNoise(SDL_Surface *surf, int noise)
+void SurfaceCompositionImagePerlinNoise(SDL_Surface *surf, float noise)
 {
-	uint8_t r;
-	uint8_t g;
-	uint8_t b;
-
-	for (size_t i = 0; i < surf->w; i++)
+	for (int i = 0; i < surf->w; i++)
 	{
 		
-		for (size_t j = 0; j < surf->h; j++)
+		for (int j = 0; j < surf->h; j++)
 		{
 
-			unsigned int *ptr = (unsigned int*)surf->pixels;
+			float *ptr = (float*)surf->pixels;
 			int lineoffset = j * (surf->pitch / 4);
-			ptr[lineoffset + i] = ptr[lineoffset + i] * (PerlinNoiseValue(i, j, noise)*255);
+			ptr[lineoffset + i] = ptr[lineoffset + i] * (PerlinNoiseValue((float)i, (float)j, noise)*255.0f);
 
 			//putpixel(surf, i, j, SDL_MapRGB(surf->format, r ,g ,b));
 		}
