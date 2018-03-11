@@ -41,6 +41,8 @@ protected:
 	glm::quat rotationQuat;
 	glm::vec3 position;
 	glm::vec3 scale;
+	float diffuseIntensity;
+	float ambientIntensity;
 
 	GLuint program;
 

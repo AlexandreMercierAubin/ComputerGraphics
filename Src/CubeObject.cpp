@@ -14,14 +14,14 @@ void CubeObject::Create(GLuint &Program)
 	glGenVertexArrays(1, &VertexArray);
 	glBindVertexArray(VertexArray);
 
-	createCube(width, height, depth);
+	createForm(width, height, depth);
 
 	glBindVertexArray(0);
 }
 
-void CubeObject::createCube(GLfloat width, GLfloat height, GLfloat depth)
+void CubeObject::createForm(GLfloat width, GLfloat height, GLfloat depth)
 {
-	createVerticesCube(width / 2, height / 2, depth / 2);
+	createVertices(width / 2, height / 2, depth / 2);
 	//creeTextureCube();
 
 	//Création et remplissage du buffer d'indices de la base:
@@ -32,7 +32,7 @@ void CubeObject::createCube(GLfloat width, GLfloat height, GLfloat depth)
 
 }
 
-void CubeObject::createVerticesCube(GLfloat width, GLfloat height, GLfloat depth)
+void CubeObject::createVertices(GLfloat width, GLfloat height, GLfloat depth)
 {
 	//Remplir la variable m_sommetsBase
 	vertices[0] = glm::vec3(0 - width, 0 - height, 0 - depth);
