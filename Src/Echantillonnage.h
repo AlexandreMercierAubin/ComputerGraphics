@@ -15,9 +15,9 @@ void SurfaceSampling(SDL_Surface *image, string texturePath) {
 	;
 	SDL_LockSurface(image);
 
-	for (size_t i = 0; i < w; i++)
+	for (int i = 0; i < w; i++)
 	{
-		for (size_t j = 0; j < h; j++) {
+		for (int j = 0; j < h; j++) {
 			if (position == 3)
 				putpixel(image, i + (image->w / 2), j + (image->h / 2), getpixel(imageEchantillon, i, j));
 			else if (position == 2)

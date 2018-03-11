@@ -24,16 +24,16 @@ void SkyboxObject::Create(GLuint &Program)
 	glGenVertexArrays(1, &VertexArray);
 	glBindVertexArray(VertexArray);
 
-	createCube(width, height, depth);
+	createForm(width, height, depth);
 
 	textureSkybox =  loadCubemap(faces, GL_TEXTURE_WRAP_S, GL_TEXTURE_WRAP_T, GL_TEXTURE_MIN_FILTER, GL_TEXTURE_MAG_FILTER);
 
 	glBindVertexArray(0);
 }
 
-void SkyboxObject::createCube(GLfloat width, GLfloat height, GLfloat depth)
+void SkyboxObject::createForm(GLfloat width, GLfloat height, GLfloat depth)
 {
-	createVerticesCube(width / 2, height / 2,depth/2);
+	createVertices(width / 2, height / 2,depth/2);
 	//creeTextureCube();
 
 	//Création et remplissage du buffer d'indices de la base:
@@ -44,7 +44,7 @@ void SkyboxObject::createCube(GLfloat width, GLfloat height, GLfloat depth)
 
 }
 
-void SkyboxObject::createVerticesCube(GLfloat width, GLfloat height, GLfloat depth)
+void SkyboxObject::createVertices(GLfloat width, GLfloat height, GLfloat depth)
 {
 	//Remplir la variable m_sommetsBase
 	vertices[0] = glm::vec3(0 - width, 0 - height, 0 - depth);

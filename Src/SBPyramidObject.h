@@ -5,10 +5,10 @@ class SBPyramidObject : public AbstractObject
 {
 private:
 	GLuint VertexArray;
-	glm::vec3 vertices[8];
+	glm::vec3 vertices[5];
 
-	void createVerticesPyramid(GLfloat width, GLfloat height, GLfloat depth);
-	void createPyramid(GLfloat width, GLfloat height, GLfloat depth);
+	void createVertices(GLfloat width, GLfloat height, GLfloat depth);
+	void createForm(GLfloat width, GLfloat height, GLfloat depth);
 
 	const unsigned int indices[18] = {
 		0,1,2,//top

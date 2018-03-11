@@ -11,8 +11,6 @@ void ModelObject::Create(GLuint &Program)
 
 	//default settings
 	scale = glm::vec3(0.0028f, 0.0028f, 0.0028f);
-	ambientIntensity = 0.9f;
-	diffuseIntensity = 0.9f;
 	model = Model(modelPath);
 
 }
