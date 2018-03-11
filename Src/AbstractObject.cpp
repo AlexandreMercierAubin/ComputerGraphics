@@ -107,6 +107,11 @@ void AbstractObject::setPosition(glm::vec3 pos)
 	position = pos;
 }
 
+void AbstractObject::addPosition(const glm::vec3 &pos)
+{
+	position += pos;
+}
+
 glm::vec3 AbstractObject::getPosition()
 {
 	return position;
@@ -116,6 +121,12 @@ void AbstractObject::setRotationDegree(glm::vec3 rot)
 {
 	rotationDegree = rot;
 	rotationQuat = glm::quat(rot);
+}
+
+void AbstractObject::addRotationDegree(const glm::vec3 &rot)
+{
+	rotationDegree += rot;
+	rotationQuat = glm::quat(rotationDegree);
 }
 
 glm::vec3 AbstractObject::getRotationDegree()
@@ -129,6 +140,12 @@ void AbstractObject::setRotationQuaternion(glm::quat quat)
 	rotationDegree = glm::eulerAngles(quat);
 }
 
+void AbstractObject::addRotationQuaternion(const glm::quat &quat)
+{
+	rotationQuat = glm::quat(rotationQuat.w + quat.w, rotationQuat.x + quat.x, rotationQuat.y + quat.y, rotationQuat.z + quat.z);
+	rotationDegree = glm::eulerAngles(rotationQuat);
+}
+
 glm::quat AbstractObject::getRotationQuaternion()
 {
 	return rotationQuat;
@@ -137,6 +154,11 @@ glm::quat AbstractObject::getRotationQuaternion()
 void AbstractObject::setScale(glm::vec3 scl)
 {
 	scale = scl;
+}
+
+void AbstractObject::addScale(const glm::vec3 &scl)
+{
+	scale += scl;
 }
 
 glm::vec3 AbstractObject::getScale()

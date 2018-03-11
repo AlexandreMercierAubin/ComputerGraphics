@@ -846,41 +846,25 @@ void Renderer::setColor()
 void Renderer::addTranslation(const glm::vec3 &v)
 {
 	for (auto pair : selectedNodes)
-	{
-		std::shared_ptr<AbstractObject> obj = pair.first;
-		glm::vec3 old = obj->getPosition();
-		obj->setPosition(old + v);
-	}
+		pair.first->addPosition(v);
 }
 
 void Renderer::addRotation(const glm::vec3 &v)
 {
 	for (auto pair : selectedNodes)
-	{
-		std::shared_ptr<AbstractObject> obj = pair.first;
-		glm::vec3 old = obj->getRotationDegree();
-		obj->setRotationDegree(old + v);
-	}
+		pair.first->addRotationDegree(v);
 }
 
 void Renderer::addRotation(const glm::quat &q)
 {
 	for (auto pair : selectedNodes)
-	{
-		std::shared_ptr<AbstractObject> obj = pair.first;
-		glm::quat old = obj->getRotationQuaternion();
-		obj->setRotationQuaternion(glm::quat(old.w + q.w, old.x + q.x, old.y + q.y, old.z + q.z));
-	}
+		pair.first->addRotationQuaternion(q);
 }
 
 void Renderer::addScale(const glm::vec3 &v)
 {
 	for (auto pair : selectedNodes)
-	{
-		std::shared_ptr<AbstractObject> obj = pair.first;
-		glm::vec3 old = obj->getScale();
-		obj->setScale(old + v);
-	}
+		pair.first->addScale(v);
 }
 
 void Renderer::updateTransformations()
