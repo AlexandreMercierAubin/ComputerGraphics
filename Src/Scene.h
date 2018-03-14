@@ -22,10 +22,12 @@ class Scene
 
 private:
 	struct objetMonde;
-	float sensitivity=0.2f;
-	float mouvementSpeed = 0.03f;
+	const float sensitivity=0.2f;
+	const float mouvementSpeed = 0.03f;
+	float viewAngle = 30.0f;
 
 	glm::mat4 MatView(bool staticPos);
+	glm::mat4 MatPerspective(const float &angleOfView, const float &aspect, const float &near, const float &far);
 	glm::mat4 perspective;
 	glm::mat4 view;
 
@@ -54,15 +56,16 @@ public:
 	~Scene(void);
 
 	void setupScene();
+	void setPerspective(const float &angleOfView, const float &aspect, const float &near, const float &far);
 
 	void drawSkybox();
 	void drawScene();
-	
-	glm::mat4 MatPerspective(const float &angleOfView, const float &aspect, const float &near, const float &far);
 
 	void mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel);
 
 	void addObject(shared_ptr<AbstractObject> object);
+
+	void dollyZoom(float dolly, float zoom);
 
 	struct KeyFlags
 	{

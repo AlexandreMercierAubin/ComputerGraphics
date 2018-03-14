@@ -22,7 +22,7 @@ void Scene::setupScene()
 
 	uniformCouleur = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
-	perspective = MatPerspective(glm::radians(30.0f),1200/800 ,0.1f, 100.0f);
+	perspective = MatPerspective(glm::radians(viewAngle),1200/800 ,0.1f, 100.0f);
 	view = MatView(false);
 
 	//test remove when done; change for an abstractobject array
@@ -38,6 +38,29 @@ void Scene::setupScene()
 	skybox.Create(skyboxID);
 
 	objects = std::make_shared<GroupObject>();
+	objects->addObject(make_shared<QuadObject>("Resources/Skybox/HandMadeSky_bk2.tga"));
+	objects->getObjectAt(0)->Create(texShaderID);
+	objects->getObjectAt(0)->setPosition(glm::vec3(0, 0, -2));
+	objects->getObjectAt(0)->setScale(glm::vec3(5, 5, 0));
+	objects->addObject(make_shared<QuadObject>("Resources/Image/Small-mario.png"));
+	objects->getObjectAt(1)->Create(texShaderID);
+	objects->getObjectAt(1)->setPosition(glm::vec3(0, 0, -1));
+
+
+	dollyZoom(1, -5);
+}
+
+void Scene::setPerspective(const float & angleOfView, const float & aspect, const float & near, const float &far)
+{
+	view = MatPerspective(angleOfView, aspect, near, far);
+}
+
+void Scene::dollyZoom(float dolly,float zoom) 
+{
+	position = position + direction * dolly;
+	viewAngle += zoom;
+	perspective = MatPerspective(glm::radians(viewAngle), 1200 / 800, 0.1f, 100.0f);
+	view = MatView(false);
 }
 
 void Scene::addObject(shared_ptr<AbstractObject> object) 
