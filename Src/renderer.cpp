@@ -95,7 +95,7 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 
 	//glm::vec3 temp1(0.0f, -0.2f, 0.5f); glm::vec3 temp2(0.0028f, 0.0028f, 0.0028f);
 	
-	scene.dollyZoom(0.001, 0.03);
+	scene.dollyZoom(-0.001, -0.013);
 	scene.refreshScene(flags);
 
 	if (utiliserSkybox)

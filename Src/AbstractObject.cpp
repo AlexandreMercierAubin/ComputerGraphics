@@ -22,7 +22,7 @@ void AbstractObject::uniformLight(GLuint &program, glm::vec3 &color, glm::vec3 &
 		"structLight.ambientIntensity"),
 		light.ambientIntensity);
 	glUniform1f(glGetUniformLocation(program,
-		"structLumiere. structLight.diffuseIntensity"),
+		"structLight.diffuseIntensity"),
 		light.diffuseIntensity);
 	glUniform3fv(glGetUniformLocation(program,
 		"structLight.direction"), 1,
