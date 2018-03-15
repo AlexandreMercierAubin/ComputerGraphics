@@ -43,10 +43,8 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 
 void Renderer::initShaders()
 {
-	//test, remove that 
 	Core::ShaderLoader loader;
 	
-	// Do not remove
 	PrimitiveShader primitiveShader;
 	primitiveShaderID = loader.CreateProgram(primitiveShader);
 	TexShader texShader;
@@ -59,7 +57,6 @@ void Renderer::initShaders()
 	curseur.Create(primitiveShaderID);
 	curseur.setCouleurRemplissage(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	curseur.setCouleurBordure(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-	// End do not remove
 
 }
 
@@ -67,35 +64,10 @@ void Renderer::initShaders()
 
 void Renderer::drawRenderer(Scene::KeyFlags &flags)
 {
-	/*glUseProgram(kochShaderID);*/
 
 	glClearColor(BackgroundColor[0], BackgroundColor[1], BackgroundColor[2], 0);// background
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//MatRotation();
-	//MatScale();
-	//MatTranslation();
-
-	//glBindBuffer(GL_ARRAY_BUFFER, kochBufferID);
-	//glBufferData(GL_ARRAY_BUFFER, Lines.size() * sizeof(glm::vec3), Lines.data(), GL_STATIC_DRAW);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	//glBindBuffer(GL_ARRAY_BUFFER, kochBufferColorID);
-	//glBufferData(GL_ARRAY_BUFFER, Colors.size() * sizeof(glm::vec3), Colors.data(), GL_STATIC_DRAW);
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	//glEnableVertexAttribArray(0);
-	//glEnableVertexAttribArray(1);
-
-	//glLineWidth((GLfloat)epaisseurBordure);
-	//glDrawArrays(GL_LINES, 0, Lines.size());
-
-	//glDisableVertexAttribArray(0);
-	//glDisableVertexAttribArray(1);
-
-	//glm::vec3 temp1(0.0f, -0.2f, 0.5f); glm::vec3 temp2(0.0028f, 0.0028f, 0.0028f);
 	
-	scene.dollyZoom(-0.001, -0.013);
 	scene.refreshScene(flags);
 
 	if (utiliserSkybox)

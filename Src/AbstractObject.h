@@ -7,7 +7,7 @@ class AbstractObject
 {
 public:
 	virtual void Create(GLuint &Program) {}
-	virtual void Draw(glm::mat4 &perspective, glm::mat4 &view) {}
+	virtual void Draw(glm::mat4 &projection, glm::mat4 &view) {}
 	virtual ~AbstractObject() {};
 	AbstractObject();
 	virtual void setPosition(glm::vec3 pos);

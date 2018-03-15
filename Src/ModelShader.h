@@ -56,7 +56,7 @@ in vec2 texCoord;
  
 uniform mat4 matView;
 uniform mat4 matTranslation;
-uniform mat4 matPerspective;
+uniform mat4 matProjection;
 uniform mat4 matRotation;
 uniform mat4 matScale;
 
@@ -66,7 +66,7 @@ out vec2 TexCoord;
 void main()
 {
 
-  gl_Position =  matPerspective*matView*matTranslation*matRotation*matScale*(vec4(position, 1.0));
+  gl_Position =  matProjection*matView*matTranslation*matRotation*matScale*(vec4(position, 1.0));
   normal = (matTranslation*matRotation*matScale*(vec4(in_normal, 0))).xyz;
   TexCoord = vec2(texCoord.x,texCoord.y);
 

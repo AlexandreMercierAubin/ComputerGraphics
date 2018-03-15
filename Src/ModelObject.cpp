@@ -15,14 +15,14 @@ void ModelObject::Create(GLuint &Program)
 
 }
 
-void ModelObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
+void ModelObject::Draw(glm::mat4 &projection, glm::mat4 &view)
 {
 
 	glUseProgram(program);
 	GLuint MatView = glGetUniformLocation(program, "matView");
 	glUniformMatrix4fv(MatView, 1, GL_FALSE, &view[0][0]);
-	GLuint MatPerspective = glGetUniformLocation(program, "matPerspective");
-	glUniformMatrix4fv(MatPerspective, 1, GL_FALSE, &perspective[0][0]);
+	GLuint MatProjection = glGetUniformLocation(program, "matProjection");
+	glUniformMatrix4fv(MatProjection, 1, GL_FALSE, &projection[0][0]);
 
 	MatRotationDegree(program,rotationDegree);//roll*pitch*yaw matrix with angles x,y,z
 	MatTranslation(program,position);
