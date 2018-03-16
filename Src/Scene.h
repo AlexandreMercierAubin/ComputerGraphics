@@ -26,9 +26,10 @@ private:
 	const float mouvementSpeed = 0.03f;
 	float viewAngle = 30.0f;
 
-	glm::mat4 MatView(bool staticPos);
-	glm::mat4 MatPerspective(const float &angleOfView, const float &aspect, const float &near, const float &far);
-	glm::mat4 perspective;
+	void MatPerspective(glm::mat4 &proj, const float &angleOfView, const float &aspect, const float &near, const float &far);
+	void MatOrthogonal(glm::mat4 &proj, const float &angleOfView, const float &aspect, const float &near, const float &far);
+	void MatView(glm::mat4 &matView,bool staticPos);
+	glm::mat4 projection;
 	glm::mat4 view;
 
 	glm::vec3 direction;
