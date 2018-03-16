@@ -20,13 +20,11 @@ void main()
 R"(#version 430 core 
 layout(location = 0) in vec3 position;
 
-uniform mat4 matTranslation;
-uniform mat4 matRotation;
-uniform mat4 matScale;
+uniform mat4 matModel;
 
 void main()
 {
-	gl_Position = matTranslation*matRotation*matScale*vec4(position, 1.0);
+	gl_Position = matModel*vec4(position, 1.0);
 }
 
 )";

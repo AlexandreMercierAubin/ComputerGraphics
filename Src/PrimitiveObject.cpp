@@ -50,9 +50,17 @@ void PrimitiveObject::Draw()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(0);
 
-	MatRotationDegree(program, rotationDegree);
-	MatTranslation(program, position);
-	MatScale(program, scale);
+	glm::mat4 r;
+	MatRotationDegree(program, r, rotationDegree);
+	glm::mat4 t;
+	MatTranslation(program, t, position);
+	glm::mat4 s;
+	MatScale(program, s, scale);
+
+	glm::mat4 model = t * r* s;
+
+	GLuint MatModel = glGetUniformLocation(program, "matModel");
+	glUniformMatrix4fv(MatModel, 1, GL_FALSE, &model[0][0]);
 
 	GLenum modeBordure = typePrimitive;
 

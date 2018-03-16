@@ -24,9 +24,17 @@ void ModelObject::Draw(glm::mat4 &projection, glm::mat4 &view)
 	GLuint MatProjection = glGetUniformLocation(program, "matProjection");
 	glUniformMatrix4fv(MatProjection, 1, GL_FALSE, &projection[0][0]);
 
-	MatRotationDegree(program,rotationDegree);//roll*pitch*yaw matrix with angles x,y,z
-	MatTranslation(program,position);
-	MatScale(program,scale);
+	glm::mat4 r;
+	MatRotationDegree(program, r, rotationDegree);
+	glm::mat4 t;
+	MatTranslation(program, t, position);
+	glm::mat4 s;
+	MatScale(program, s, scale);
+
+	glm::mat4 mModel = t * r* s;
+
+	GLuint MatModel = glGetUniformLocation(program, "matModel");
+	glUniformMatrix4fv(MatModel, 1, GL_FALSE, &mModel[0][0]);
 
 	AbstractObject::uniformColor(program, color);
 	AbstractObject::uniformLight(program, glm::vec3(1.0, 1.0, 1.0), glm::vec3(0,0,1), ambientIntensity, diffuseIntensity);
