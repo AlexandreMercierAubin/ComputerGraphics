@@ -22,7 +22,8 @@ void Scene::setupScene()
 
 	uniformCouleur = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
-	MatOrthogonal(projection,glm::radians(viewAngle),1200/800 ,0.1f, 100.0f);
+	projectionType = Perspective;
+	setProjection(projectionType,glm::radians(viewAngle),1200/800 ,0.1f, 100.0f);
 	MatView(view,false);
 
 	//test remove when done; change for an abstractobject array
@@ -48,18 +49,33 @@ void Scene::setupScene()
 
 }
 
-void Scene::setPerspective(const float & angleOfView, const float & aspect, const float & near, const float &far)
+void Scene::setProjection(PROJECTIONTYPE type,const float & angleOfView, const float & aspect, const float & near, const float &far)
 {
-	 MatPerspective(projection,angleOfView, aspect, near, far);
+	projectionType = type;
+	switch (type)
+	{
+	case Perspective:
+		MatPerspective(projection, angleOfView, aspect, near, far);
+		break;
+	case Orthographic:
+		MatOrthographic(projection, angleOfView, aspect, near, far);
+		break;
+	case InversePerspective:
+		MatInversePerspective(projection, angleOfView, aspect, near, far);
+		break;
+	}
+	
 }
 
 void Scene::dollyZoom(float dolly,float zoom) 
 {
 	position = position + direction * dolly;
 	viewAngle += zoom;
-	MatPerspective(projection,glm::radians(viewAngle), 1200 / 800, 0.1f, 100.0f);
+	setProjection(projectionType, glm::radians(viewAngle), 1200 / 800, 0.1f, 100.0f);
 	MatView(view,false);
 }
+
+
 
 void Scene::addObject(shared_ptr<AbstractObject> object) 
 {
@@ -147,9 +163,36 @@ void Scene::MatPerspective(glm::mat4 &proj,const float & angleOfView,const float
 	proj[1][0] = 0.0f; proj[1][1] = h; proj[1][2] = 0.0f; proj[1][3] = 0.0f;
 	proj[2][0] = 0.0f; proj[2][1] = 0.0f; proj[2][2] = q; proj[2][3] = -1.0f;
 	proj[3][0] = 0.0f; proj[3][1] = 0.0f; proj[3][2] = qn; proj[3][3] = 0.0f;
+
 }
 
-void Scene::MatOrthogonal(glm::mat4 & proj, const float & angleOfView, const float & aspect, const float & near, const float &far)
+void Scene::MatInversePerspective(glm::mat4 &proj, const float & angleOfView, const float &aspect, const float & near, const float &far)
+{
+	float xymax = near * tanf(angleOfView);
+	float ymin = -xymax;
+	float xmin = -xymax;
+
+	float width = xymax - xmin;
+	float height = xymax - ymin;
+
+	float depth = far - near;
+	float q = -(far + near) / depth;
+	float qn = -2 * (far * near) / depth;
+
+	float w = 2 * near / width;
+	w = w / aspect;
+	float h = 2 * near / height;
+
+	float scale = 1 / tanf(angleOfView);
+	proj[0][0] = w; proj[0][1] = 0.0f; proj[0][2] = 0.0f; proj[0][3] = 0.0f;
+	proj[1][0] = 0.0f; proj[1][1] = h; proj[1][2] = 0.0f; proj[1][3] = 0.0f;
+	proj[2][0] = 0.0f; proj[2][1] = 0.0f; proj[2][2] = q; proj[2][3] = -1.0f;
+	proj[3][0] = 0.0f; proj[3][1] = 0.0f; proj[3][2] = qn; proj[3][3] = 0.0f;
+
+	proj = glm::inverse(proj);
+}
+
+void Scene::MatOrthographic(glm::mat4 & proj, const float & angleOfView, const float & aspect, const float & near, const float &far)
 {
 	float xymax = near * tanf(angleOfView);
 	float ymin = -xymax;
