@@ -22,8 +22,9 @@ void Scene::setupScene()
 
 	uniformCouleur = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
-	perspective = MatPerspective(glm::radians(30.0f),1200/800 ,0.1f, 100.0f);
-	view = MatView(false);
+	projectionType = Perspective;
+	setProjection(projectionType,glm::radians(viewAngle),1200/800 ,0.1f, 100.0f);
+	MatView(view,false);
 
 	//test remove when done; change for an abstractobject array
 	Core::ShaderLoader loader;
@@ -38,14 +39,43 @@ void Scene::setupScene()
 	skybox.Create(skyboxID);
 
 	objects = std::make_shared<GroupObject>();
-
-	objects->addObject(make_shared<ModelObject>());
-	objects->getObjectAt(0)->Create(shaderID);
-
+	objects->addObject(make_shared<QuadObject>("Resources/Skybox/HandMadeSky_bk2.tga"));
+	objects->getObjectAt(0)->Create(texShaderID);
+	objects->getObjectAt(0)->setPosition(glm::vec3(0, 0, -2));
+	objects->getObjectAt(0)->setScale(glm::vec3(5, 5, 0));
 	objects->addObject(make_shared<QuadObject>("Resources/Image/Small-mario.png"));
 	objects->getObjectAt(1)->Create(texShaderID);
+	objects->getObjectAt(1)->setPosition(glm::vec3(0, 0, -1));
 
 }
+
+void Scene::setProjection(PROJECTIONTYPE type,const float & angleOfView, const float & aspect, const float & near, const float &far)
+{
+	projectionType = type;
+	switch (type)
+	{
+	case Perspective:
+		MatPerspective(projection, angleOfView, aspect, near, far);
+		break;
+	case Orthographic:
+		MatOrthographic(projection, angleOfView, aspect, near, far);
+		break;
+	case InversePerspective:
+		MatInversePerspective(projection, angleOfView, aspect, near, far);
+		break;
+	}
+	
+}
+
+void Scene::dollyZoom(float dolly,float zoom) 
+{
+	position = position + direction * dolly;
+	viewAngle += zoom;
+	setProjection(projectionType, glm::radians(viewAngle), 1200 / 800, 0.1f, 100.0f);
+	MatView(view,false);
+}
+
+
 
 void Scene::addObject(shared_ptr<AbstractObject> object) 
 {
@@ -75,14 +105,13 @@ void Scene::refreshScene(KeyFlags flags)
 			position += mouvementSpeed * glm::normalize(Left);
 
 		}
-		view = MatView(false);
+		MatView(view,false);
 	}
 }
 
 
-glm::mat4 Scene::MatView(bool staticPos)
+void Scene::MatView(glm::mat4 &matView, bool staticPos)
 {
-	glm::mat4 view;
 	glm::vec3 front;
 	glm::vec3 tempPos;
 
@@ -103,20 +132,17 @@ glm::mat4 Scene::MatView(bool staticPos)
 		tempPos = position;
 	}
 
-	view = glm::lookAt(tempPos, direction + tempPos, orientation);
-	return view;
+	matView = glm::lookAt(tempPos, direction + tempPos, orientation);
 }
 
 
 void Scene::drawScene()
 {
-	objects->Draw(perspective,view);
+	objects->Draw(projection,view);
 }
 
-glm::mat4 Scene::MatPerspective(const float & angleOfView,const float &aspect, const float & near, const float &far)
+void Scene::MatPerspective(glm::mat4 &proj,const float & angleOfView,const float &aspect, const float & near, const float &far)
 {
-	glm::mat4 pers;
-
 	float xymax = near * tanf(angleOfView);
 	float ymin = -xymax;
 	float xmin = -xymax;
@@ -133,12 +159,61 @@ glm::mat4 Scene::MatPerspective(const float & angleOfView,const float &aspect, c
 	float h = 2 * near / height;
 
 	float scale = 1 / tanf(angleOfView);
-	pers[0][0] = w; pers[0][1] = 0.0f; pers[0][2] = 0.0f; pers[0][3] = 0.0f;
-	pers[1][0] = 0.0f; pers[1][1] = h; pers[1][2] = 0.0f; pers[1][3] = 0.0f;
-	pers[2][0] = 0.0f; pers[2][1] = 0.0f; pers[2][2] = q; pers[2][3] = -1;
-	pers[3][0] = 0.0f; pers[3][1] = 0.0f; pers[3][2] = qn; pers[3][3] = 0;
+	proj[0][0] = w; proj[0][1] = 0.0f; proj[0][2] = 0.0f; proj[0][3] = 0.0f;
+	proj[1][0] = 0.0f; proj[1][1] = h; proj[1][2] = 0.0f; proj[1][3] = 0.0f;
+	proj[2][0] = 0.0f; proj[2][1] = 0.0f; proj[2][2] = q; proj[2][3] = -1.0f;
+	proj[3][0] = 0.0f; proj[3][1] = 0.0f; proj[3][2] = qn; proj[3][3] = 0.0f;
 
-	return pers;
+}
+
+void Scene::MatInversePerspective(glm::mat4 &proj, const float & angleOfView, const float &aspect, const float & near, const float &far)
+{
+	float xymax = near * tanf(angleOfView);
+	float ymin = -xymax;
+	float xmin = -xymax;
+
+	float width = xymax - xmin;
+	float height = xymax - ymin;
+
+	float depth = far - near;
+	float q = -(far + near) / depth;
+	float qn = -2 * (far * near) / depth;
+
+	float w = 2 * near / width;
+	w = w / aspect;
+	float h = 2 * near / height;
+
+	float scale = 1 / tanf(angleOfView);
+	proj[0][0] = w; proj[0][1] = 0.0f; proj[0][2] = 0.0f; proj[0][3] = 0.0f;
+	proj[1][0] = 0.0f; proj[1][1] = h; proj[1][2] = 0.0f; proj[1][3] = 0.0f;
+	proj[2][0] = 0.0f; proj[2][1] = 0.0f; proj[2][2] = q; proj[2][3] = -1.0f;
+	proj[3][0] = 0.0f; proj[3][1] = 0.0f; proj[3][2] = qn; proj[3][3] = 0.0f;
+
+	proj = glm::inverse(proj);
+}
+
+void Scene::MatOrthographic(glm::mat4 & proj, const float & angleOfView, const float & aspect, const float & near, const float &far)
+{
+	float xymax = near * tanf(angleOfView);
+	float ymin = -xymax;
+	float xmin = -xymax;
+
+	float width = xymax - xmin;
+	float height = xymax - ymin;
+
+	float depth = far - near;
+	float q = -2 / depth;
+	float qn = -(far + near) / depth;
+
+	float w = 2 / width;
+	//w = w / aspect;
+	float h = 2 / height;
+
+	float scale = 1 / tanf(angleOfView);
+	proj[0][0] = w; proj[0][1] = 0.0f; proj[0][2] = 0.0f; proj[0][3] = 0.0f;
+	proj[1][0] = 0.0f; proj[1][1] = h; proj[1][2] = 0.0f; proj[1][3] = 0.0f;
+	proj[2][0] = 0.0f; proj[2][1] = 0.0f; proj[2][2] = q; proj[2][3] = 0.0f;
+	proj[3][0] = 0.0f; proj[3][1] = 0.0f; proj[3][2] = qn; proj[3][3] = 1.0f;
 }
 
 void Scene::mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel)
@@ -156,13 +231,13 @@ void Scene::mouseMotion(const unsigned int & timestamp, const unsigned int & win
 	{
 		pitch -= yRel;
 	}
-	view = MatView(false);
+	MatView(view,false);
 }
 
 
 void Scene::drawSkybox()
 {
-	skybox.Draw(perspective,view);
+	skybox.Draw(projection,view);
 }
 
 std::shared_ptr<GroupObject> Scene::getObjects()

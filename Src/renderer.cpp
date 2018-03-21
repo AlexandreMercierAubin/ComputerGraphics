@@ -43,10 +43,8 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 
 void Renderer::initShaders()
 {
-	//test, remove that 
 	Core::ShaderLoader loader;
 	
-	// Do not remove
 	PrimitiveShader primitiveShader;
 	primitiveShaderID = loader.CreateProgram(primitiveShader);
 	TexShader texShader;
@@ -59,7 +57,6 @@ void Renderer::initShaders()
 	curseur.Create(primitiveShaderID);
 	curseur.setCouleurRemplissage(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	curseur.setCouleurBordure(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-	// End do not remove
 
 }
 
@@ -67,33 +64,10 @@ void Renderer::initShaders()
 
 void Renderer::drawRenderer(Scene::KeyFlags &flags)
 {
-	/*glUseProgram(kochShaderID);*/
 
 	glClearColor(BackgroundColor[0], BackgroundColor[1], BackgroundColor[2], 0);// background
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//MatRotation();
-	//MatScale();
-	//MatTranslation();
-
-	//glBindBuffer(GL_ARRAY_BUFFER, kochBufferID);
-	//glBufferData(GL_ARRAY_BUFFER, Lines.size() * sizeof(glm::vec3), Lines.data(), GL_STATIC_DRAW);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	//glBindBuffer(GL_ARRAY_BUFFER, kochBufferColorID);
-	//glBufferData(GL_ARRAY_BUFFER, Colors.size() * sizeof(glm::vec3), Colors.data(), GL_STATIC_DRAW);
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	//glEnableVertexAttribArray(0);
-	//glEnableVertexAttribArray(1);
-
-	//glLineWidth((GLfloat)epaisseurBordure);
-	//glDrawArrays(GL_LINES, 0, Lines.size());
-
-	//glDisableVertexAttribArray(0);
-	//glDisableVertexAttribArray(1);
-
-	//glm::vec3 temp1(0.0f, -0.2f, 0.5f); glm::vec3 temp2(0.0028f, 0.0028f, 0.0028f);
+	
 	scene.refreshScene(flags);
 
 	if (utiliserSkybox)
@@ -637,21 +611,21 @@ void Renderer::ajouterPtDessin(int x, int y)
 	// Ajout de primitive
 	if (typePrimitive != -1)
 	{
-		PrimitiveObject primitive;
-		primitive.Create(primitiveShaderID, name);
-		primitive.setCouleurBordure(couleurBordure);
-		primitive.setCouleurRemplissage(couleurRemplissage);
-		primitive.setEpaisseurBordure(epaisseurBordure);
-		primitive.setTypePrimitive(typePrimitive);
+		std::shared_ptr<PrimitiveObject> primitive = std::make_shared<PrimitiveObject>();
+		primitive->Create(primitiveShaderID, name);
+		primitive->setCouleurBordure(couleurBordure);
+		primitive->setCouleurRemplissage(couleurRemplissage);
+		primitive->setEpaisseurBordure(epaisseurBordure);
+		primitive->setTypePrimitive(typePrimitive);
 
 		// Lorsqu'on dessine un rectangle, on donne les coordonnées de 2 sommets opposés
 		// On doit donc ajouter 2 sommets au dessin
 		if (formeADessiner == 3)
 			ptsDessin = { ptsDessin[0], glm::vec3(ptsDessin[0].x, ptsDessin[1].y, 0.0f), ptsDessin[1], glm::vec3(ptsDessin[1].x, ptsDessin[0].y, 0.0f) };
 
-		primitive.setVertices(ptsDessin);
+		primitive->setVertices(ptsDessin);
 
-		scene.addObject(std::make_shared<PrimitiveObject>(primitive));
+		scene.addObject(primitive);
 
 		ptsDessin.clear();
 	}
@@ -676,24 +650,28 @@ void Renderer::addSBPyramid()
 void Renderer::ajouterSmiley()
 {
 	const int nbPrimitives = 4;
-	PrimitiveObject primitives[nbPrimitives];
+	std::shared_ptr<PrimitiveObject> primitives[nbPrimitives];
+	
+	// Initialisation
+	for (int i = 0; i < nbPrimitives; ++i)
+		primitives[i] = std::make_shared<PrimitiveObject>();
 
-	primitives[0].Create(primitiveShaderID, "Smiley");
-	primitives[1].Create(primitiveShaderID, "Oeil gauche");
-	primitives[2].Create(primitiveShaderID, "Oeil droit");
-	primitives[3].Create(primitiveShaderID, "Sourire");
+	primitives[0]->Create(primitiveShaderID, "Smiley");
+	primitives[1]->Create(primitiveShaderID, "Oeil gauche");
+	primitives[2]->Create(primitiveShaderID, "Oeil droit");
+	primitives[3]->Create(primitiveShaderID, "Sourire");
 
 	for (int i = 0; i < nbPrimitives; i++)
 	{
-		primitives[i].setCouleurBordure(couleurBordure);
+		primitives[i]->setCouleurBordure(couleurBordure);
 
 		if (i == 0)
-			primitives[i].setCouleurRemplissage(couleurRemplissage);
+			primitives[i]->setCouleurRemplissage(couleurRemplissage);
 		else
-			primitives[i].setCouleurRemplissage(couleurBordure);
+			primitives[i]->setCouleurRemplissage(couleurBordure);
 
-		primitives[i].setEpaisseurBordure(epaisseurBordure);
-		primitives[i].setTypePrimitive(GL_TRIANGLE_FAN);
+		primitives[i]->setEpaisseurBordure(epaisseurBordure);
+		primitives[i]->setTypePrimitive(GL_TRIANGLE_FAN);
 	}
 
 	glm::vec3 topLeft = { min(ptsDessin[0].x, ptsDessin[1].x), max(ptsDessin[0].y, ptsDessin[1].y), 0.0f };
@@ -705,7 +683,7 @@ void Renderer::ajouterSmiley()
 
 	// Carré principal
 	vertices = { topLeft, glm::vec3(topLeft.x, botRight.y, 0.0f), botRight, glm::vec3(botRight.x, topLeft.y, 0.0f) };
-	primitives[0].setVertices(vertices);
+	primitives[0]->setVertices(vertices);
 
 	// Oeil gauche
 	vertices = { 
@@ -714,7 +692,7 @@ void Renderer::ajouterSmiley()
 		glm::vec3(topLeft.x + 0.375f * w, topLeft.y - 0.375f * h, 0.0f),
 		glm::vec3(topLeft.x + 0.375f * w, topLeft.y - 0.125f * h, 0.0f)
 	};
-	primitives[1].setVertices(vertices);
+	primitives[1]->setVertices(vertices);
 
 	// Oeil droit
 	vertices = {
@@ -723,7 +701,7 @@ void Renderer::ajouterSmiley()
 		glm::vec3(botRight.x - 0.125f * w, topLeft.y - 0.375f * h, 0.0f),
 		glm::vec3(botRight.x - 0.125f * w, topLeft.y - 0.125f * h, 0.0f)
 	};
-	primitives[2].setVertices(vertices);
+	primitives[2]->setVertices(vertices);
 
 	// Sourire
 	vertices = {
@@ -732,24 +710,24 @@ void Renderer::ajouterSmiley()
 		glm::vec3(botRight.x - 0.25f * w, botRight.y + 0.125f * h, 0.0f),
 		glm::vec3(botRight.x - 0.125f * w, botRight.y + 0.375f * h, 0.0f)
 	};
-	primitives[3].setVertices(vertices);
+	primitives[3]->setVertices(vertices);
 
-	GroupObject smiley;
+	std::shared_ptr<GroupObject> smiley = std::make_shared<GroupObject>();
 	for (int i = 0; i < nbPrimitives; i++)
-		smiley.addObject(std::make_shared<PrimitiveObject>(primitives[i]));
+		smiley->addObject(primitives[i]);
 
-	scene.addObject(std::make_shared<GroupObject>(smiley));
+	scene.addObject(smiley);
 
 	ptsDessin.clear();
 }
 
 void Renderer::ajouterEtoile()
 {
-	PrimitiveObject primitive;
-	primitive.Create(primitiveShaderID, "Etoile");
-	primitive.setCouleurBordure(couleurBordure);
-	primitive.setEpaisseurBordure(epaisseurBordure);
-	primitive.setTypePrimitive(GL_LINES);
+	std::shared_ptr<PrimitiveObject> primitive = std::make_shared<PrimitiveObject>();
+	primitive->Create(primitiveShaderID, "Etoile");
+	primitive->setCouleurBordure(couleurBordure);
+	primitive->setEpaisseurBordure(epaisseurBordure);
+	primitive->setTypePrimitive(GL_LINES);
 	
 	glm::vec3 topLeft = { min(ptsDessin[0].x, ptsDessin[1].x), max(ptsDessin[0].y, ptsDessin[1].y), 0.0f };
 	glm::vec3 botRight = { max(ptsDessin[0].x, ptsDessin[1].x), min(ptsDessin[0].y, ptsDessin[1].y), 0.0f };
@@ -766,9 +744,9 @@ void Renderer::ajouterEtoile()
 	vertices.push_back(glm::vec3(botRight.x, botRight.y + 0.5f * h, 0.0f));
 	vertices.push_back(glm::vec3(topLeft.x, botRight.y + 0.5f * h, 0.0f));
 
-	primitive.setVertices(vertices);
+	primitive->setVertices(vertices);
 
-	scene.addObject(std::make_shared<PrimitiveObject>(primitive));
+	scene.addObject(primitive);
 
 	ptsDessin.clear();
 }

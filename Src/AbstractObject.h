@@ -7,7 +7,7 @@ class AbstractObject
 {
 public:
 	virtual void Create(GLuint &Program) {}
-	virtual void Draw(glm::mat4 &perspective, glm::mat4 &view) {}
+	virtual void Draw(glm::mat4 &projection, glm::mat4 &view) {}
 	virtual ~AbstractObject() {};
 	AbstractObject();
 	virtual void setPosition(glm::vec3 pos);
@@ -34,11 +34,11 @@ protected:
 
 	virtual void uniformLight(GLuint &program, glm::vec3 &color, glm::vec3 &direction, float ambientIntensity, float diffuseIntensity);
 	virtual void uniformColor(GLuint &program, glm::vec4 &uniformColor);
-	virtual void MatRotation(const GLuint &program, const glm::vec3 &r);
-	virtual void MatRotationDegree(const GLuint &program, const glm::vec3 &r);
-	virtual void MatRotationQuaternion(const GLuint &program, const glm::quat &r);
-	virtual void MatTranslation(GLuint program, const glm::vec3 &position);
-	virtual void MatScale(GLuint program, const glm::vec3 &scale);
+	virtual void MatRotation(const GLuint &program, glm::mat4 &rotat, const glm::vec3 &r);
+	virtual void MatRotationDegree(const GLuint &program, glm::mat4 &rotat, const glm::vec3 &r);
+	virtual void MatRotationQuaternion(const GLuint &program, glm::mat4 &rotat, const glm::quat &r);
+	virtual void MatTranslation(GLuint program, glm::mat4 &trans, const glm::vec3 &position);
+	virtual void MatScale(GLuint program, glm::mat4 &scl, const glm::vec3 &scale);
 
 	glm::vec4 color;
 	glm::vec3 rotationDegree;

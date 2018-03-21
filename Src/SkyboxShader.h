@@ -26,14 +26,14 @@ void main()
 	std::string vshader =
 R"(#version 430 core 
 in vec3 position;
-uniform mat4 matPerspective;
+uniform mat4 matProjection;
 uniform mat4 matView;
 out vec3 TexCoords;
 
 void main() 
 {
 	
-	vec4 pos = matPerspective * matView * vec4(position, 1.0);
+	vec4 pos = matProjection * matView * vec4(position, 1.0);
 	gl_Position = pos.xyww;
 	TexCoords = normalize(position);
 }
