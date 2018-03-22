@@ -93,6 +93,9 @@ private:
 	void addScale(const glm::vec3 &v);
 	void updateTransformations();
 
+	// Camera
+	Scene::PROJECTIONTYPE projectionType = Scene::PROJECTIONTYPE::Perspective;
+
 	std::vector<std::pair<std::shared_ptr<AbstractObject>, std::shared_ptr<GroupObject>>> selectedNodes;
 	std::shared_ptr<GroupObject> castToGroupObject(std::shared_ptr<AbstractObject> obj);
 	void deselectAllNodes();
