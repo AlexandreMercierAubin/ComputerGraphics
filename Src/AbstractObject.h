@@ -6,10 +6,20 @@
 class AbstractObject
 {
 public:
+	struct Light
+	{
+		glm::vec3 color;
+		float ambientIntensity;
+		float diffuseIntensity;
+		glm::vec3 direction;
+	};
+
 	virtual void Create(GLuint &Program) {}
 	virtual void Draw(glm::mat4 &projection, glm::mat4 &view) {}
 	virtual ~AbstractObject() {};
 	AbstractObject();
+	virtual Light getLight();
+	virtual void setLight(glm::vec3 color, glm::vec3 direction, float ambientIntensity, float diffuseIntensity);
 	virtual void setPosition(glm::vec3 pos);
 	virtual void addPosition(const glm::vec3 &pos);
 	virtual glm::vec3 getPosition();
@@ -28,11 +38,11 @@ public:
 	void setSelected(bool value);
 	string getName();
 
-protected: 
+protected:
 
 	string name = "Abstract";
 
-	virtual void uniformLight(GLuint &program, glm::vec3 &color, glm::vec3 &direction, float ambientIntensity, float diffuseIntensity);
+	virtual void uniformLight(GLuint &program, const AbstractObject::Light &inLight);
 	virtual void uniformColor(GLuint &program, glm::vec4 &uniformColor);
 	virtual void MatRotation(const GLuint &program, glm::mat4 &rotat, const glm::vec3 &r);
 	virtual void MatRotationDegree(const GLuint &program, glm::mat4 &rotat, const glm::vec3 &r);
@@ -45,19 +55,15 @@ protected:
 	glm::quat rotationQuat;
 	glm::vec3 position;
 	glm::vec3 scale;
-	float diffuseIntensity;
-	float ambientIntensity;
 
 	GLuint program;
 
-	struct Light
-	{
-		glm::vec3 color;
-		float ambientIntensity;
-		float diffuseIntensity;
-		glm::vec3 direction;
-	};
-	
+
+	Light light;
+
 private:
 	bool selected = false;
+
+
+
 };

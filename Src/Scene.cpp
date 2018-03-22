@@ -46,7 +46,9 @@ void Scene::setupScene()
 	objects->addObject(make_shared<QuadObject>("Resources/Image/Small-mario.png"));
 	objects->getObjectAt(1)->Create(texShaderID);
 	objects->getObjectAt(1)->setPosition(glm::vec3(0, 0, -1));
-
+	objects->addObject(make_shared<ModelObject>());
+	objects->getObjectAt(2)->Create(shaderID);
+	objects->getObjectAt(2)->setPosition(glm::vec3(0, 0.0f, 0));
 }
 
 void Scene::setProjection(PROJECTIONTYPE type,const float & angleOfView, const float & aspect, const float & near, const float &far)

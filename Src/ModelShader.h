@@ -65,7 +65,7 @@ void main()
 {
 
   gl_Position =  matProjection*matView*matModel*(vec4(position, 1.0));
-  normal = (matModel*(vec4(in_normal, 0))).xyz;
+  normal = (matModel*(vec4(in_normal, 1))).xyz;
   TexCoord = vec2(texCoord.x,texCoord.y);
 
 }

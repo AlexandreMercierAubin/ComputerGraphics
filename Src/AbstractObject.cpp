@@ -1,6 +1,20 @@
 #pragma once
 #include "AbstractObject.h"
 
+AbstractObject::AbstractObject()
+{
+	position = glm::vec3(0.0f, 0.0f, 0.0f);
+	rotationDegree = glm::vec3(0.0f, 0.0f, 0.0f);
+	rotationQuat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+	scale = glm::vec3(1.0f, 1.0f, 1.0f);
+	color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	setLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, -1.0f, 0.0f), 0.2f, 1.0f);
+}
+
+AbstractObject::Light AbstractObject::getLight()
+{
+	return light;
+}
 
 void AbstractObject::uniformColor(GLuint &program, glm::vec4 &uniformColor)
 {
@@ -8,25 +22,19 @@ void AbstractObject::uniformColor(GLuint &program, glm::vec4 &uniformColor)
 	glUniform4fv(vecCouleur, 1, &uniformColor[0]);
 }
 
-void AbstractObject::uniformLight(GLuint &program, glm::vec3 &color, glm::vec3 &direction, float ambientIntensity, float diffuseIntensity)
+void AbstractObject::uniformLight(GLuint &program,const AbstractObject::Light &inLight)
 {
-	Light light;
-	light.color = color;
-	light.ambientIntensity = ambientIntensity;
-	light.diffuseIntensity = diffuseIntensity;
-	light.direction = direction;
-
 	glUniform3fv(glGetUniformLocation(program,
-		"structLight.color"), 1, &light.color[0]);
+		"structLight.color"), 1, &inLight.color[0]);
 	glUniform1f(glGetUniformLocation(program,
 		"structLight.ambientIntensity"),
-		light.ambientIntensity);
+		inLight.ambientIntensity);
 	glUniform1f(glGetUniformLocation(program,
 		"structLight.diffuseIntensity"),
-		light.diffuseIntensity);
+		inLight.diffuseIntensity);
 	glUniform3fv(glGetUniformLocation(program,
 		"structLight.direction"), 1,
-		&light.direction[0]);
+		&inLight.direction[0]);
 }
 
 void AbstractObject::MatRotation(const GLuint &program, glm::mat4 &rotat, const glm::vec3 &r) // matrice de rotation
@@ -74,15 +82,14 @@ void AbstractObject::MatRotationQuaternion(const GLuint &program, glm::mat4 &rot
 
 
 
-AbstractObject::AbstractObject()
+
+
+void AbstractObject::setLight(glm::vec3 color, glm::vec3 direction, float ambientIntensity, float diffuseIntensity)
 {
-	position = glm::vec3(0, 0, 0);
-	rotationDegree = glm::vec3(0, 0, 0);
-	rotationQuat = glm::quat(1, 0, 0, 0);
-	scale = glm::vec3(1, 1, 1);
-	color = glm::vec4(1, 1, 1, 1);
-	ambientIntensity = 1.0f;
-	diffuseIntensity = 1.0f;
+	light.ambientIntensity = ambientIntensity;
+	light.diffuseIntensity = diffuseIntensity;
+	light.direction = direction;
+	light.color = color;
 }
 
 void AbstractObject::setPosition(glm::vec3 pos)
