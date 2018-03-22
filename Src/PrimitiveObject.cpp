@@ -68,7 +68,11 @@ void PrimitiveObject::Draw()
 	if (typePrimitive != GL_POINTS && typePrimitive != GL_LINES)
 	{
 		uniformPrimitiveColor(couleurRemplissage);
+
+		glDisable(GL_CULL_FACE);
 		glDrawArrays(typePrimitive, 0, vertices.size());
+		glEnable(GL_CULL_FACE);
+
 		modeBordure = GL_LINE_LOOP;
 	}
 
