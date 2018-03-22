@@ -121,11 +121,15 @@ void SkyboxObject::Draw(glm::mat4 &projection, glm::mat4 &view)
 	glUniform1i(glGetUniformLocation(program, "skybox"), 0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureSkybox);
 
+	// Innverser temporairement l'occlusion pour que l'intérieur du cube soit visible au lieu de l'extérieur
+	glCullFace(GL_FRONT);
+
 	//Dessiner le cube
 	glBindVertexArray(VertexArray);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
+	glCullFace(GL_BACK);
 	glDepthMask(GL_TRUE);
 }
 

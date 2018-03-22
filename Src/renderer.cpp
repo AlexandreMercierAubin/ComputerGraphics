@@ -18,6 +18,7 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+	glEnable(GL_CULL_FACE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthFunc(GL_LEQUAL);
 
@@ -209,6 +210,21 @@ void Renderer::drawGUI()
 		SDL_GetWindowSize(window, &w, &h);
 		screenShot(0, 0, w, h, fileName.c_str());
 	}
+
+	ImGui::SetNextWindowPos(ImVec2(2.0f, ImGui::GetCurrentWindow()->Pos.y + ImGui::GetCurrentWindow()->Size.y + 3.0f));
+	ImGui::End();
+
+	// ********** Caméra **********
+
+	ImGui::Begin("Camera", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+	bool radioClicked = false;
+	radioClicked |= ImGui::RadioButton("Perspective", (int*)&projectionType, (int)Scene::PROJECTIONTYPE::Perspective);
+	radioClicked |= ImGui::RadioButton("Perspective inverse", (int*)&projectionType, (int)Scene::PROJECTIONTYPE::InversePerspective);
+	radioClicked |= ImGui::RadioButton("Orthographique", (int*)&projectionType, (int)Scene::PROJECTIONTYPE::Orthographic);
+
+	if (radioClicked)
+		scene.setProjection(projectionType);
 
 	ImGui::End();
 

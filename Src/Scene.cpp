@@ -23,7 +23,7 @@ void Scene::setupScene()
 	uniformCouleur = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
 	projectionType = Perspective;
-	setProjection(projectionType,glm::radians(viewAngle),1200/800 ,0.1f, 100.0f);
+	setProjection(projectionType);
 	MatView(view,false);
 
 	//test remove when done; change for an abstractobject array
@@ -51,7 +51,7 @@ void Scene::setupScene()
 	objects->getObjectAt(2)->setPosition(glm::vec3(0, 0.0f, 0));
 }
 
-void Scene::setProjection(PROJECTIONTYPE type,const float & angleOfView, const float & aspect, const float & near, const float &far)
+void Scene::setProjection(PROJECTIONTYPE type, const float & angleOfView, const float & aspect, const float & near, const float &far)
 {
 	projectionType = type;
 	switch (type)
@@ -73,7 +73,7 @@ void Scene::dollyZoom(float dolly,float zoom)
 {
 	position = position + direction * dolly;
 	viewAngle += zoom;
-	setProjection(projectionType, glm::radians(viewAngle), 1200 / 800, 0.1f, 100.0f);
+	setProjection(projectionType, glm::radians(viewAngle));
 	MatView(view,false);
 }
 
