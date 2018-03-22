@@ -22,7 +22,6 @@
 #include "SphereObject.h"
 #include "SBPyramidObject.h"
 #include "PrimitiveShader.h"
-#include "SimpleTexShader.h"
 #include "TexShader.h"
 #include "SimpleGPShader.h"
 
@@ -52,6 +51,9 @@ private:
 	std::vector<glm::vec3> Lines; 
 	std::vector<glm::vec3> Colors;
 
+	float transformationsWindowWidth = 0;
+	float samplingWindowHeight = 0;
+
 	float testScale;
 
 	void initShaders();
@@ -68,7 +70,6 @@ private:
 	PrimitiveObject curseur;
 
 	GLuint primitiveShaderID;
-	GLuint simpleTexShaderID;
 	GLuint GPShaderID;
 	GLuint modelShaderID;
 	GLuint texShaderID;
@@ -78,11 +79,14 @@ private:
 	int pourcentageImage = 0;
 
 	// Transformations
+	glm::vec4 currentColor;
 	glm::vec3 currentTranslation;
 	glm::vec3 currentRotation;
 	glm::quat currentRotationQuat;
 	glm::vec3 currentScale;
 	bool proportionalResizing = true;
+	bool useQuaternion = false;
+	void setColor();
 	void addTranslation(const glm::vec3 &v);
 	void addRotation(const glm::vec3 &v);
 	void addRotation(const glm::quat &q);

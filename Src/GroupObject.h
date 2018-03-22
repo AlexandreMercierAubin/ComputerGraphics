@@ -6,7 +6,7 @@
 class GroupObject : public AbstractObject
 {
 public:
-	virtual void Draw(glm::mat4 &perspective,glm::mat4 &view);
+	virtual void Draw(glm::mat4 &projection,glm::mat4 &view);
 	void addObject(std::shared_ptr<AbstractObject> object);
 	void deleteObjectAt(const int index);
 	void deleteObject(std::shared_ptr<AbstractObject> object);
@@ -38,6 +38,16 @@ public:
 			return false;
 		}
 	}
+
+	virtual void setPosition(glm::vec3 pos);
+	virtual void addPosition(const glm::vec3 &pos);
+	virtual void setRotationDegree(glm::vec3 rot);
+	virtual void addRotationDegree(const glm::vec3 &rot);
+	virtual void setRotationQuaternion(glm::quat quat);
+	virtual void addRotationQuaternion(const glm::quat &quat);
+	virtual void setScale(glm::vec3 scl);
+	virtual void addScale(const glm::vec3 &scl);
+	virtual void setColor(glm::vec4 Color);
 
 	GroupObject();
 	~GroupObject();

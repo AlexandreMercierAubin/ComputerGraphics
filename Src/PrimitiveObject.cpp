@@ -1,5 +1,11 @@
 #include "PrimitiveObject.h"
 
+void PrimitiveObject::uniformPrimitiveColor(const glm::vec4 &color)
+{
+	GLuint vecCouleur = glGetUniformLocation(program, "pColor");
+	glUniform4fv(vecCouleur, 1, &color[0]);
+}
+
 void PrimitiveObject::Create(GLuint &program)
 {
 	Create(program, "Primitive");
@@ -18,14 +24,14 @@ void PrimitiveObject::Create(GLuint &Program, string Name)
 	glGenVertexArrays(1, &vertexArray);
 }
 
-void PrimitiveObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
+void PrimitiveObject::Draw(glm::mat4 &projection, glm::mat4 &view)
 {
 	glUseProgram(program);
 
 	GLuint MatView = glGetUniformLocation(program, "matView");
 	glUniformMatrix4fv(MatView, 1, GL_FALSE, &view[0][0]);
-	GLuint MatPerspective = glGetUniformLocation(program, "matPerspective");
-	glUniformMatrix4fv(MatPerspective, 1, GL_FALSE, &perspective[0][0]);
+	GLuint MatProjection = glGetUniformLocation(program, "matProjection");
+	glUniformMatrix4fv(MatProjection, 1, GL_FALSE, &projection[0][0]);
 
 	Draw();
 }
@@ -35,6 +41,8 @@ void PrimitiveObject::Draw()
 	glUseProgram(program);
 	glBindVertexArray(vertexArray);
 
+	uniformColor(program, color);
+
 	GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
@@ -42,12 +50,24 @@ void PrimitiveObject::Draw()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(0);
 
+	glm::mat4 r;
+	MatRotationDegree(program, r, rotationDegree);
+	glm::mat4 t;
+	MatTranslation(program, t, position);
+	glm::mat4 s;
+	MatScale(program, s, scale);
+
+	glm::mat4 model = t * r* s;
+
+	GLuint MatModel = glGetUniformLocation(program, "matModel");
+	glUniformMatrix4fv(MatModel, 1, GL_FALSE, &model[0][0]);
+
 	GLenum modeBordure = typePrimitive;
 
 	// Dessiner intérieur
 	if (typePrimitive != GL_POINTS && typePrimitive != GL_LINES)
 	{
-		uniformColor(program, couleurRemplissage);
+		uniformPrimitiveColor(couleurRemplissage);
 		glDrawArrays(typePrimitive, 0, vertices.size());
 		modeBordure = GL_LINE_LOOP;
 	}
@@ -60,7 +80,7 @@ void PrimitiveObject::Draw()
 		else
 			glLineWidth((GLfloat)epaisseurBordure);
 
-		uniformColor(program, couleurBordure);
+		uniformPrimitiveColor(couleurBordure);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDrawArrays(modeBordure, 0, vertices.size());
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

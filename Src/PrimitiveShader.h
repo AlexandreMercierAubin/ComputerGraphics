@@ -6,11 +6,12 @@ class PrimitiveShader : public AbstractShader
 	std::string fshader =
 R"(#version 430 core
 out vec4 color;
+uniform vec4 pColor;
 uniform vec4 vColor;
 
 void main()
 {
-	color = vColor;
+	color = pColor * vColor;
 }
 
 )";
@@ -19,9 +20,11 @@ void main()
 R"(#version 430 core 
 layout(location = 0) in vec3 position;
 
+uniform mat4 matModel;
+
 void main()
 {
-	gl_Position = vec4(position, 1.0);
+	gl_Position = matModel*vec4(position, 1.0);
 }
 
 )";

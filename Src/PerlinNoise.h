@@ -92,7 +92,7 @@ void SurfacePerlinNoise(SDL_Surface *surf, float noise)
 			red = (r * PerlinNoiseValue(i, j, noise)) + r;
 			green = (g * PerlinNoiseValue(i, j, noise)) + g;
 			blue = (b * PerlinNoiseValue(i, j, noise)) + b;
-			putpixel(surf, i, j, SDL_MapRGB(surf->format, (red <= 255.0f) ? (Uint8)red : 255, (green <= 255.0f) ? (Uint8)green : 255, (blue <= 255.0f) ? (Uint8)blue : 255));
+			putpixel(surf, (int)i, (int)j, SDL_MapRGB(surf->format, (red <= 255.0f) ? (Uint8)red : 255, (green <= 255.0f) ? (Uint8)green : 255, (blue <= 255.0f) ? (Uint8)blue : 255));
 		}
 	}
 };

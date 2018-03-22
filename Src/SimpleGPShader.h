@@ -26,15 +26,13 @@ R"(#version 430 core
 in vec3 position;
 
 uniform mat4 matView;
-uniform mat4 matTranslation;
-uniform mat4 matPerspective;
-uniform mat4 matRotation;
-uniform mat4 matScale;
+uniform mat4 matProjection;
+uniform mat4 matModel;
 
 
 void main()
 {
-	gl_Position = matPerspective*matView*matTranslation*matRotation*matScale*vec4(position, 1.0);
+	gl_Position = matProjection*matView*matModel*vec4(position, 1.0);
 }
 
 )";

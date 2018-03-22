@@ -11,9 +11,11 @@ private:
 	GLenum typePrimitive;
 	std::vector<glm::vec3> vertices;
 
+	void uniformPrimitiveColor(const glm::vec4 &color);
+
 public:
 	virtual void Create(GLuint &program);
-	virtual void Draw(glm::mat4 &perspective, glm::mat4 &view);
+	virtual void Draw(glm::mat4 &projection, glm::mat4 &view);
 	~PrimitiveObject();
 
 	void Create(GLuint &program, string name);
