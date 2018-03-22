@@ -6,7 +6,7 @@
 class GroupObject : public AbstractObject
 {
 public:
-	virtual void Draw(glm::mat4 &projection,glm::mat4 &view);
+	virtual void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos);
 	void addObject(std::shared_ptr<AbstractObject> object);
 	void deleteObjectAt(const int index);
 	void deleteObject(std::shared_ptr<AbstractObject> object);

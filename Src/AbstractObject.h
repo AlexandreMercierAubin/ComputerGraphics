@@ -12,14 +12,15 @@ public:
 		float ambientIntensity;
 		float diffuseIntensity;
 		glm::vec3 direction;
+		glm::vec3 position;
 	};
 
 	virtual void Create(GLuint &Program) {}
-	virtual void Draw(glm::mat4 &projection, glm::mat4 &view) {}
+	virtual void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos) {}
 	virtual ~AbstractObject() {};
 	AbstractObject();
 	virtual Light getLight();
-	virtual void setLight(glm::vec3 color, glm::vec3 direction, float ambientIntensity, float diffuseIntensity);
+	virtual void setLight(glm::vec3 color, glm::vec3 direction, glm::vec3 position, float ambientIntensity, float diffuseIntensity);
 	virtual void setPosition(glm::vec3 pos);
 	virtual void addPosition(const glm::vec3 &pos);
 	virtual glm::vec3 getPosition();
@@ -44,6 +45,7 @@ protected:
 
 	virtual void uniformLight(GLuint &program, const AbstractObject::Light &inLight);
 	virtual void uniformColor(GLuint &program, glm::vec4 &uniformColor);
+	virtual void uniformCameraPosition(GLuint &program, glm::vec3 &uniformCameraPos);
 	virtual void MatRotation(const GLuint &program, glm::mat4 &rotat, const glm::vec3 &r);
 	virtual void MatRotationDegree(const GLuint &program, glm::mat4 &rotat, const glm::vec3 &r);
 	virtual void MatRotationQuaternion(const GLuint &program, glm::mat4 &rotat, const glm::quat &r);

@@ -1,12 +1,12 @@
 #pragma once
 #include "GroupObject.h"
 
-void GroupObject::Draw(glm::mat4 &projection, glm::mat4 &view)
+void GroupObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos)
 {
 	//tranfers the draw call
 	for (auto it = vObject.begin(); it != vObject.end(); ++it)
 	{
-		(*it)->Draw(projection, view);
+		(*it)->Draw(projection, view,camPos);
 	}
 }
 

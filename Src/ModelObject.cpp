@@ -15,7 +15,7 @@ void ModelObject::Create(GLuint &Program)
 
 }
 
-void ModelObject::Draw(glm::mat4 &projection, glm::mat4 &view)
+void ModelObject::Draw(glm::mat4 &projection, glm::mat4 &view , glm::vec3 &camPos)
 {
 
 	glUseProgram(program);
@@ -38,6 +38,7 @@ void ModelObject::Draw(glm::mat4 &projection, glm::mat4 &view)
 
 	AbstractObject::uniformColor(program, color);
 	AbstractObject::uniformLight(program, light);
+	AbstractObject::uniformCameraPosition(program, camPos);
 
 	model.Draw(program);
 }

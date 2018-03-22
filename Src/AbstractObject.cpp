@@ -8,7 +8,7 @@ AbstractObject::AbstractObject()
 	rotationQuat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 	scale = glm::vec3(1.0f, 1.0f, 1.0f);
 	color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	setLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(1.0f, -1.0f, 0.0f), 0.2f, 1.0f);
+	setLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-1.0f, 1.0f, 0.0f),glm::vec3(-1.0f, 1.0f, 0.0f), 0.2f, 1.0f);
 }
 
 AbstractObject::Light AbstractObject::getLight()
@@ -20,6 +20,12 @@ void AbstractObject::uniformColor(GLuint &program, glm::vec4 &uniformColor)
 {
 	GLuint vecCouleur = glGetUniformLocation(program, "vColor");
 	glUniform4fv(vecCouleur, 1, &uniformColor[0]);
+}
+
+void AbstractObject::uniformCameraPosition(GLuint &program, glm::vec3 &uniformCameraPos) 
+{
+	GLuint vecCamera = glGetUniformLocation(program, "cameraPosition");
+	glUniform4fv(vecCamera, 1, &uniformCameraPos[0]);
 }
 
 void AbstractObject::uniformLight(GLuint &program,const AbstractObject::Light &inLight)
@@ -35,6 +41,9 @@ void AbstractObject::uniformLight(GLuint &program,const AbstractObject::Light &i
 	glUniform3fv(glGetUniformLocation(program,
 		"structLight.direction"), 1,
 		&inLight.direction[0]);
+	glUniform3fv(glGetUniformLocation(program,
+		"structLight.position"), 1,
+		&inLight.position[0]);
 }
 
 void AbstractObject::MatRotation(const GLuint &program, glm::mat4 &rotat, const glm::vec3 &r) // matrice de rotation
@@ -84,12 +93,13 @@ void AbstractObject::MatRotationQuaternion(const GLuint &program, glm::mat4 &rot
 
 
 
-void AbstractObject::setLight(glm::vec3 color, glm::vec3 direction, float ambientIntensity, float diffuseIntensity)
+void AbstractObject::setLight(glm::vec3 color, glm::vec3 direction,glm::vec3 position ,float ambientIntensity, float diffuseIntensity)
 {
 	light.ambientIntensity = ambientIntensity;
 	light.diffuseIntensity = diffuseIntensity;
 	light.direction = direction;
 	light.color = color;
+	light.position = position;
 }
 
 void AbstractObject::setPosition(glm::vec3 pos)

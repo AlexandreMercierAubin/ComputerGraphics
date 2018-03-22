@@ -48,7 +48,7 @@ void Scene::setupScene()
 	objects->getObjectAt(1)->setPosition(glm::vec3(0, 0, -1));
 	objects->addObject(make_shared<ModelObject>());
 	objects->getObjectAt(2)->Create(shaderID);
-	objects->getObjectAt(2)->setPosition(glm::vec3(0, 0.0f, 0));
+	objects->getObjectAt(2)->setPosition(glm::vec3(0, -0.2f, 0));
 }
 
 void Scene::setProjection(PROJECTIONTYPE type,const float & angleOfView, const float & aspect, const float & near, const float &far)
@@ -140,7 +140,7 @@ void Scene::MatView(glm::mat4 &matView, bool staticPos)
 
 void Scene::drawScene()
 {
-	objects->Draw(projection,view);
+	objects->Draw(projection,view,position);
 }
 
 void Scene::MatPerspective(glm::mat4 &proj,const float & angleOfView,const float &aspect, const float & near, const float &far)
@@ -239,7 +239,7 @@ void Scene::mouseMotion(const unsigned int & timestamp, const unsigned int & win
 
 void Scene::drawSkybox()
 {
-	skybox.Draw(projection,view);
+	skybox.Draw(projection,view,position);
 }
 
 std::shared_ptr<GroupObject> Scene::getObjects()

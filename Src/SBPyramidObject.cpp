@@ -51,7 +51,7 @@ void SBPyramidObject::createVertices(GLfloat width, GLfloat height, GLfloat dept
 }
 
 
-void SBPyramidObject::Draw(glm::mat4 &projection, glm::mat4 &view)
+void SBPyramidObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos)
 {
 	glUseProgram(program);
 	uniformColor(program, color);
