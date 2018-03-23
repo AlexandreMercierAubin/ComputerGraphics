@@ -15,16 +15,16 @@ public:
 		int lightType = 0;
 
 		glm::vec3 ambientColor=glm::vec3(1.0f, 1.0f, 1.0f);
-		float ambientIntensity=1.0f;
+		float ambientIntensity=0.3f;
 
 		glm::vec3 diffuseColor= glm::vec3(1, 1, 1);
-		float diffuseIntensity=0.3f;
+		float diffuseIntensity=1.0f;
 
 		glm::vec3 specularColor = glm::vec3(1, 1, 1);
 		float specularIntensity = 1.0f;
 		float attenuation = 0.8f;
 
-		glm::vec3 direction = glm::vec3(-1.0f, 1.0f, 0.0f);
+		glm::vec3 direction = glm::vec3(-1.0f, -1.0f, 0.0f);
 		glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 	};
 

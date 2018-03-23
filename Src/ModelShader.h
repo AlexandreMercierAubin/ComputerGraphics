@@ -39,12 +39,25 @@ void main(void)
 {
 	vec4 texColor =texture(texture_diffuse, TexCoord);
 
-	color=texColor*vColor;
+	color=vec4(0,0,0,0);
 	for(int i =0;i<structLightSize;++i)
 	{
 		if(structLight[i].type==0)//IK ifs are bad in a shader >=)
 		{
+			  vec4 vAmbient = vec4(structLight[i].ambientColor * structLight[i].ambientIntensity, 1);
+			  float diffuseFactor = dot(normalize(normal), -normalize(structLight[i].direction));               
 
+			  vec4 diffuseColor;
+			  if (diffuseFactor > 0) 
+			  {
+				  diffuseColor = vec4(structLight[i].diffuseColor * structLight[i].diffuseIntensity * diffuseFactor, 1);
+			  }
+			  else 
+			  {
+				  diffuseColor = vec4(0, 0, 0, 1);
+			  }
+
+			  color= texture(texture_diffuse, TexCoord)*(vAmbient + diffuseColor)*vColor;
 		}
 		else if(structLight[i].type==1)
 		{
