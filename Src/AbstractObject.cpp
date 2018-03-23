@@ -148,22 +148,32 @@ void AbstractObject::uniformLight(GLuint &program, vector<Light*>lights)
 
 	for (unsigned int i = 0; i < lights.size(); ++i) 
 	{
-		string location = "structLight["+to_string(i)+"].color";
+		string location = "structLight["+to_string(i)+"].ambientColor";
 		glUniform3fv(glGetUniformLocation(program, location.c_str()) , 1, &(lights[i]->ambientColor[0])); //verbose, I know -_-
 
 		location = "structLight[" + to_string(i) + "].ambientIntensity";
 		glUniform1f(glGetUniformLocation(program,location.c_str()), lights[i]->ambientIntensity);
 
+		location = "structLight[" + to_string(i) + "].diffuseColor";
+		glUniform3fv(glGetUniformLocation(program, location.c_str()), 1, &(lights[i]->diffuseColor[0]));
+
 		location = "structLight[" + to_string(i) + "].diffuseIntensity";
 		glUniform1f(glGetUniformLocation(program,location.c_str()), lights[i]->diffuseIntensity);
+
+		location = "structLight[" + to_string(i) + "].specularColor";
+		glUniform3fv(glGetUniformLocation(program, location.c_str()),1, &(lights[i]->specularColor[0]));
+
+		location = "structLight[" + to_string(i) + "].specularIntensity";
+		glUniform1f(glGetUniformLocation(program, location.c_str()), lights[i]->specularIntensity);
+
+		location = "structLight[" + to_string(i) + "].attenuation";
+		glUniform1f(glGetUniformLocation(program, location.c_str()), lights[i]->attenuation);
 
 		location = "structLight[" + to_string(i) + "].direction";
 		glUniform3fv(glGetUniformLocation(program,location.c_str()), 1,&(lights[i]->direction[0]));
 
 		location = "structLight[" + to_string(i) + "].position";
-		glUniform3fv(glGetUniformLocation(program,
-			location.c_str()), 1,
-			&(lights[i]->position[0]));
+		glUniform3fv(glGetUniformLocation(program,location.c_str()), 1,&(lights[i]->position[0]));
 	}
 }
 

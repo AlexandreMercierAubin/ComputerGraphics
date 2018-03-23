@@ -20,9 +20,13 @@ uniform float shininess;
 
 struct Light
 {
-	vec3 color;
+	vec3 ambientColor;
+	vec3 diffuseColor;
+	vec3 specularColor;
 	float ambientIntensity;
 	float diffuseIntensity;
+	float specularIntensity;
+	float attenuation;
 	vec3 direction;
 	vec3 position;
 };
@@ -32,30 +36,39 @@ uniform Light structLight[temp];
 
 void main(void)
 {
-	color=vec4(0,0,0,1);
+	vec4 texColor =texture(texture_diffuse, TexCoord);
+	color=texColor*vColor;
 	for(int i =0;i<structLightSize;++i)
 	{
-		vec4 vAmbient = vec4(structLight[i].color * structLight[i].ambientIntensity, 1);	     
+		vec3 vAmbient = structLight[i].ambientColor * structLight[i].ambientIntensity *texColor.xyz;	     
 		vec3 surfaceToLight = normalize(structLight[i].position - vertices);
 		vec3 surfaceToCamera = normalize(cameraPosition - vertices);          
 
-		vec4 diffuseColor;
+		vec3 diffuseColor;
 		float diffuseFactor = dot(normalize(normal), -structLight[i].direction);
 		if (diffuseFactor > 0) 
 		{
-			diffuseColor = vec4(structLight[i].color * structLight[i].diffuseIntensity * diffuseFactor, 1);
+			diffuseColor = vec3(structLight[i].diffuseColor * structLight[i].diffuseIntensity * diffuseFactor);
 		}
 		else 
 		{
-			diffuseColor = vec4(0, 0, 0, 1);
+			diffuseColor = vec3(0, 0, 0);
 		}
 
 		float specularFactor = 0.0;
 		if(diffuseFactor > 0.0)
 			specularFactor = pow(max(0.0, dot(surfaceToCamera, reflect(-surfaceToLight, normal))), shininess);
-		vec4 specularColor = vec4(specularFactor *structLight[i].diffuseIntensity* structLight[i].color,1.0);//change diffuseIntensity for specularIntensity
+		vec3 specularColor = vec3(specularFactor *structLight[i].specularIntensity* structLight[i].specularColor);
 
-		color= texture(texture_diffuse, TexCoord)*(vAmbient + diffuseColor+specularColor)*vColor;//temp test code (really poor quality)
+		//attenuation
+		float distanceToLight = length(structLight[i].position-vertices);
+		float attenuation = 1.0/(1.0+structLight[i].attenuation*pow(distanceToLight,2));
+		
+		vec3 linearColor =vAmbient + attenuation*(diffuseColor+specularColor)*vColor.xyz;
+
+		vec3 gamma = vec3(1.0/2.2);
+
+		color= vec4(pow(linearColor, gamma),texColor.w);//temp test code (really poor quality)
 	}
 
 	
