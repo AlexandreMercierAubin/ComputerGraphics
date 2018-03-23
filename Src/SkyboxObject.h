@@ -33,7 +33,7 @@ private:
 
 public:
 	virtual void Create(GLuint &Program);
-	virtual void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos);
+	virtual void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights);
 	~SkyboxObject();
 	//virtual void SetColor();
 };

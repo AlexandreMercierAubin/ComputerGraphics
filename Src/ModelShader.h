@@ -26,33 +26,39 @@ struct Light
 	vec3 direction;
 	vec3 position;
 };
-
-uniform Light structLight;
+uniform int structLightSize;
+const int temp = 1;
+uniform Light structLight[temp];
 
 void main(void)
 {
-	vec4 vAmbient = vec4(structLight.color * structLight.ambientIntensity, 1);	     
-    vec3 surfaceToLight = normalize(structLight.position - vertices);
-    vec3 surfaceToCamera = normalize(cameraPosition - vertices);          
-
-	vec4 diffuseColor;
-	float diffuseFactor = dot(normalize(normal), -structLight.direction);
-	if (diffuseFactor > 0) 
+	color=vec4(0,0,0,1);
+	for(int i =0;i<structLightSize;++i)
 	{
-		diffuseColor = vec4(structLight.color * structLight.diffuseIntensity * diffuseFactor, 1);
+		vec4 vAmbient = vec4(structLight[i].color * structLight[i].ambientIntensity, 1);	     
+		vec3 surfaceToLight = normalize(structLight[i].position - vertices);
+		vec3 surfaceToCamera = normalize(cameraPosition - vertices);          
+
+		vec4 diffuseColor;
+		float diffuseFactor = dot(normalize(normal), -structLight[i].direction);
+		if (diffuseFactor > 0) 
+		{
+			diffuseColor = vec4(structLight[i].color * structLight[i].diffuseIntensity * diffuseFactor, 1);
+		}
+		else 
+		{
+			diffuseColor = vec4(0, 0, 0, 1);
+		}
+
+		float specularFactor = 0.0;
+		if(diffuseFactor > 0.0)
+			specularFactor = pow(max(0.0, dot(surfaceToCamera, reflect(-surfaceToLight, normal))), shininess);
+		vec4 specularColor = vec4(specularFactor *structLight[i].diffuseIntensity* structLight[i].color,1.0);//change diffuseIntensity for specularIntensity
+
+		color= texture(texture_diffuse, TexCoord)*(vAmbient + diffuseColor+specularColor)*vColor;//temp test code (really poor quality)
 	}
-	else 
-	{
-		diffuseColor = vec4(0, 0, 0, 1);
-	}
 
-	float specularFactor = 0.0;
-    if(diffuseFactor > 0.0)
-        specularFactor = pow(max(0.0, dot(surfaceToCamera, reflect(-surfaceToLight, normal))), shininess);
-    vec4 specularColor = vec4(specularFactor *structLight.diffuseIntensity* structLight.color,1.0);//change diffuseIntensity for specularIntensity
-
-
-	color= texture(texture_diffuse, TexCoord)*(vAmbient + diffuseColor+specularColor)*vColor;
+	
 }
 
 )";

@@ -19,7 +19,7 @@ private:
 	bool imageOK = false;
 public:
 	virtual void Create(GLuint &Program);
-	virtual void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos);
+	virtual void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights);
 	QuadObject(std::string texturePath);
 	QuadObject(std::string texturePath,std::string texturePath2);
 	~QuadObject();

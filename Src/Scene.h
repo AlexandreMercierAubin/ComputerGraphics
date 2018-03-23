@@ -15,6 +15,7 @@
 #include "TexShader.h"
 #include "ModelObject.h"
 #include "GroupObject.h"
+#include "LightObject.h"
 
 class Scene
 {
@@ -32,6 +33,7 @@ public:
 	~Scene(void);
 
 	void setupScene();
+	void setupLight();
 	void setProjection(PROJECTIONTYPE type,const float &angleOfView, const float &aspect, const float &near, const float &far);
 
 	void drawSkybox();
@@ -43,6 +45,7 @@ public:
 
 	void dollyZoom(float dolly, float zoom);
 
+	
 
 	struct KeyFlags
 	{
@@ -86,5 +89,6 @@ private:
 	GLuint bufferColorID;
 	//end of test
 	std::shared_ptr<GroupObject> objects;
+	std::vector<AbstractObject::Light*> lights;
 	SkyboxObject skybox;
 };

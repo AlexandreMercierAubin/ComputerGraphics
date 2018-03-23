@@ -1,12 +1,13 @@
 #pragma once
 #include "AbstractObject.h"
+#include "LightObject.h"
 #include "Model.h"
 #include <memory>
 
 class GroupObject : public AbstractObject
 {
 public:
-	virtual void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos);
+	virtual void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights);
 	void addObject(std::shared_ptr<AbstractObject> object);
 	void deleteObjectAt(const int index);
 	void deleteObject(std::shared_ptr<AbstractObject> object);
@@ -48,6 +49,8 @@ public:
 	virtual void setScale(glm::vec3 scl);
 	virtual void addScale(const glm::vec3 &scl);
 	virtual void setColor(glm::vec4 Color);
+
+	virtual void getLight(std::vector<Light*>& lights);
 
 	GroupObject();
 	~GroupObject();

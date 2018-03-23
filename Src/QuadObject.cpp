@@ -85,7 +85,7 @@ void QuadObject::Create(GLuint &Program)
 	glBindVertexArray(0);
 }
 
-void QuadObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos)
+void QuadObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights)
 {
 	if (!imageOK)
 		return;

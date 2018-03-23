@@ -8,13 +8,8 @@ AbstractObject::AbstractObject()
 	rotationQuat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 	scale = glm::vec3(1.0f, 1.0f, 1.0f);
 	color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	setLight(glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(-1.0f, 1.0f, 0.0f),glm::vec3(-1.0f, 1.0f, 0.0f), 0.2f, 1.0f);
 }
 
-AbstractObject::Light AbstractObject::getLight()
-{
-	return light;
-}
 
 void AbstractObject::uniformColor(GLuint &program, glm::vec4 &uniformColor)
 {
@@ -28,25 +23,8 @@ void AbstractObject::uniformCameraPosition(GLuint &program, glm::vec3 &uniformCa
 	glUniform4fv(vecCamera, 1, &uniformCameraPos[0]);
 }
 
-void AbstractObject::uniformLight(GLuint &program,const AbstractObject::Light &inLight)
-{
-	glUniform3fv(glGetUniformLocation(program,
-		"structLight.color"), 1, &inLight.color[0]);
-	glUniform1f(glGetUniformLocation(program,
-		"structLight.ambientIntensity"),
-		inLight.ambientIntensity);
-	glUniform1f(glGetUniformLocation(program,
-		"structLight.diffuseIntensity"),
-		inLight.diffuseIntensity);
-	glUniform3fv(glGetUniformLocation(program,
-		"structLight.direction"), 1,
-		&inLight.direction[0]);
-	glUniform3fv(glGetUniformLocation(program,
-		"structLight.position"), 1,
-		&inLight.position[0]);
-}
 
-void AbstractObject::MatRotation(const GLuint &program, glm::mat4 &rotat, const glm::vec3 &r) // matrice de rotation
+void AbstractObject::MatRotation(const GLuint &program, glm::mat4 &rotat, const glm::vec3 &r) // rotation matrix
 {
 	//x:pitch y:yaw z:roll
 
@@ -87,19 +65,6 @@ void AbstractObject::MatRotationQuaternion(const GLuint &program, glm::mat4 &rot
 	rotat[2][0] = 2*r.x*r.z-2*r.w*r.y;			   rotat[2][1] = 2*r.y*r.z + 2*r.w*r.x;					rotat[2][2] = 1 - 2*pow(r.x, 2) - 2*pow(r.y, 2);			rotat[2][3] = 0.0f;
 	rotat[3][0] = 0.0f;							   rotat[3][1] = 0.0f;									rotat[3][2] = 0.0f;											rotat[3][3] = 1.0f;
 
-}
-
-
-
-
-
-void AbstractObject::setLight(glm::vec3 color, glm::vec3 direction,glm::vec3 position ,float ambientIntensity, float diffuseIntensity)
-{
-	light.ambientIntensity = ambientIntensity;
-	light.diffuseIntensity = diffuseIntensity;
-	light.direction = direction;
-	light.color = color;
-	light.position = position;
 }
 
 void AbstractObject::setPosition(glm::vec3 pos)
@@ -174,6 +139,32 @@ void AbstractObject::setColor(glm::vec4 Color)
 glm::vec4 AbstractObject::getColor()
 {
 	return color;
+}
+
+void AbstractObject::uniformLight(GLuint &program, vector<Light*>lights)
+{
+	GLuint size = glGetUniformLocation(program, "structLightSize");
+	glUniform1i(size, lights.size());
+
+	for (unsigned int i = 0; i < lights.size(); ++i) 
+	{
+		string location = "structLight["+to_string(i)+"].color";
+		glUniform3fv(glGetUniformLocation(program, location.c_str()) , 1, &(lights[i]->ambientColor[0])); //verbose, I know -_-
+
+		location = "structLight[" + to_string(i) + "].ambientIntensity";
+		glUniform1f(glGetUniformLocation(program,location.c_str()), lights[i]->ambientIntensity);
+
+		location = "structLight[" + to_string(i) + "].diffuseIntensity";
+		glUniform1f(glGetUniformLocation(program,location.c_str()), lights[i]->diffuseIntensity);
+
+		location = "structLight[" + to_string(i) + "].direction";
+		glUniform3fv(glGetUniformLocation(program,location.c_str()), 1,&(lights[i]->direction[0]));
+
+		location = "structLight[" + to_string(i) + "].position";
+		glUniform3fv(glGetUniformLocation(program,
+			location.c_str()), 1,
+			&(lights[i]->position[0]));
+	}
 }
 
 bool AbstractObject::isSelected()
