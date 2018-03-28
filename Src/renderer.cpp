@@ -224,7 +224,12 @@ void Renderer::drawGUI()
 	radioClicked |= ImGui::RadioButton("Orthographique", (int*)&projectionType, (int)Scene::PROJECTIONTYPE::Orthographic);
 
 	if (radioClicked)
-		scene.setProjection(projectionType);
+	{
+		if (projectionType == Scene::PROJECTIONTYPE::Orthographic)
+			scene.setProjection(projectionType, glm::radians(80.0f));
+		else
+			scene.setProjection(projectionType);
+	}
 
 	ImGui::End();
 
