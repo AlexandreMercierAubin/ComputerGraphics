@@ -175,6 +175,9 @@ void AbstractObject::uniformLight(GLuint &program, vector<Light*>lights)
 		location = "structLight[" + to_string(i) + "].position";
 		glUniform3fv(glGetUniformLocation(program,location.c_str()), 1,&(lights[i]->position[0]));
 
+		location = "structLight[" + to_string(i) + "].coneAngle";
+		glUniform1f(glGetUniformLocation(program, location.c_str()), lights[i]->coneAngle);
+
 		location = "structLight[" + to_string(i) + "].type";
 		glUniform1i(glGetUniformLocation(program, location.c_str()), lights[i]->lightType);
 	}

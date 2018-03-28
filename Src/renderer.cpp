@@ -380,9 +380,18 @@ void Renderer::drawGUI()
 	ImGui::SliderFloat("Intensite diffuse", &lightDiffuseIntensity, 0.0f, 1.0f);
 	ImGui::ColorEdit3("Couleur speculaire", &lightSpecularColor.r);
 	ImGui::SliderFloat("Intensite speculaire", &lightSpecularIntensity, 0.0f, 1.0f);
-	ImGui::SliderFloat("Attenuation", &lightAttenuation, 0.0f, 1.0f);
-	ImGui::DragFloat3("Position", &lightPosition.x, 0.01f, -1000.0f, 1000.0f, "%.2f");
-	ImGui::DragFloat3("Direction", &lightDirection.x, 0.01f, -1000.0f, 1000.0f, "%.2f");
+
+	if (lightType != 0)
+		ImGui::SliderFloat("Attenuation", &lightAttenuation, 0.0f, 1.0f);
+
+	if (lightType != 1)
+		ImGui::DragFloat3("Direction", &lightDirection.x, 0.01f, -1000.0f, 1000.0f, "%.2f");
+
+	if (lightType != 0)
+		ImGui::DragFloat3("Position", &lightPosition.x, 0.01f, -1000.0f, 1000.0f, "%.2f");
+
+	if (lightType == 2)
+		ImGui::SliderFloat("Angle cone", &lightConeAngle, 0.01f, 179.9f, "%.2f");
 
 	if (ImGui::Button("Ajouter une lumiere"))
 	{
@@ -396,8 +405,9 @@ void Renderer::drawGUI()
 			lightSpecularColor,
 			lightSpecularIntensity,
 			lightAttenuation,
+			lightDirection,
 			lightPosition,
-			lightDirection);
+			lightConeAngle);
 
 		scene.addObject(light);
 		scene.setupLight();

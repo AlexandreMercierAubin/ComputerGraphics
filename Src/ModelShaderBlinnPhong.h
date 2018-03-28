@@ -1,8 +1,8 @@
 #pragma once
 #include "AbstractShader.h"
 
-//phong
-class ModelShader : public AbstractShader
+//blinn phong
+class ModelShaderBlinnPhong : public AbstractShader
 {
 	std::string fshader =
 R"(#version 430 core
@@ -50,7 +50,7 @@ vec4 MakeLightPoint(vec3 vAmbient,vec3 surfaceToLight,vec3 surfaceToCamera,float
 
 	float specularFactor = 0.0;
 	if(diffuseFactor > 0.0)
-		specularFactor = pow(max(0.0, dot(surfaceToCamera, reflect(-surfaceToLight, normalizedNormal))), shininess);
+		specularFactor = pow(max(0.0, dot(normalizedNormal, normalize(surfaceToLight + surfaceToCamera))), shininess); //this is the only difference between Phong and Blinn Phong
 	vec3 specularColor = vec3(specularFactor *light.specularIntensity* light.specularColor);
 
 

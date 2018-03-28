@@ -86,6 +86,7 @@ private:
 	float lightAttenuation = 1.0f;
 	glm::vec3 lightDirection;
 	glm::vec3 lightPosition;
+	float lightConeAngle = 10.0f;
 
 	// Échantillonnage d’image
 	int postionEchantillonnage = 0; // 0 = Haut-Gauche, 1 = Haut-Milieu, 2 = Milieu-Gauche, 3 = Milieu-Milieu

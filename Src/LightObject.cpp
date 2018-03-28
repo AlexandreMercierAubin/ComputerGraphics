@@ -16,7 +16,8 @@ void LightObject::setLight(const int &type,
 							const float &specularIntensity,
 							const float attenuation,
 							const glm::vec3 &direction,
-							const glm::vec3 &in_position)
+							const glm::vec3 &in_position,
+							const float &coneAngle)
 {
 	light.lightType = type;
 	light.ambientColor = ambientColor;
@@ -26,9 +27,11 @@ void LightObject::setLight(const int &type,
 	light.specularColor = specularColor;
 	light.specularIntensity = specularIntensity;
 	light.attenuation = attenuation;
-	light.direction = direction;	
-	rotationDegree = direction;
+	light.direction = direction;
+	light.coneAngle = coneAngle;
 	position=in_position;
+
+	setRotationDegree(direction);
 }
 
 void LightObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights) 
