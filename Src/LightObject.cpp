@@ -18,10 +18,15 @@ void LightObject::setLight(const int &type,
 							const glm::vec3 &direction,
 							const glm::vec3 &in_position)
 {
-	light.ambientIntensity = ambientIntensity;
-	light.diffuseIntensity = diffuseIntensity;
-	light.direction = direction;
+	light.lightType = type;
 	light.ambientColor = ambientColor;
+	light.ambientIntensity = ambientIntensity;
+	light.diffuseColor = diffuseColor;
+	light.diffuseIntensity = diffuseIntensity;
+	light.specularColor = specularColor;
+	light.specularIntensity = specularIntensity;
+	light.attenuation = attenuation;
+	light.direction = direction;	
 	position=in_position;
 }
 

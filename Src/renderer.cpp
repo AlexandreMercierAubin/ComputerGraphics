@@ -488,6 +488,7 @@ void Renderer::importImage(string fichier)
 	scene.addObject(std::make_shared<QuadObject>(fichier));
 	std::shared_ptr<GroupObject> objects= scene.getObjects();
 	objects->getObjectAt(objects->size()-1)->Create(texShaderID);
+	scene.setupLight();
 }
 
 void Renderer::importModel(string file)
@@ -505,6 +506,7 @@ void Renderer::importModel(string file)
 	object.Create(modelShaderID);
 	scene.addObject(std::make_shared<ModelObject>(object));
 	//Resources/megalodon/megalodon.FBX
+	scene.setupLight();
 }
 void Renderer::imagePerlinNoise(string fichier)
 {
@@ -805,6 +807,7 @@ void Renderer::eraseNodes()
 			pair.second->deleteObject(pair.first);
 	}
 	selectedNodes.clear();
+	scene.setupLight();
 }
 
 void Renderer::groupNodes()

@@ -32,12 +32,13 @@ struct Light
 	vec3 position;
 };
 uniform int structLightSize;
-const int MAXLIGHTS = 64;
+const int MAXLIGHTS = 32;
 uniform Light structLight[MAXLIGHTS];
 
 void main(void)
 {
 	vec4 texColor =texture(texture_diffuse, TexCoord);
+	vec3 normalizedNormal = normalize(normal); //safety to counter interpolation    
 
 	color=vec4(0,0,0,0);
 	for(int i =0;i<structLightSize;++i)
@@ -45,7 +46,7 @@ void main(void)
 		if(structLight[i].type==0)//IK ifs are bad in a shader >=)
 		{
 			  vec4 vAmbient = vec4(structLight[i].ambientColor * structLight[i].ambientIntensity, 1);
-			  float diffuseFactor = dot(normalize(normal), -structLight[i].direction);               
+			  float diffuseFactor = dot(normalizedNormal, -structLight[i].direction);               
 
 			  vec4 diffuseColor;
 			  if (diffuseFactor > 0) 
@@ -57,28 +58,25 @@ void main(void)
 				  diffuseColor = vec4(0, 0, 0, 1);
 			  }
 
-			  color= texture(texture_diffuse, TexCoord)*(vAmbient + diffuseColor)*vColor;
+			  color+= texture(texture_diffuse, TexCoord)*(vAmbient + diffuseColor)*vColor;
 		}
 		else if(structLight[i].type==1)
 		{
 			vec3 vAmbient = structLight[i].ambientColor * structLight[i].ambientIntensity *texColor.xyz;	     
 			vec3 surfaceToLight = normalize(structLight[i].position - vertices);
-			vec3 surfaceToCamera = normalize(cameraPosition - vertices);          
+			vec3 surfaceToCamera = normalize(cameraPosition - vertices);      
+			
 
-			vec3 diffuseColor;
-			float diffuseFactor = dot(normalize(normal), -structLight[i].direction);
+			vec3 diffuseColor= vec3(0, 0, 0);
+			float diffuseFactor = max(0.0,dot(normalizedNormal, surfaceToLight));
 			if (diffuseFactor > 0) 
 			{
 				diffuseColor = vec3(structLight[i].diffuseColor * structLight[i].diffuseIntensity * diffuseFactor);
 			}
-			else 
-			{
-				diffuseColor = vec3(0, 0, 0);
-			}
 
 			float specularFactor = 0.0;
 			if(diffuseFactor > 0.0)
-				specularFactor = pow(max(0.0, dot(surfaceToCamera, reflect(-surfaceToLight, normal))), shininess);
+				specularFactor = pow(max(0.0, dot(surfaceToCamera, reflect(-surfaceToLight, normalizedNormal))), shininess);
 			vec3 specularColor = vec3(specularFactor *structLight[i].specularIntensity* structLight[i].specularColor);
 
 			//attenuation
@@ -89,10 +87,10 @@ void main(void)
 
 			vec3 gamma = vec3(1.0/2.2);
 
-			color= vec4(pow(linearColor, gamma),texColor.w);//temp test code (really poor quality)
+			color+= vec4(pow(linearColor, gamma),texColor.w);//temp test code (really poor quality)
 	}
 }
-
+	color=color/structLightSize;
 	
 }
 

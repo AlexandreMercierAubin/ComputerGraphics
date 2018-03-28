@@ -93,7 +93,7 @@ private:
 	void addScale(const glm::vec3 &v);
 	void updateTransformations();
 
-	std::vector<std::pair<std::shared_ptr<AbstractObject>, std::shared_ptr<GroupObject>>> selectedNodes;
+	std::vector<std::pair<std::shared_ptr<AbstractObject>, std::shared_ptr<GroupObject>>> selectedNodes; //not needed as there is a getCastedAt in groupObject and the tree is a groupObject, not an abstractObject
 	std::shared_ptr<GroupObject> castToGroupObject(std::shared_ptr<AbstractObject> obj);
 	void deselectAllNodes();
 	void deselectNode(std::shared_ptr<AbstractObject> obj);
