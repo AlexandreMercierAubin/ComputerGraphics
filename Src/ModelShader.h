@@ -32,8 +32,8 @@ struct Light
 	vec3 position;
 };
 uniform int structLightSize;
-const int temp = 1;
-uniform Light structLight[temp];
+const int MAXLIGHTS = 256;
+uniform Light structLight[MAXLIGHTS];
 
 void main(void)
 {
