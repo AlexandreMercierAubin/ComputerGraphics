@@ -10,12 +10,15 @@
 #include "SkyboxObject.h"
 #include "CubeObject.h"
 #include "ShaderLoader.h"
-#include "ModelShader.h"
 #include "SkyboxShader.h"
 #include "TexShader.h"
 #include "ModelObject.h"
 #include "GroupObject.h"
 #include "LightObject.h"
+
+#include "ModelShader.h"
+#include "ModelShaderLambert.h"
+#include "ModelShaderBlinnPhong.h"
 
 class Scene
 {
