@@ -27,6 +27,7 @@ void LightObject::setLight(const int &type,
 	light.specularIntensity = specularIntensity;
 	light.attenuation = attenuation;
 	light.direction = direction;	
+	rotationDegree = direction;
 	position=in_position;
 }
 
@@ -40,5 +41,32 @@ AbstractObject::Light* LightObject::getLight()
 	return &light;
 }
 
+void LightObject::setRotationDegree(glm::vec3 rot)
+{
+	AbstractObject::setRotationDegree(rot);
+	light.direction = glm::normalize(rotationDegree);
+}
 
+void LightObject::addRotationDegree(const glm::vec3 & rot)
+{
+	AbstractObject::addRotationDegree(rot);
+	light.direction = glm::normalize(rotationDegree);
+}
 
+void LightObject::setRotationQuaternion(glm::quat quat)
+{
+	AbstractObject::setRotationQuaternion(quat);
+	light.direction = glm::normalize(rotationDegree);
+}
+
+void LightObject::addRotationQuaternion(const glm::quat & quat)
+{
+	AbstractObject::addRotationQuaternion(quat);
+	light.direction = glm::normalize(rotationDegree);
+}
+
+void LightObject::setColor(glm::vec4 Color)
+{
+	AbstractObject::setColor(Color);
+	light.diffuseColor = Color;
+}

@@ -35,6 +35,12 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 	currentRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	currentScale = glm::vec3(1.0f, 1.0f, 1.0f);
 
+	lightAmbientColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	lightDiffuseColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	lightSpecularColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	lightPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+	lightDirection = glm::vec3(0.0f, -1.0f, 0.0f);
+
 	// Setup ImGUI
 	ImGui::CreateContext();
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
@@ -360,6 +366,44 @@ void Renderer::drawGUI()
 		echantillonnageImage(imageBase,imageEchantillon);
 
 	samplingWindowHeight = ImGui::GetCurrentWindow()->Size.y;
+	ImGui::End();
+
+	// ********** Lumières **********
+
+	ImGui::SetNextWindowPos(ImVec2(sdlWindowWidth - lightsWindowSize.x - 2.0f, sdlWindowHeight - lightsWindowSize.y - 2.0f));
+	ImGui::Begin("Lumieres", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+	ImGui::Combo("Type", &lightType, "Directionnelle\0Ponctuelle\0Projecteur\0");
+	ImGui::ColorEdit3("Couleur ambiante", &lightAmbientColor.r);
+	ImGui::SliderFloat("Intensite ambiante", &lightAmbientIntensity, 0.0f, 1.0f);
+	ImGui::ColorEdit3("Couleur diffuse", &lightDiffuseColor.r);
+	ImGui::SliderFloat("Intensite diffuse", &lightDiffuseIntensity, 0.0f, 1.0f);
+	ImGui::ColorEdit3("Couleur speculaire", &lightSpecularColor.r);
+	ImGui::SliderFloat("Intensite speculaire", &lightSpecularIntensity, 0.0f, 1.0f);
+	ImGui::SliderFloat("Attenuation", &lightAttenuation, 0.0f, 1.0f);
+	ImGui::DragFloat3("Position", &lightPosition.x, 0.01f, -1000.0f, 1000.0f, "%.2f");
+	ImGui::DragFloat3("Direction", &lightDirection.x, 0.01f, -1000.0f, 1000.0f, "%.2f");
+
+	if (ImGui::Button("Ajouter une lumiere"))
+	{
+		std::shared_ptr<LightObject> light = std::make_shared<LightObject>();
+		light->setLight(
+			lightType,
+			lightAmbientColor,
+			lightAmbientIntensity,
+			lightDiffuseColor,
+			lightDiffuseIntensity,
+			lightSpecularColor,
+			lightSpecularIntensity,
+			lightAttenuation,
+			lightPosition,
+			lightDirection);
+
+		scene.addObject(light);
+		scene.setupLight();
+	}
+
+	lightsWindowSize = ImVec2(ImGui::GetCurrentWindow()->Size.x, ImGui::GetCurrentWindow()->Size.y);
 	ImGui::End();
 
 	// Render
