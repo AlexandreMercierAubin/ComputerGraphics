@@ -54,7 +54,7 @@ void CubeObject::createVertices(GLfloat width, GLfloat height, GLfloat depth)
 }
 
 
-void CubeObject::Draw(glm::mat4 &projection, glm::mat4 &view)
+void CubeObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights)
 {
 	glUseProgram(program);
 	uniformColor(program, color);

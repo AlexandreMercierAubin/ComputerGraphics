@@ -1,12 +1,12 @@
 #pragma once
 #include "GroupObject.h"
 
-void GroupObject::Draw(glm::mat4 &projection, glm::mat4 &view)
+void GroupObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights)
 {
 	//tranfers the draw call
 	for (auto it = vObject.begin(); it != vObject.end(); ++it)
 	{
-		(*it)->Draw(projection, view);
+		(*it)->Draw(projection, view,camPos,lights);
 	}
 }
 
@@ -103,6 +103,21 @@ void GroupObject::setColor(glm::vec4 Color)
 	AbstractObject::setColor(Color);
 	for (auto obj : vObject)
 		obj->setColor(Color);
+}
+
+void GroupObject::getLight(std::vector<Light*>& lights)
+{
+	for (unsigned int i = 0; i < vObject.size();++i) 
+	{
+		if (isCastableAt<GroupObject>(i)) 
+		{
+			getCastedObjectAt<GroupObject>(i)->getLight(lights);
+		}
+		else if (isCastableAt<LightObject>(i))
+		{
+			lights.push_back(getCastedObjectAt<LightObject>(i)->getLight());
+		}
+	}
 }
 
 GroupObject::GroupObject()
