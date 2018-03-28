@@ -45,7 +45,7 @@ void main(void)
 		if(structLight[i].type==0)//IK ifs are bad in a shader >=)
 		{
 			  vec4 vAmbient = vec4(structLight[i].ambientColor * structLight[i].ambientIntensity, 1);
-			  float diffuseFactor = dot(normalize(normal), -normalize(structLight[i].direction));               
+			  float diffuseFactor = dot(normalize(normal), -structLight[i].direction);               
 
 			  vec4 diffuseColor;
 			  if (diffuseFactor > 0) 
@@ -119,7 +119,7 @@ void main()
 {
 	vertices = (matModel*vec4(in_position,1.0)).xyz;
 	gl_Position =  matProjection*matView*matModel*(vec4(in_position, 1.0));
-	normal = (matModel*(vec4(in_normal, 1))).xyz;
+	normal = vec3(matModel*(vec4(in_normal, 0.0))).xyz;
 	TexCoord = vec2(texCoord.x,texCoord.y);
 
 }
