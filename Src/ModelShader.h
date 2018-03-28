@@ -36,10 +36,35 @@ uniform int structLightSize;
 const int MAXLIGHTS = 32;
 uniform Light structLight[MAXLIGHTS];
 
+vec4 texColor;
+vec3 normalizedNormal;
+
+vec4 MakeLightPoint(vec3 vAmbient,vec3 surfaceToLight,vec3 surfaceToCamera,float attenuation,Light light)
+{
+	vec3 diffuseColor= vec3(0, 0, 0);
+	float diffuseFactor = max(0.0,dot(normalizedNormal, surfaceToLight));
+	if (diffuseFactor > 0) 
+	{
+		diffuseColor = vec3(light.diffuseColor * light.diffuseIntensity * diffuseFactor);
+	}
+
+	float specularFactor = 0.0;
+	if(diffuseFactor > 0.0)
+		specularFactor = pow(max(0.0, dot(surfaceToCamera, reflect(-surfaceToLight, normalizedNormal))), shininess);
+	vec3 specularColor = vec3(specularFactor *light.specularIntensity* light.specularColor);
+
+
+	vec3 linearColor =vAmbient + attenuation*(diffuseColor+specularColor);
+
+	vec3 gamma = vec3(1.0/2.2);
+
+	return vec4(pow(linearColor, gamma),texColor.w);//temp test code (really poor quality);
+}
+
 void main(void)
 {
-	vec4 texColor =texture(texture_diffuse, TexCoord);
-	vec3 normalizedNormal = normalize(normal); //safety to counter interpolation    
+	texColor =texture(texture_diffuse, TexCoord);
+	normalizedNormal = normalize(normal); //safety to counter interpolation    
 
 	color=vec4(0,0,0,0);
 	for(int i =0;i<structLightSize;++i)
@@ -66,29 +91,12 @@ void main(void)
 			vec3 vAmbient = structLight[i].ambientColor * structLight[i].ambientIntensity *texColor.xyz;	     
 			vec3 surfaceToLight = normalize(structLight[i].position - vertices);
 			vec3 surfaceToCamera = normalize(cameraPosition - vertices);      
-			
-
-			vec3 diffuseColor= vec3(0, 0, 0);
-			float diffuseFactor = max(0.0,dot(normalizedNormal, surfaceToLight));
-			if (diffuseFactor > 0) 
-			{
-				diffuseColor = vec3(structLight[i].diffuseColor * structLight[i].diffuseIntensity * diffuseFactor);
-			}
-
-			float specularFactor = 0.0;
-			if(diffuseFactor > 0.0)
-				specularFactor = pow(max(0.0, dot(surfaceToCamera, reflect(-surfaceToLight, normalizedNormal))), shininess);
-			vec3 specularColor = vec3(specularFactor *structLight[i].specularIntensity* structLight[i].specularColor);
 
 			//attenuation
 			float distanceToLight = length(structLight[i].position-vertices);
 			float attenuation = 1.0/(1.0+structLight[i].attenuation*pow(distanceToLight,2));
-		
-			vec3 linearColor =vAmbient + attenuation*(diffuseColor+specularColor);
 
-			vec3 gamma = vec3(1.0/2.2);
-
-			color+= vec4(pow(linearColor, gamma),texColor.w);//temp test code (really poor quality)
+			color+= MakeLightPoint(vAmbient,surfaceToLight,surfaceToCamera,attenuation,structLight[i]);
 		}
 		else if(structLight[i].type==2)
 		{
@@ -97,34 +105,15 @@ void main(void)
 			vec3 surfaceToLight = normalize(structLight[i].position - vertices);
 			vec3 surfaceToCamera = normalize(cameraPosition - vertices); 
      
-
-			vec3 diffuseColor= vec3(0, 0, 0);
-			float diffuseFactor = max(0.0,dot(normalizedNormal, surfaceToLight));
-			if (diffuseFactor > 0) 
-			{
-				diffuseColor = vec3(structLight[i].diffuseColor * structLight[i].diffuseIntensity * diffuseFactor);
-			}
-
-			float specularFactor = 0.0;
-			if(diffuseFactor > 0.0)
-				specularFactor = pow(max(0.0, dot(surfaceToCamera, reflect(-surfaceToLight, normalizedNormal))), shininess);
-			vec3 specularColor = vec3(specularFactor *structLight[i].specularIntensity* structLight[i].specularColor);
-
 			//attenuation
 			float distanceToLight = length(structLight[i].position-vertices);
 			float attenuation = 1.0/(1.0+structLight[i].attenuation*pow(distanceToLight,2));
 		
 			float lightToSurfaceAngle = degrees(acos(dot(-surfaceToLight, normalize(-structLight[i].direction))));
-			if(lightToSurfaceAngle > structLight[i].coneAngle)//might be better to change this for a if point inside, then do everything else this
+			if(lightToSurfaceAngle < structLight[i].coneAngle)
 			{
-				attenuation = 0.0;
-			}
-
-			vec3 linearColor =vAmbient + attenuation*(diffuseColor+specularColor);
-
-			vec3 gamma = vec3(1.0/2.2);
-
-			color+= vec4(pow(linearColor, gamma),texColor.w);//temp test code (really poor quality)
+				color+= MakeLightPoint(vAmbient,surfaceToLight,surfaceToCamera,attenuation,structLight[i]);
+			}		
 		}
 	}
 	color=(color/structLightSize)*vColor;// simple personalized way to counter overly white colors
