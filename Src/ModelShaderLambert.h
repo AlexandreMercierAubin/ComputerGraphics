@@ -2,7 +2,7 @@
 #include "AbstractShader.h"
 
 //phong
-class ModelShader : public AbstractShader
+class ModelShaderLambert : public AbstractShader
 {
 	std::string fshader =
 R"(#version 430 core
@@ -48,13 +48,8 @@ vec4 MakeLightPoint(vec3 vAmbient,vec3 surfaceToLight,vec3 surfaceToCamera,float
 		diffuseColor = vec3(light.diffuseColor * light.diffuseIntensity * diffuseFactor);
 	}
 
-	float specularFactor = 0.0;
-	if(diffuseFactor > 0.0)
-		specularFactor = pow(max(0.0, dot(surfaceToCamera, reflect(-surfaceToLight, normalizedNormal))), shininess);
-	vec3 specularColor = vec3(specularFactor *light.specularIntensity* light.specularColor);
 
-
-	vec3 linearColor =vAmbient + attenuation*(diffuseColor+specularColor);
+	vec3 linearColor =vAmbient + attenuation*diffuseColor;
 
 	vec3 gamma = vec3(1.0/2.2);
 
