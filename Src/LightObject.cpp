@@ -16,7 +16,8 @@ void LightObject::setLight(const int &type,
 							const float &specularIntensity,
 							const float attenuation,
 							const glm::vec3 &direction,
-							const glm::vec3 &in_position)
+							const glm::vec3 &in_position,
+							const float &coneAngle)
 {
 	light.lightType = type;
 	light.ambientColor = ambientColor;
@@ -26,7 +27,8 @@ void LightObject::setLight(const int &type,
 	light.specularColor = specularColor;
 	light.specularIntensity = specularIntensity;
 	light.attenuation = attenuation;
-	light.direction = direction;	
+	light.direction = direction;
+	light.coneAngle = coneAngle;
 	position=in_position;
 }
 

@@ -30,6 +30,7 @@ struct Light
 	float attenuation;
 	vec3 direction;
 	vec3 position;
+	float coneAngle;
 };
 uniform int structLightSize;
 const int MAXLIGHTS = 32;
@@ -58,7 +59,7 @@ void main(void)
 				  diffuseColor = vec4(0, 0, 0, 1);
 			  }
 
-			  color+= texture(texture_diffuse, TexCoord)*(vAmbient + diffuseColor)*vColor;
+			  color+= texture(texture_diffuse, TexCoord)*(vAmbient + diffuseColor);
 		}
 		else if(structLight[i].type==1)
 		{
@@ -83,14 +84,50 @@ void main(void)
 			float distanceToLight = length(structLight[i].position-vertices);
 			float attenuation = 1.0/(1.0+structLight[i].attenuation*pow(distanceToLight,2));
 		
-			vec3 linearColor =vAmbient + attenuation*(diffuseColor+specularColor)*vColor.xyz;
+			vec3 linearColor =vAmbient + attenuation*(diffuseColor+specularColor);
 
 			vec3 gamma = vec3(1.0/2.2);
 
 			color+= vec4(pow(linearColor, gamma),texColor.w);//temp test code (really poor quality)
+		}
+		else if(structLight[i].type==2)
+		{
+
+			vec3 vAmbient = structLight[i].ambientColor * structLight[i].ambientIntensity *texColor.xyz;	     
+			vec3 surfaceToLight = normalize(structLight[i].position - vertices);
+			vec3 surfaceToCamera = normalize(cameraPosition - vertices); 
+     
+
+			vec3 diffuseColor= vec3(0, 0, 0);
+			float diffuseFactor = max(0.0,dot(normalizedNormal, surfaceToLight));
+			if (diffuseFactor > 0) 
+			{
+				diffuseColor = vec3(structLight[i].diffuseColor * structLight[i].diffuseIntensity * diffuseFactor);
+			}
+
+			float specularFactor = 0.0;
+			if(diffuseFactor > 0.0)
+				specularFactor = pow(max(0.0, dot(surfaceToCamera, reflect(-surfaceToLight, normalizedNormal))), shininess);
+			vec3 specularColor = vec3(specularFactor *structLight[i].specularIntensity* structLight[i].specularColor);
+
+			//attenuation
+			float distanceToLight = length(structLight[i].position-vertices);
+			float attenuation = 1.0/(1.0+structLight[i].attenuation*pow(distanceToLight,2));
+		
+			float lightToSurfaceAngle = degrees(acos(dot(-surfaceToLight, normalize(-structLight[i].direction))));
+			if(lightToSurfaceAngle > structLight[i].coneAngle)//might be better to change this for a if point inside, then do everything else this
+			{
+				attenuation = 0.0;
+			}
+
+			vec3 linearColor =vAmbient + attenuation*(diffuseColor+specularColor);
+
+			vec3 gamma = vec3(1.0/2.2);
+
+			color+= vec4(pow(linearColor, gamma),texColor.w);//temp test code (really poor quality)
+		}
 	}
-}
-	color=color/structLightSize;
+	color=(color/structLightSize)*vColor;// simple personalized way to counter overly white colors
 	
 }
 
