@@ -56,9 +56,9 @@ vec4 MakeLightPoint(vec3 vAmbient,vec3 surfaceToLight,vec3 surfaceToCamera,float
 
 	vec3 linearColor =vAmbient + attenuation*(diffuseColor+specularColor);
 
-	vec3 gamma = vec3(1.0/2.2);
+	vec3 gamma = vec3(1.0/2.2);//may be a good idea to make this one a parameter
 
-	return vec4(pow(linearColor, gamma),texColor.w);//temp test code (really poor quality);
+	return vec4(pow(linearColor, gamma),texColor.w);
 }
 
 void main(void)
@@ -116,7 +116,10 @@ void main(void)
 			}		
 		}
 	}
-	color=(color/structLightSize)*vColor;// simple personalized way to counter overly white colors
+	float blendFactor=1;
+	if(color.w>1)
+		blendFactor=1/color.w;
+	color=vec4(color.x*blendFactor,color.y*blendFactor,color.z*blendFactor,color.w*blendFactor)*vColor;// simple personalized way to counter overly white colors
 	
 }
 
