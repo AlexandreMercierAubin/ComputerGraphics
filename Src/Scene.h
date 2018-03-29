@@ -10,11 +10,15 @@
 #include "SkyboxObject.h"
 #include "CubeObject.h"
 #include "ShaderLoader.h"
-#include "ModelShader.h"
 #include "SkyboxShader.h"
 #include "TexShader.h"
 #include "ModelObject.h"
 #include "GroupObject.h"
+#include "LightObject.h"
+
+#include "ModelShader.h"
+#include "ModelShaderLambert.h"
+#include "ModelShaderBlinnPhong.h"
 
 class Scene
 {
@@ -33,6 +37,7 @@ public:
 
 	void setupScene();
 	void setProjection(PROJECTIONTYPE type, const float & angleOfView = 0.5236f, const float & aspect = 1.5f, const float & near = 0.1f, const float &far = 100.0f);
+	void setupLight();
 
 	void drawSkybox();
 	void drawScene();
@@ -43,6 +48,7 @@ public:
 
 	void dollyZoom(float dolly, float zoom);
 
+	
 
 	struct KeyFlags
 	{
@@ -86,5 +92,6 @@ private:
 	GLuint bufferColorID;
 	//end of test
 	std::shared_ptr<GroupObject> objects;
+	std::vector<AbstractObject::Light*> lights;
 	SkyboxObject skybox;
 };

@@ -1,8 +1,8 @@
 #pragma once
 #include "AbstractShader.h"
 
-//phong
-class ModelShader : public AbstractShader
+//Lambert
+class ModelShaderLambert : public AbstractShader
 {
 	std::string fshader =
 R"(#version 430 core
@@ -48,17 +48,12 @@ vec4 MakeLightPoint(vec3 vAmbient,vec3 surfaceToLight,vec3 surfaceToCamera,float
 		diffuseColor = vec3(light.diffuseColor * light.diffuseIntensity * diffuseFactor);
 	}
 
-	float specularFactor = 0.0;
-	if(diffuseFactor > 0.0)
-		specularFactor = pow(max(0.0, dot(surfaceToCamera, reflect(-surfaceToLight, normalizedNormal))), shininess);
-	vec3 specularColor = vec3(specularFactor *light.specularIntensity* light.specularColor);
 
+	vec3 linearColor =vAmbient + attenuation*diffuseColor;
 
-	vec3 linearColor =vAmbient + attenuation*(diffuseColor+specularColor);
+	vec3 gamma = vec3(1.0/2.2);
 
-	vec3 gamma = vec3(1.0/2.2);//may be a good idea to make this one a parameter
-
-	return vec4(pow(linearColor, gamma),texColor.w);
+	return vec4(pow(linearColor, gamma),texColor.w);//temp test code (really poor quality);
 }
 
 void main(void)
@@ -116,10 +111,7 @@ void main(void)
 			}		
 		}
 	}
-	float blendFactor=1;
-	if(color.w>1)
-		blendFactor=1/color.w;
-	color=vec4(color.x*blendFactor,color.y*blendFactor,color.z*blendFactor,color.w*blendFactor)*vColor;// simple personalized way to counter overly white colors
+	color=(color/structLightSize)*vColor;// simple personalized way to counter overly white colors
 	
 }
 

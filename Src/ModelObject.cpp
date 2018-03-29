@@ -15,7 +15,7 @@ void ModelObject::Create(GLuint &Program)
 
 }
 
-void ModelObject::Draw(glm::mat4 &projection, glm::mat4 &view)
+void ModelObject::Draw(glm::mat4 &projection, glm::mat4 &view , glm::vec3 &camPos, const vector<Light*>& lights)
 {
 
 	glUseProgram(program);
@@ -37,7 +37,8 @@ void ModelObject::Draw(glm::mat4 &projection, glm::mat4 &view)
 	glUniformMatrix4fv(MatModel, 1, GL_FALSE, &mModel[0][0]);
 
 	AbstractObject::uniformColor(program, color);
-	AbstractObject::uniformLight(program, light);
+	AbstractObject::uniformLight(program, lights);
+	AbstractObject::uniformCameraPosition(program, camPos);
 
 	model.Draw(program);
 }

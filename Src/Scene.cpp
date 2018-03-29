@@ -14,7 +14,7 @@ Scene::~Scene(void)
 void Scene::setupScene()
 {
 	
-	direction = glm::vec3(0.0, 0.0, 1.0);
+	direction = glm::vec3(0.0, 1.0, 1.0);
 	position = glm::vec3(0.0, 0.0, 1.0);
 	orientation = glm::vec3(0.0, 1.0, 0.0);
 	yaw = -90;
@@ -39,16 +39,42 @@ void Scene::setupScene()
 	skybox.Create(skyboxID);
 
 	objects = std::make_shared<GroupObject>();
+	objects->addObject(make_shared<LightObject>());
+	objects->getCastedObjectAt<LightObject>(0)->setLight(0, glm::vec3(1, 1, 1), 0.2f, glm::vec3(1, 1, 1), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(-1, -1, 0), glm::vec3(0, 0, 0),30);
+	objects->addObject(make_shared<LightObject>());
+	objects->getCastedObjectAt<LightObject>(1)->setLight(1, glm::vec3(1, 1, 1), 0.2f, glm::vec3(0, 1, 1), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(0, -1, 0), glm::vec3(-0.25, -0.33, 0),30);
 	objects->addObject(make_shared<QuadObject>("Resources/Skybox/HandMadeSky_bk2.tga"));
-	objects->getObjectAt(0)->Create(texShaderID);
-	objects->getObjectAt(0)->setPosition(glm::vec3(0, 0, -2));
-	objects->getObjectAt(0)->setScale(glm::vec3(5, 5, 0));
+	objects->getObjectAt(2)->Create(texShaderID);
+	objects->getObjectAt(2)->setPosition(glm::vec3(0, 0, -2));
+	objects->getObjectAt(2)->setScale(glm::vec3(5, 5, 0));
 	objects->addObject(make_shared<QuadObject>("Resources/Image/Small-mario.png"));
-	objects->getObjectAt(1)->Create(texShaderID);
-	objects->getObjectAt(1)->setPosition(glm::vec3(0, 0, -1));
+	objects->getObjectAt(3)->Create(texShaderID);
+	objects->getObjectAt(3)->setPosition(glm::vec3(0, 0, -1));
 	objects->addObject(make_shared<ModelObject>());
-	objects->getObjectAt(2)->Create(shaderID);
-	objects->getObjectAt(2)->setPosition(glm::vec3(0, 0.0f, 0));
+	objects->getObjectAt(4)->Create(shaderID);
+	objects->getObjectAt(4)->setPosition(glm::vec3(0, -0.2f, 0));
+	objects->addObject(make_shared<ModelObject>());
+	objects->getObjectAt(5)->Create(shaderID);
+	objects->getObjectAt(5)->setPosition(glm::vec3(0.5f, -0.2f, 0));
+	objects->getObjectAt(5)->setColor(glm::vec4(1, 0, 0,1));
+	objects->addObject(make_shared<ModelObject>());
+	objects->getObjectAt(6)->Create(shaderID);
+	objects->getObjectAt(6)->setPosition(glm::vec3(-0.5f, -0.2f, 0));
+	objects->getObjectAt(6)->setColor(glm::vec4(0, 1, 0, 1));
+	objects->addObject(make_shared<LightObject>());
+	objects->getCastedObjectAt<LightObject>(7)->setLight(1, glm::vec3(1, 1, 1), 0.2f, glm::vec3(1, 1, 0), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(0, -1, 0), glm::vec3(0.25, -0.33, 0),30);
+	objects->addObject(make_shared<LightObject>());
+	objects->getCastedObjectAt<LightObject>(8)->setLight(2, glm::vec3(1, 1, 1), 0.2f, glm::vec3(1,0 , 0), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), 10);
+	objects->addObject(make_shared<LightObject>());
+	objects->getCastedObjectAt<LightObject>(9)->setLight(2, glm::vec3(1, 1, 1), 0.2f, glm::vec3(0, 1, 0), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), 10);
+
+	setupLight();
+}
+
+void Scene::setupLight()
+{
+	lights.clear();
+	objects->getLight(lights);
 }
 
 void Scene::setProjection(PROJECTIONTYPE type, const float & angleOfView, const float & aspect, const float & near, const float &far)
@@ -140,7 +166,7 @@ void Scene::MatView(glm::mat4 &matView, bool staticPos)
 
 void Scene::drawScene()
 {
-	objects->Draw(projection,view);
+	objects->Draw(projection,view,position, lights);
 }
 
 void Scene::MatPerspective(glm::mat4 &proj,const float & angleOfView,const float &aspect, const float & near, const float &far)
@@ -239,7 +265,7 @@ void Scene::mouseMotion(const unsigned int & timestamp, const unsigned int & win
 
 void Scene::drawSkybox()
 {
-	skybox.Draw(projection,view);
+	skybox.Draw(projection,view,position,lights);
 }
 
 std::shared_ptr<GroupObject> Scene::getObjects()
