@@ -19,6 +19,13 @@ public:
 
 	void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights);
 	AbstractObject::Light* getLight();
+
+	virtual void setRotationDegree(glm::vec3 rot);
+	virtual void addRotationDegree(const glm::vec3 &rot);
+	virtual void setRotationQuaternion(glm::quat quat);
+	virtual void addRotationQuaternion(const glm::quat &quat);
+	virtual void setColor(glm::vec4 Color);
+
 private:
 	AbstractObject::Light light;
 };

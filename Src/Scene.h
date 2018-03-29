@@ -36,8 +36,8 @@ public:
 	~Scene(void);
 
 	void setupScene();
-	void setProjection(PROJECTIONTYPE type, const float & angleOfView = 0.5236f, const float & aspect = 1.5f, const float & near = 0.1f, const float &far = 100.0f);
 	void setupLight();
+	void setProjection(PROJECTIONTYPE type, const float & angleOfView = 0.5236f, const float & aspect = 1.5f, const float & near = 0.1f, const float &far = 100.0f);
 
 	void drawSkybox();
 	void drawScene();
