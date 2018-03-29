@@ -72,7 +72,10 @@ private:
 
 	GLuint primitiveShaderID;
 	GLuint GPShaderID;
-	GLuint modelShaderID;
+	GLuint modelShaderPhongID;
+	GLuint modelShaderLambertID;
+	GLuint modelShaderBlinnPhongID;
+	GLuint currentModelShaderID;
 	GLuint texShaderID;
 
 	// Lumières

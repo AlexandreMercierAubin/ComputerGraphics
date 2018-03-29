@@ -57,7 +57,12 @@ void Renderer::initShaders()
 	TexShader texShader;
 	texShaderID = loader.CreateProgram(texShader);
 	ModelShader modelShader;
-	modelShaderID = loader.CreateProgram(modelShader);
+	modelShaderPhongID = loader.CreateProgram(modelShader);
+	ModelShaderLambert modelShaderLambert;
+	modelShaderLambertID = loader.CreateProgram(modelShaderLambert);
+	ModelShaderBlinnPhong modelShaderBlinnPhong;
+	modelShaderBlinnPhongID = loader.CreateProgram(modelShaderBlinnPhong);
+	currentModelShaderID = modelShaderPhongID;
 	SimpleGPShader GPShader;
 	GPShaderID = loader.CreateProgram(GPShader);
 
@@ -147,8 +152,12 @@ Renderer::~Renderer()
 {
 	glDeleteProgram(primitiveShaderID);
 	glDeleteBuffers(1, &primitiveShaderID);
-	glDeleteProgram(modelShaderID);
-	glDeleteBuffers(1, &modelShaderID);
+	glDeleteProgram(modelShaderPhongID);
+	glDeleteBuffers(1, &modelShaderPhongID);
+	glDeleteProgram(modelShaderLambertID);
+	glDeleteBuffers(1, &modelShaderLambertID);
+	glDeleteProgram(modelShaderBlinnPhongID);
+	glDeleteBuffers(1, &modelShaderBlinnPhongID);
 	glDeleteProgram(texShaderID);
 	glDeleteBuffers(1, &texShaderID);
 }
@@ -220,22 +229,46 @@ void Renderer::drawGUI()
 	ImGui::SetNextWindowPos(ImVec2(2.0f, ImGui::GetCurrentWindow()->Pos.y + ImGui::GetCurrentWindow()->Size.y + 3.0f));
 	ImGui::End();
 
-	// ********** Caméra **********
+	// ********** Autres options **********
 
-	ImGui::Begin("Camera", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+	ImGui::Begin("Autres options", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
-	bool radioClicked = false;
-	radioClicked |= ImGui::RadioButton("Perspective", (int*)&projectionType, (int)Scene::PROJECTIONTYPE::Perspective);
-	radioClicked |= ImGui::RadioButton("Perspective inverse", (int*)&projectionType, (int)Scene::PROJECTIONTYPE::InversePerspective);
-	radioClicked |= ImGui::RadioButton("Orthographique", (int*)&projectionType, (int)Scene::PROJECTIONTYPE::Orthographic);
-
-	if (radioClicked)
+	if (ImGui::Combo("Mode de projection", (int*)&projectionType, "Perspective\0Perspective inverse\0Orthographique\0"))
 	{
 		if (projectionType == Scene::PROJECTIONTYPE::Orthographic)
 			scene.setProjection(projectionType, glm::radians(80.0f));
 		else
 			scene.setProjection(projectionType);
 	}
+
+	ImGui::NewLine();
+
+	int illuminationType;
+	if (currentModelShaderID == modelShaderLambertID)
+		illuminationType = 0;
+	else if (currentModelShaderID == modelShaderPhongID)
+		illuminationType = 1;
+	else
+		illuminationType = 2;
+
+	if (ImGui::Combo("Type d'illumination", &illuminationType, "Lambert\0Phong\0Blinn-Phong\0"))
+	{
+		switch (illuminationType)
+		{
+		case 0:
+			currentModelShaderID = modelShaderLambertID;
+			break;
+
+		case 1:
+			currentModelShaderID = modelShaderPhongID;
+			break;
+
+		case 2:
+			currentModelShaderID = modelShaderBlinnPhongID;
+			break;
+		}
+	}
+	ImGui::Text("S'applique aux prochains modeles importes");
 
 	ImGui::End();
 
@@ -578,7 +611,7 @@ void Renderer::importModel(string file)
 
 	ModelObject object;
 	object.setModelToCreate(file);
-	object.Create(modelShaderID);
+	object.Create(currentModelShaderID);
 	scene.addObject(std::make_shared<ModelObject>(object));
 	//Resources/megalodon/megalodon.FBX
 	scene.setupLight();
