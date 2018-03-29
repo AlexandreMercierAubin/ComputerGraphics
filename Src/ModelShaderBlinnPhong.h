@@ -116,7 +116,10 @@ void main(void)
 			}		
 		}
 	}
-	color=(color/structLightSize)*vColor;// simple personalized way to counter overly white colors
+	float blendFactor=1;
+	if(color.w>1)
+		blendFactor=1/color.w;
+	color=vec4(color.x*blendFactor,color.y*blendFactor,color.z*blendFactor,color.w*blendFactor)*vColor;// simple personalized way to counter overly white colors
 	
 }
 
