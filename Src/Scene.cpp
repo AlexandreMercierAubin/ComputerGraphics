@@ -65,6 +65,8 @@ void Scene::setupScene()
 	objects->getCastedObjectAt<LightObject>(7)->setLight(1, glm::vec3(1, 1, 1), 0.2f, glm::vec3(1, 1, 0), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(0, -1, 0), glm::vec3(0.25, -0.33, 0),30);
 	objects->addObject(make_shared<LightObject>());
 	objects->getCastedObjectAt<LightObject>(8)->setLight(2, glm::vec3(1, 1, 1), 0.2f, glm::vec3(1,0 , 0), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), 10);
+	objects->addObject(make_shared<LightObject>());
+	objects->getCastedObjectAt<LightObject>(9)->setLight(2, glm::vec3(1, 1, 1), 0.2f, glm::vec3(0, 1, 0), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), 10);
 
 	setupLight();
 }
