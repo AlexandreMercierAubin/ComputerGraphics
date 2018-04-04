@@ -8,6 +8,7 @@ AbstractObject::AbstractObject()
 	rotationQuat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 	scale = glm::vec3(1.0f, 1.0f, 1.0f);
 	color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	shininess = 16.0f;
 }
 
 
@@ -141,6 +142,16 @@ glm::vec4 AbstractObject::getColor()
 	return color;
 }
 
+float AbstractObject::getShininess()
+{
+	return shininess;
+}
+
+void AbstractObject::setShininess(float inShininess)
+{
+	shininess = inShininess;
+}
+
 void AbstractObject::uniformLight(GLuint &program, vector<Light*>lights)
 {
 	GLuint size = glGetUniformLocation(program, "structLightSize");
@@ -181,6 +192,12 @@ void AbstractObject::uniformLight(GLuint &program, vector<Light*>lights)
 		location = "structLight[" + to_string(i) + "].type";
 		glUniform1i(glGetUniformLocation(program, location.c_str()), lights[i]->lightType);
 	}
+}
+
+void AbstractObject::uniformShininess(GLuint &program,float shininess)
+{
+	// Also set each Mesh's shininess property to a default value (if you want you could extend this to another Mesh property and possibly change this value)
+	glUniform1f(glGetUniformLocation(program, "shininess"), shininess);
 }
 
 bool AbstractObject::isSelected()

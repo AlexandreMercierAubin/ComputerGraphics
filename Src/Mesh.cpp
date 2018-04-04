@@ -37,9 +37,6 @@ void Mesh::Draw(GLuint shader)
 		glBindTexture(GL_TEXTURE_2D, this->texturesModel[i].id);
 	}
 
-	// Also set each Mesh's shininess property to a default value (if you want you could extend this to another Mesh property and possibly change this value)
-	glUniform1f(glGetUniformLocation(shader, "shininess"), 16.0f);
-
 	// Draw Mesh
 	glBindVertexArray(this->VAO);
 	glDrawElements(GL_TRIANGLES, this->indicesModel.size(), GL_UNSIGNED_INT, 0);

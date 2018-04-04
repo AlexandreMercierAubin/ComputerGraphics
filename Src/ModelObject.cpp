@@ -25,11 +25,11 @@ void ModelObject::Draw(glm::mat4 &projection, glm::mat4 &view , glm::vec3 &camPo
 	glUniformMatrix4fv(MatProjection, 1, GL_FALSE, &projection[0][0]);
 
 	glm::mat4 r;
-	MatRotationDegree(program, r, rotationDegree);
+	AbstractObject::MatRotationDegree(program, r, rotationDegree);
 	glm::mat4 t;
-	MatTranslation(program, t, position);
+	AbstractObject::MatTranslation(program, t, position);
 	glm::mat4 s;
-	MatScale(program, s, scale);
+	AbstractObject::MatScale(program, s, scale);
 
 	glm::mat4 mModel = t * r* s;
 
@@ -39,6 +39,7 @@ void ModelObject::Draw(glm::mat4 &projection, glm::mat4 &view , glm::vec3 &camPo
 	AbstractObject::uniformColor(program, color);
 	AbstractObject::uniformLight(program, lights);
 	AbstractObject::uniformCameraPosition(program, camPos);
+	AbstractObject::uniformShininess(program,shininess);
 
 	model.Draw(program);
 }

@@ -38,17 +38,24 @@ public:
 	virtual void setPosition(glm::vec3 pos);
 	virtual void addPosition(const glm::vec3 &pos);
 	virtual glm::vec3 getPosition();
+
 	virtual void setRotationDegree(glm::vec3 rot);
 	virtual void addRotationDegree(const glm::vec3 &rot);
 	virtual  glm::vec3 getRotationDegree();
 	virtual void setRotationQuaternion(glm::quat quat);
 	virtual void addRotationQuaternion(const glm::quat &quat);
 	virtual  glm::quat getRotationQuaternion();
+
 	virtual void setScale(glm::vec3 scl);
 	virtual void addScale(const glm::vec3 &scl);
 	virtual  glm::vec3 getScale();
+
 	virtual void setColor(glm::vec4 Color);
 	virtual glm::vec4 getColor();
+
+	virtual void setShininess(float shininess);
+	virtual float getShininess();
+
 
 	bool isSelected();
 	void setSelected(bool value);
@@ -61,6 +68,7 @@ protected:
 	virtual void uniformColor(GLuint &program, glm::vec4 &uniformColor);
 	virtual void uniformCameraPosition(GLuint &program, glm::vec3 &uniformCameraPos);
 	virtual void uniformLight(GLuint &program,vector<Light*>lights);
+	virtual void uniformShininess(GLuint &program,float shininess);
 
 	virtual void MatRotation(const GLuint &program, glm::mat4 &rotat, const glm::vec3 &r);
 	virtual void MatRotationDegree(const GLuint &program, glm::mat4 &rotat, const glm::vec3 &r);
@@ -73,6 +81,8 @@ protected:
 	glm::quat rotationQuat;
 	glm::vec3 position;
 	glm::vec3 scale;
+
+	float shininess;
 
 	GLuint program;
 
