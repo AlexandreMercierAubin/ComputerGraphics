@@ -18,6 +18,7 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+	glEnable(GL_CULL_FACE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDepthFunc(GL_LEQUAL);
 
@@ -34,6 +35,12 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 	currentRotation = glm::vec3(0.0f, 0.0f, 0.0f);
 	currentScale = glm::vec3(1.0f, 1.0f, 1.0f);
 
+	lightAmbientColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	lightDiffuseColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	lightSpecularColor = glm::vec3(1.0f, 1.0f, 1.0f);
+	lightPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+	lightDirection = glm::vec3(0.0f, -1.0f, 0.0f);
+
 	// Setup ImGUI
 	ImGui::CreateContext();
 	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
@@ -43,23 +50,25 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 
 void Renderer::initShaders()
 {
-	//test, remove that 
 	Core::ShaderLoader loader;
 	
-	// Do not remove
 	PrimitiveShader primitiveShader;
 	primitiveShaderID = loader.CreateProgram(primitiveShader);
 	TexShader texShader;
 	texShaderID = loader.CreateProgram(texShader);
 	ModelShader modelShader;
-	modelShaderID = loader.CreateProgram(modelShader);
+	modelShaderPhongID = loader.CreateProgram(modelShader);
+	ModelShaderLambert modelShaderLambert;
+	modelShaderLambertID = loader.CreateProgram(modelShaderLambert);
+	ModelShaderBlinnPhong modelShaderBlinnPhong;
+	modelShaderBlinnPhongID = loader.CreateProgram(modelShaderBlinnPhong);
+	currentModelShaderID = modelShaderPhongID;
 	SimpleGPShader GPShader;
 	GPShaderID = loader.CreateProgram(GPShader);
 
 	curseur.Create(primitiveShaderID);
 	curseur.setCouleurRemplissage(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	curseur.setCouleurBordure(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-	// End do not remove
 
 }
 
@@ -67,33 +76,10 @@ void Renderer::initShaders()
 
 void Renderer::drawRenderer(Scene::KeyFlags &flags)
 {
-	/*glUseProgram(kochShaderID);*/
 
 	glClearColor(BackgroundColor[0], BackgroundColor[1], BackgroundColor[2], 0);// background
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//MatRotation();
-	//MatScale();
-	//MatTranslation();
-
-	//glBindBuffer(GL_ARRAY_BUFFER, kochBufferID);
-	//glBufferData(GL_ARRAY_BUFFER, Lines.size() * sizeof(glm::vec3), Lines.data(), GL_STATIC_DRAW);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	//glBindBuffer(GL_ARRAY_BUFFER, kochBufferColorID);
-	//glBufferData(GL_ARRAY_BUFFER, Colors.size() * sizeof(glm::vec3), Colors.data(), GL_STATIC_DRAW);
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-	//glEnableVertexAttribArray(0);
-	//glEnableVertexAttribArray(1);
-
-	//glLineWidth((GLfloat)epaisseurBordure);
-	//glDrawArrays(GL_LINES, 0, Lines.size());
-
-	//glDisableVertexAttribArray(0);
-	//glDisableVertexAttribArray(1);
-
-	//glm::vec3 temp1(0.0f, -0.2f, 0.5f); glm::vec3 temp2(0.0028f, 0.0028f, 0.0028f);
+	
 	scene.refreshScene(flags);
 
 	if (utiliserSkybox)
@@ -166,8 +152,12 @@ Renderer::~Renderer()
 {
 	glDeleteProgram(primitiveShaderID);
 	glDeleteBuffers(1, &primitiveShaderID);
-	glDeleteProgram(modelShaderID);
-	glDeleteBuffers(1, &modelShaderID);
+	glDeleteProgram(modelShaderPhongID);
+	glDeleteBuffers(1, &modelShaderPhongID);
+	glDeleteProgram(modelShaderLambertID);
+	glDeleteBuffers(1, &modelShaderLambertID);
+	glDeleteProgram(modelShaderBlinnPhongID);
+	glDeleteBuffers(1, &modelShaderBlinnPhongID);
 	glDeleteProgram(texShaderID);
 	glDeleteBuffers(1, &texShaderID);
 }
@@ -235,6 +225,50 @@ void Renderer::drawGUI()
 		SDL_GetWindowSize(window, &w, &h);
 		screenShot(0, 0, w, h, fileName.c_str());
 	}
+
+	ImGui::SetNextWindowPos(ImVec2(2.0f, ImGui::GetCurrentWindow()->Pos.y + ImGui::GetCurrentWindow()->Size.y + 3.0f));
+	ImGui::End();
+
+	// ********** Autres options **********
+
+	ImGui::Begin("Autres options", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+	if (ImGui::Combo("Mode de projection", (int*)&projectionType, "Perspective\0Perspective inverse\0Orthographique\0"))
+	{
+		if (projectionType == Scene::PROJECTIONTYPE::Orthographic)
+			scene.setProjection(projectionType, glm::radians(80.0f));
+		else
+			scene.setProjection(projectionType);
+	}
+
+	ImGui::NewLine();
+
+	int illuminationType;
+	if (currentModelShaderID == modelShaderLambertID)
+		illuminationType = 0;
+	else if (currentModelShaderID == modelShaderPhongID)
+		illuminationType = 1;
+	else
+		illuminationType = 2;
+
+	if (ImGui::Combo("Type d'illumination", &illuminationType, "Lambert\0Phong\0Blinn-Phong\0"))
+	{
+		switch (illuminationType)
+		{
+		case 0:
+			currentModelShaderID = modelShaderLambertID;
+			break;
+
+		case 1:
+			currentModelShaderID = modelShaderPhongID;
+			break;
+
+		case 2:
+			currentModelShaderID = modelShaderBlinnPhongID;
+			break;
+		}
+	}
+	ImGui::Text("S'applique aux prochains modeles importes");
 
 	ImGui::End();
 
@@ -365,6 +399,54 @@ void Renderer::drawGUI()
 		echantillonnageImage(imageBase,imageEchantillon);
 
 	samplingWindowHeight = ImGui::GetCurrentWindow()->Size.y;
+	ImGui::End();
+
+	// ********** Lumières **********
+
+	ImGui::SetNextWindowPos(ImVec2(sdlWindowWidth - lightsWindowSize.x - 2.0f, sdlWindowHeight - lightsWindowSize.y - 2.0f));
+	ImGui::Begin("Lumieres", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+	ImGui::Combo("Type", &lightType, "Directionnelle\0Ponctuelle\0Projecteur\0");
+	ImGui::ColorEdit3("Couleur ambiante", &lightAmbientColor.r);
+	ImGui::SliderFloat("Intensite ambiante", &lightAmbientIntensity, 0.0f, 1.0f);
+	ImGui::ColorEdit3("Couleur diffuse", &lightDiffuseColor.r);
+	ImGui::SliderFloat("Intensite diffuse", &lightDiffuseIntensity, 0.0f, 1.0f);
+	ImGui::ColorEdit3("Couleur speculaire", &lightSpecularColor.r);
+	ImGui::SliderFloat("Intensite speculaire", &lightSpecularIntensity, 0.0f, 1.0f);
+
+	if (lightType != 0)
+		ImGui::SliderFloat("Attenuation", &lightAttenuation, 0.0f, 1.0f);
+
+	if (lightType != 1)
+		ImGui::DragFloat3("Direction", &lightDirection.x, 0.01f, -1000.0f, 1000.0f, "%.2f");
+
+	if (lightType != 0)
+		ImGui::DragFloat3("Position", &lightPosition.x, 0.01f, -1000.0f, 1000.0f, "%.2f");
+
+	if (lightType == 2)
+		ImGui::SliderFloat("Angle cone", &lightConeAngle, 0.01f, 179.9f, "%.2f");
+
+	if (ImGui::Button("Ajouter une lumiere"))
+	{
+		std::shared_ptr<LightObject> light = std::make_shared<LightObject>();
+		light->setLight(
+			lightType,
+			lightAmbientColor,
+			lightAmbientIntensity,
+			lightDiffuseColor,
+			lightDiffuseIntensity,
+			lightSpecularColor,
+			lightSpecularIntensity,
+			lightAttenuation,
+			lightDirection,
+			lightPosition,
+			lightConeAngle);
+
+		scene.addObject(light);
+		scene.setupLight();
+	}
+
+	lightsWindowSize = ImVec2(ImGui::GetCurrentWindow()->Size.x, ImGui::GetCurrentWindow()->Size.y);
 	ImGui::End();
 
 	// Render
@@ -514,6 +596,7 @@ void Renderer::importImage(string fichier)
 	scene.addObject(std::make_shared<QuadObject>(fichier));
 	std::shared_ptr<GroupObject> objects= scene.getObjects();
 	objects->getObjectAt(objects->size()-1)->Create(texShaderID);
+	scene.setupLight();
 }
 
 void Renderer::importModel(string file)
@@ -528,9 +611,10 @@ void Renderer::importModel(string file)
 
 	ModelObject object;
 	object.setModelToCreate(file);
-	object.Create(modelShaderID);
+	object.Create(currentModelShaderID);
 	scene.addObject(std::make_shared<ModelObject>(object));
 	//Resources/megalodon/megalodon.FBX
+	scene.setupLight();
 }
 void Renderer::imagePerlinNoise(string fichier)
 {
@@ -831,6 +915,7 @@ void Renderer::eraseNodes()
 			pair.second->deleteObject(pair.first);
 	}
 	selectedNodes.clear();
+	scene.setupLight();
 }
 
 void Renderer::groupNodes()

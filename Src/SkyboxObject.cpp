@@ -104,14 +104,14 @@ GLuint SkyboxObject::loadCubemap(std::vector<char*> faces, GLint wrapS, GLint wr
 }
 
 
-void SkyboxObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
+void SkyboxObject::Draw(glm::mat4 &projection, glm::mat4 &view , glm::vec3 &camPos, const vector<Light*>& lights)
 {
 	glUseProgram(program);
 	uniformColor(program, color);
 	GLuint MatView = glGetUniformLocation(program, "matView");
 	glUniformMatrix4fv(MatView, 1, GL_FALSE, &view[0][0]);
-	GLuint MatPerspective = glGetUniformLocation(program, "matPerspective");
-	glUniformMatrix4fv(MatPerspective, 1, GL_FALSE, &perspective[0][0]);
+	GLuint MatProjection = glGetUniformLocation(program, "matProjection");
+	glUniformMatrix4fv(MatProjection, 1, GL_FALSE, &projection[0][0]);
 
 	//Changer le test de profondeur
 	glDepthMask(GL_FALSE);
@@ -121,11 +121,15 @@ void SkyboxObject::Draw(glm::mat4 &perspective, glm::mat4 &view)
 	glUniform1i(glGetUniformLocation(program, "skybox"), 0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureSkybox);
 
+	// Innverser temporairement l'occlusion pour que l'intérieur du cube soit visible au lieu de l'extérieur
+	glCullFace(GL_FRONT);
+
 	//Dessiner le cube
 	glBindVertexArray(VertexArray);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
+	glCullFace(GL_BACK);
 	glDepthMask(GL_TRUE);
 }
 

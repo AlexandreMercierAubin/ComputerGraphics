@@ -53,6 +53,7 @@ private:
 
 	float transformationsWindowWidth = 0;
 	float samplingWindowHeight = 0;
+	ImVec2 lightsWindowSize;
 
 	float testScale;
 
@@ -71,8 +72,24 @@ private:
 
 	GLuint primitiveShaderID;
 	GLuint GPShaderID;
-	GLuint modelShaderID;
+	GLuint modelShaderPhongID;
+	GLuint modelShaderLambertID;
+	GLuint modelShaderBlinnPhongID;
+	GLuint currentModelShaderID;
 	GLuint texShaderID;
+
+	// Lumières
+	int lightType = 0; // 0 = directionnelle, 1 = ponctuelle, 2 = projecteur
+	glm::vec3 lightAmbientColor;
+	float lightAmbientIntensity = 1.0f;
+	glm::vec3 lightDiffuseColor;
+	float lightDiffuseIntensity = 1.0f;
+	glm::vec3 lightSpecularColor;
+	float lightSpecularIntensity = 1.0f;
+	float lightAttenuation = 1.0f;
+	glm::vec3 lightDirection;
+	glm::vec3 lightPosition;
+	float lightConeAngle = 10.0f;
 
 	// Échantillonnage d’image
 	int postionEchantillonnage = 0; // 0 = Haut-Gauche, 1 = Haut-Milieu, 2 = Milieu-Gauche, 3 = Milieu-Milieu
@@ -93,7 +110,10 @@ private:
 	void addScale(const glm::vec3 &v);
 	void updateTransformations();
 
-	std::vector<std::pair<std::shared_ptr<AbstractObject>, std::shared_ptr<GroupObject>>> selectedNodes;
+	// Camera
+	Scene::PROJECTIONTYPE projectionType = Scene::PROJECTIONTYPE::Perspective;
+
+	std::vector<std::pair<std::shared_ptr<AbstractObject>, std::shared_ptr<GroupObject>>> selectedNodes; //not needed as there is a getCastedAt in groupObject and the tree is a groupObject, not an abstractObject
 	std::shared_ptr<GroupObject> castToGroupObject(std::shared_ptr<AbstractObject> obj);
 	void deselectAllNodes();
 	void deselectNode(std::shared_ptr<AbstractObject> obj);
