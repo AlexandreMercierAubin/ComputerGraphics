@@ -36,38 +36,27 @@ void Scene::setupScene()
 	skyboxID = loader.CreateProgram(skyboxShader);
 	GLuint texShaderID = loader.CreateProgram(texShader);
 
+	
 	skybox.Create(skyboxID);
-
 	objects = std::make_shared<GroupObject>();
 	objects->addObject(make_shared<LightObject>());
 	objects->getCastedObjectAt<LightObject>(0)->setLight(0, glm::vec3(1, 1, 1), 0.2f, glm::vec3(1, 1, 1), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(-1, -1, 0), glm::vec3(0, 0, 0),30);
 	objects->addObject(make_shared<LightObject>());
-	objects->getCastedObjectAt<LightObject>(1)->setLight(1, glm::vec3(1, 1, 1), 0.2f, glm::vec3(0, 1, 1), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(0, -1, 0), glm::vec3(-0.25, -0.33, 0),30);
-	objects->addObject(make_shared<QuadObject>("Resources/Skybox/HandMadeSky_bk2.tga"));
-	objects->getObjectAt(2)->Create(texShaderID);
-	objects->getObjectAt(2)->setPosition(glm::vec3(0, 0, -2));
-	objects->getObjectAt(2)->setScale(glm::vec3(5, 5, 0));
+	objects->getCastedObjectAt<LightObject>(1)->setLight(1, glm::vec3(1, 1, 1), 0.2f, glm::vec3(0, 1, 1), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(0, -1, 0), glm::vec3(-0.25, 7.5, 0),30);
 	objects->addObject(make_shared<QuadObject>("Resources/Image/Small-mario.png"));
-	objects->getObjectAt(3)->Create(texShaderID);
-	objects->getObjectAt(3)->setPosition(glm::vec3(0, 0, -1));
+	objects->getObjectAt(2)->Create(texShaderID);
+	objects->getObjectAt(2)->setPosition(glm::vec3(0, 0, -1));
+	objects->addObject(make_shared<ModelObject>());
+	objects->getObjectAt(3)->Create(shaderID);
+	objects->getObjectAt(3)->setPosition(glm::vec3(0, -0.2f, 0));
 	objects->addObject(make_shared<ModelObject>());
 	objects->getObjectAt(4)->Create(shaderID);
-	objects->getObjectAt(4)->setPosition(glm::vec3(0, -0.2f, 0));
+	objects->getObjectAt(4)->setPosition(glm::vec3(0.5f, -0.2f, 0));
+	objects->getObjectAt(4)->setColor(glm::vec4(1, 0, 0,1));
 	objects->addObject(make_shared<ModelObject>());
 	objects->getObjectAt(5)->Create(shaderID);
-	objects->getObjectAt(5)->setPosition(glm::vec3(0.5f, -0.2f, 0));
-	objects->getObjectAt(5)->setColor(glm::vec4(1, 0, 0,1));
-	objects->addObject(make_shared<ModelObject>());
-	objects->getObjectAt(6)->Create(shaderID);
-	objects->getObjectAt(6)->setPosition(glm::vec3(-0.5f, -0.2f, 0));
-	objects->getObjectAt(6)->setColor(glm::vec4(0, 1, 0, 1));
-	objects->addObject(make_shared<LightObject>());
-	objects->getCastedObjectAt<LightObject>(7)->setLight(1, glm::vec3(1, 1, 1), 0.2f, glm::vec3(1, 1, 0), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(0, -1, 0), glm::vec3(0.25, -0.33, 0),30);
-	objects->addObject(make_shared<LightObject>());
-	objects->getCastedObjectAt<LightObject>(8)->setLight(2, glm::vec3(1, 1, 1), 0.2f, glm::vec3(1,0 , 0), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), 10);
-	objects->addObject(make_shared<LightObject>());
-	objects->getCastedObjectAt<LightObject>(9)->setLight(2, glm::vec3(1, 1, 1), 0.2f, glm::vec3(0, 1, 0), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), 10);
-
+	objects->getObjectAt(5)->setPosition(glm::vec3(-0.5f, -0.2f, 0));
+	objects->getObjectAt(5)->setColor(glm::vec4(0, 1, 0, 1));
 	setupLight();
 }
 

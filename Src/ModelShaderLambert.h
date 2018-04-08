@@ -79,7 +79,7 @@ void main(void)
 				  diffuseColor = vec4(0, 0, 0, 1);
 			  }
 
-			  color+= texture(texture_diffuse, TexCoord)*(vAmbient + diffuseColor);
+			  color+= texColor*(vAmbient + diffuseColor);
 		}
 		else if(structLight[i].type==1)
 		{
