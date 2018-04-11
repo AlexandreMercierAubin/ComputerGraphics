@@ -12,6 +12,7 @@
 #include "ShaderLoader.h"
 #include "SkyboxShader.h"
 #include "TexShader.h"
+#include "PrimitiveShader.h"
 #include "ModelObject.h"
 #include "GroupObject.h"
 #include "LightObject.h"

@@ -31,11 +31,12 @@ void Scene::setupScene()
 	ModelShader modelShader;
 	SkyboxShader skyboxShader;
 	TexShader texShader;
-	
+	PrimitiveShader pShader;
+
 	shaderID = loader.CreateProgram(modelShader);
 	skyboxID = loader.CreateProgram(skyboxShader);
 	GLuint texShaderID = loader.CreateProgram(texShader);
-
+	GLuint primitiveShaderID= loader.CreateProgram(pShader);
 	
 	skybox.Create(skyboxID);
 	objects = std::make_shared<GroupObject>();
@@ -57,6 +58,21 @@ void Scene::setupScene()
 	objects->getObjectAt(5)->Create(shaderID);
 	objects->getObjectAt(5)->setPosition(glm::vec3(-0.5f, -0.2f, 0));
 	objects->getObjectAt(5)->setColor(glm::vec4(0, 1, 0, 1));
+
+	objects->addObject(make_shared<ParametricCurveObject>());
+	objects->getObjectAt(6)->Create(primitiveShaderID);
+	std::vector<glm::vec3> vertices;
+	vertices.push_back(glm::vec3(-0.3, 0, 0));
+	vertices.push_back(glm::vec3(0.0, 0.5, 0));
+	vertices.push_back(glm::vec3(0.3, 0.0, 0));
+	vertices.push_back(glm::vec3(0.0, 0.0, 0));
+	objects->getCastedObjectAt<ParametricCurveObject>(6)->setParametricType(ParametricCurveObject::Hermite);
+	objects->getCastedObjectAt<ParametricCurveObject>(6)->setVertices(vertices);
+	objects->getCastedObjectAt<ParametricCurveObject>(6)->setColor(glm::vec4(0,0,0,1));
+	objects->getCastedObjectAt<ParametricCurveObject>(6)->setEdgeColor(glm::vec4(0, 0, 0, 1));
+	objects->getCastedObjectAt<ParametricCurveObject>(6)->setEdgeSize(5);
+	
+
 	setupLight();
 }
 
