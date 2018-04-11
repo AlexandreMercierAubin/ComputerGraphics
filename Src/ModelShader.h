@@ -63,7 +63,7 @@ vec4 MakeLightPoint(vec3 vAmbient,vec3 surfaceToLight,vec3 surfaceToCamera,float
 
 void main(void)
 {
-	texColor =texture(texture_diffuse, TexCoord);
+	texColor =texture(texture_diffuse, TexCoord)*vColor;
 	normalizedNormal = normalize(normal); //safety to counter interpolation    
 
 	color=vec4(0,0,0,0);
@@ -84,7 +84,7 @@ void main(void)
 				  diffuseColor = vec4(0, 0, 0, 1);
 			  }
 
-			  color+= texture(texture_diffuse, TexCoord)*(vAmbient + diffuseColor);
+			  color+= texColor*(vAmbient + diffuseColor);
 		}
 		else if(structLight[i].type==1)
 		{
@@ -119,7 +119,7 @@ void main(void)
 	float blendFactor=1;
 	if(color.w>1)
 		blendFactor=1/color.w;
-	color=vec4(color.x*blendFactor,color.y*blendFactor,color.z*blendFactor,color.w*blendFactor)*vColor;// simple personalized way to counter overly white colors
+	color=vec4(color.x*blendFactor,color.y*blendFactor,color.z*blendFactor,color.w*blendFactor);// simple personalized way to counter overly white colors
 	
 }
 
