@@ -21,9 +21,9 @@ public:
 	void Create(GLuint &program, string name);
 	void Draw();
 
-	void setVertices(std::vector<glm::vec3> vertices);
-	void setCouleurRemplissage(glm::vec4 couleur);
-	void setCouleurBordure(glm::vec4 couleur);
-	void setEpaisseurBordure(int valeur);
-	void setTypePrimitive(GLenum type);
+	virtual void setVertices(const std::vector<glm::vec3> & vertices);
+	virtual void setCouleurRemplissage(glm::vec4 couleur);
+	virtual void setCouleurBordure(glm::vec4 couleur);
+	virtual void setEpaisseurBordure(int valeur);
+	virtual void setTypePrimitive(GLenum type);
 };

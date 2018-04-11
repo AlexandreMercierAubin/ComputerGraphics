@@ -98,7 +98,7 @@ PrimitiveObject::~PrimitiveObject()
 	glDeleteVertexArrays(1, &vertexArray);
 }
 
-void PrimitiveObject::setVertices(std::vector<glm::vec3> vertices)
+void PrimitiveObject::setVertices(const std::vector<glm::vec3> &vertices)
 {
 	this->vertices = vertices;
 }

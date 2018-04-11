@@ -19,6 +19,7 @@
 #include "ModelShader.h"
 #include "ModelShaderLambert.h"
 #include "ModelShaderBlinnPhong.h"
+#include "ParametricCurveObject.h"
 
 class Scene
 {
