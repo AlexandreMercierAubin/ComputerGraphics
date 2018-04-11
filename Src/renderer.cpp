@@ -333,6 +333,13 @@ void Renderer::drawGUI()
 		if (ImGui::ColorEdit4("Couleur", &currentColor.x))
 			setColor();
 
+		float oldShininess = currentShininess;
+		if (ImGui::DragFloat("Brillance", &currentShininess, 0.1f, 0.1f, 1000.0f, "%.1F"))
+		{
+			currentShininess = glm::clamp(currentShininess, 0.1f, 1000.0f);
+			addShininess(currentShininess - oldShininess);
+		}
+
 		glm::vec3 oldTranslation = currentTranslation;
 		if (ImGui::DragFloat3("Translation", &currentTranslation.x, 0.01f, -1000.0f, 1000.0f, "%.2f"))
 			addTranslation(currentTranslation - oldTranslation);
@@ -945,6 +952,12 @@ void Renderer::setColor()
 		pair.first->setColor(currentColor);
 }
 
+void Renderer::addShininess(const float &v)
+{
+	for (auto pair : selectedNodes)
+		pair.first->addShininess(v);
+}
+
 void Renderer::addTranslation(const glm::vec3 &v)
 {
 	for (auto pair : selectedNodes)
@@ -976,6 +989,7 @@ void Renderer::updateTransformations()
 		std::shared_ptr<AbstractObject> obj = selectedNodes[0].first;
 
 		currentColor = obj->getColor();
+		currentShininess = obj->getShininess();
 		currentRotation = obj->getRotationDegree();
 		currentRotationQuat = obj->getRotationQuaternion();
 		currentTranslation = obj->getPosition();
@@ -984,6 +998,7 @@ void Renderer::updateTransformations()
 	else // Aucun ou plusieurs sélectionnés
 	{
 		currentColor = glm::vec4(0, 0, 0, 1);
+		currentShininess = 50.0f;
 		currentRotation = glm::vec3(0,0,0);
 		currentRotationQuat = glm::quat(1,0,0,0);
 		currentTranslation = glm::vec3(0, 0, 0);

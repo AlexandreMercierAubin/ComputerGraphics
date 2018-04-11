@@ -54,6 +54,7 @@ public:
 	virtual glm::vec4 getColor();
 
 	virtual void setShininess(float shininess);
+	virtual void addShininess(const float &shininess);
 	virtual float getShininess();
 
 
