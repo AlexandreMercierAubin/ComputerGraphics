@@ -24,7 +24,7 @@ void PrimitiveObject::Create(GLuint &Program, string Name)
 	glGenVertexArrays(1, &vertexArray);
 }
 
-void PrimitiveObject::Draw(glm::mat4 &projection, glm::mat4 &view)
+void PrimitiveObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights)
 {
 	glUseProgram(program);
 
