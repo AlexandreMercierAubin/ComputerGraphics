@@ -71,7 +71,7 @@ void Scene::setupScene()
 	vertices.push_back(glm::vec3(-1.0, 0.0, 0));
 	vertices.push_back(glm::vec3(0.0, -1.0, 0));
 	vertices.push_back(glm::vec3(0.0, 1.0, 0));
-	objects->getCastedObjectAt<ParametricCurveObject>(6)->setParametricType(ParametricCurveObject::Bezier);
+	objects->getCastedObjectAt<ParametricCurveObject>(6)->setParametricType(ParametricCurveObject::CatmullRom);
 	objects->getCastedObjectAt<ParametricCurveObject>(6)->setNumLines(100);
 	objects->getCastedObjectAt<ParametricCurveObject>(6)->setVertices(vertices);
 	objects->getCastedObjectAt<ParametricCurveObject>(6)->setColor(glm::vec4(0,0,0,1));
