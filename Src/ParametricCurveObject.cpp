@@ -86,7 +86,7 @@ glm::vec3 ParametricCurveObject::bezier(std::vector<glm::vec3> pt, float t)// wo
 	return point;
 }
 
-glm::vec3 ParametricCurveObject::catmullRom(std::vector<glm::vec3> pt, float t) // 4 pts needed
+glm::vec3 ParametricCurveObject::catmull_rom(std::vector<glm::vec3> pt, float t) // 4 pts needed
 {
 
 
@@ -152,7 +152,7 @@ void ParametricCurveObject::setVertices(std::vector<glm::vec3> &vertices)//must 
 	case CatmullRom:
 		if (vertices.size() >= 4)
 		{
-			forNumLines(vertices, numLines + 1, catmullRom);
+			forNumLines(vertices, numLines + 1, catmull_rom);
 			return;
 		}
 		break;

@@ -26,19 +26,23 @@ public:
 	void setParametricType(PARAMETRICTYPE in_type);
 	virtual void Create(GLuint &program);
 	virtual void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights);
-private:
-	PARAMETRICTYPE type;
-	int numLines;
+
 	static unsigned int factorial(unsigned int n);
 	static  glm::vec3 bezier_quadratic(std::vector<glm::vec3> pt, float t);
 	static  glm::vec3 bezier_cubic(std::vector<glm::vec3> pt, float t);
 	static glm::vec3 hermite(std::vector<glm::vec3> pt, float t);
 	static glm::vec3 bezier(std::vector<glm::vec3> pt, float t);
-	static glm::vec3 catmullRom(std::vector<glm::vec3> pt, float t);
+	static glm::vec3 catmull_rom(std::vector<glm::vec3> pt, float t);
+private:
+	PARAMETRICTYPE type;
+	void forNumLines(std::vector<glm::vec3>&vertices, int num, std::function<glm::vec3(vector<glm::vec3>, float)> func);
+
+	int numLines;
+
 
 
 	
-	void forNumLines(std::vector<glm::vec3>&vertices, int num, std::function<glm::vec3(vector<glm::vec3>, float)> func);
+	
 
 
 };
