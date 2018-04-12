@@ -1,7 +1,7 @@
 #include "ParametricCurveObject.h"
 
 
-void ParametricCurveObject::forNumLines(std::vector<glm::vec3> vertices, int num, std::function<glm::vec3(vector<glm::vec3>, float)> func)
+void ParametricCurveObject::forNumLines(std::vector<glm::vec3> &vertices, int num, std::function<glm::vec3(vector<glm::vec3>, float)> func)
 {
 	lines.clear();
 
@@ -131,7 +131,7 @@ void ParametricCurveObject::setNumLines(int num)
 	numLines = num;
 }
 
-void ParametricCurveObject::setVertices(std::vector<glm::vec3> vertices)//must be executed first
+void ParametricCurveObject::setVertices(std::vector<glm::vec3> &vertices)//must be executed first
 {
 	switch (type) 
 	{

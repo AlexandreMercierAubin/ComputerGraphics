@@ -19,7 +19,7 @@ public:
 	std::vector<PrimitiveObject> lines;
 
 	void setNumLines(int num);
-	void setVertices(std::vector<glm::vec3> vertices);
+	void setVertices(std::vector<glm::vec3> &vertices);
 	void setFillColor(glm::vec4 color);
 	void setEdgeColor(glm::vec4 color);
 	void setEdgeSize(int value);
@@ -38,7 +38,7 @@ private:
 
 
 	
-	void forNumLines(std::vector<glm::vec3>vertices, int num, std::function<glm::vec3(vector<glm::vec3>, float)> func);
+	void forNumLines(std::vector<glm::vec3>&vertices, int num, std::function<glm::vec3(vector<glm::vec3>, float)> func);
 
 
 };
