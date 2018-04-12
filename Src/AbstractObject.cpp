@@ -152,6 +152,11 @@ void AbstractObject::setShininess(float inShininess)
 	shininess = inShininess;
 }
 
+void AbstractObject::addShininess(const float &inShininess)
+{
+	shininess += inShininess;
+}
+
 void AbstractObject::uniformLight(GLuint &program, vector<Light*>lights)
 {
 	GLuint size = glGetUniformLocation(program, "structLightSize");

@@ -120,6 +120,30 @@ void GroupObject::getLight(std::vector<Light*>& lights)
 	}
 }
 
+bool GroupObject::raycast(const Ray &ray, double &distance, std::shared_ptr<AbstractObject> &object)
+{
+	bool intersect = false;
+	distance = std::numeric_limits<double>::infinity();
+
+	for (auto obj : vObject)
+	{
+		double dist = std::numeric_limits<double>::infinity();
+		std::shared_ptr<AbstractObject> o;
+
+		if (obj->raycast(ray, dist, o))
+		{
+			intersect = true;
+			if (dist < distance)
+			{
+				distance = dist;
+				object = o;
+			}
+		}
+	}
+
+	return intersect;
+}
+
 GroupObject::GroupObject()
 {
 	name = "Groupe";

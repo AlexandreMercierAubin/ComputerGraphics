@@ -97,6 +97,7 @@ private:
 
 	// Transformations
 	glm::vec4 currentColor;
+	float currentShininess = 50.0f;
 	glm::vec3 currentTranslation;
 	glm::vec3 currentRotation;
 	glm::quat currentRotationQuat;
@@ -104,6 +105,7 @@ private:
 	bool proportionalResizing = true;
 	bool useQuaternion = false;
 	void setColor();
+	void addShininess(const float &v);
 	void addTranslation(const glm::vec3 &v);
 	void addRotation(const glm::vec3 &v);
 	void addRotation(const glm::quat &q);
