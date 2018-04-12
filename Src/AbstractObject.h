@@ -4,7 +4,8 @@
 #include <sstream>
 #include <string>
 #include<cmath>
-
+#include "Ray.h"
+#include <memory>
 
 class AbstractObject
 {
@@ -57,6 +58,7 @@ public:
 	virtual void addShininess(const float &shininess);
 	virtual float getShininess();
 
+	virtual bool raycast(const Ray &ray, double &distance, std::shared_ptr<AbstractObject> &object) { return false; }
 
 	bool isSelected();
 	void setSelected(bool value);

@@ -48,7 +48,8 @@ public:
 
 	void dollyZoom(float dolly, float zoom);
 
-	
+	bool raycast(const Ray &ray, double &distance, std::shared_ptr<AbstractObject> &object);
+
 
 	struct KeyFlags
 	{

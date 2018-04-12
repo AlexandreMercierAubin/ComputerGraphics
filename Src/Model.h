@@ -33,6 +33,8 @@ public:
 	static SDL_Surface *loadImage(string filename);
 	static void getImageProperties(SDL_Surface *image, GLint &nOfColors, GLenum &texture_format);
 
+	vector<Mesh> getMeshes() { return Meshes; }
+
 private:
 	/*  Model Data  */
 	

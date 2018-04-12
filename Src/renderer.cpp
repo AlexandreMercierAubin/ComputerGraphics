@@ -195,6 +195,24 @@ void Renderer::drawGUI()
 	if (ImGui::Button("Afficher texture PerlinNoise"))
 		imagePerlinNoise("Resources/Image/Couleur.png");
 
+	///////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////   PLEASE REMOVE   ///////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////
+	if (ImGui::Button("TEST"))
+	{
+		Ray ray(glm::vec3(-1.5f, -0.15f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		double distance = std::numeric_limits<double>::infinity();
+		std::shared_ptr<AbstractObject> obj;
+		bool result = scene.raycast(ray, distance, obj);
+		std::cout << (result ? "t" : "f") << " " << distance << std::endl;
+
+		ray = Ray(glm::vec3(1.5f, -0.14f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+		distance = std::numeric_limits<double>::infinity();
+		obj = nullptr;
+		result = scene.raycast(ray, distance, obj);
+		std::cout << (result ? "t" : "f") << " " << distance << std::endl;
+	}
+
 	ImGui::SetNextWindowPos(ImVec2(2.0f, ImGui::GetCurrentWindow()->Size.y + 5.0f));
 	ImGui::End();
 
@@ -332,7 +350,7 @@ void Renderer::drawGUI()
 
 		if (ImGui::ColorEdit4("Couleur", &currentColor.x))
 			setColor();
-
+		
 		float oldShininess = currentShininess;
 		if (ImGui::DragFloat("Brillance", &currentShininess, 0.1f, 0.1f, 1000.0f, "%.1F"))
 		{

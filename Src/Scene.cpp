@@ -92,6 +92,10 @@ void Scene::dollyZoom(float dolly,float zoom)
 	MatView(view,false);
 }
 
+bool Scene::raycast(const Ray &ray, double &distance, std::shared_ptr<AbstractObject> &object)
+{
+	return objects->raycast(ray, distance, object);
+}
 
 
 void Scene::addObject(shared_ptr<AbstractObject> object) 
