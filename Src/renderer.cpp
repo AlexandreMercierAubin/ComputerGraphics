@@ -177,7 +177,7 @@ void Renderer::drawGUI()
 	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
 	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
 	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
-	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide\0"))
+	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide\0SurfaceParam\0"))
 		ptsDessin.clear();
 
 	ImGui::NewLine();
@@ -740,6 +740,9 @@ void Renderer::ajouterPtDessin(int x, int y)
 	case 8://pyramid
 		addSBPyramid();
 		break;
+	case 9://pyramid
+		addParametricSurface();
+		break;
 
 	}
 
@@ -777,6 +780,14 @@ void Renderer::addCube()
 void Renderer::addSBPyramid()
 {
 	scene.addObject(make_shared<SBPyramidObject>());
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->setColor(couleurRemplissage);
+	ptsDessin.clear();
+}
+
+void Renderer::addParametricSurface()
+{
+	scene.addObject(make_shared<ParametricSurfaceObject>());
 	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
 	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->setColor(couleurRemplissage);
 	ptsDessin.clear();

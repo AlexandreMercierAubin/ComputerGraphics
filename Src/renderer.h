@@ -21,6 +21,7 @@
 #include "PrimitiveObject.h"
 #include "SphereObject.h"
 #include "SBPyramidObject.h"
+#include "ParametricSurfaceObject.h"
 #include "PrimitiveShader.h"
 #include "TexShader.h"
 #include "SimpleGPShader.h"
@@ -136,4 +137,5 @@ private:
 	void ajouterEtoile();
 	void addCube();
 	void addSBPyramid();
+	void addParametricSurface();
 };

@@ -12,6 +12,8 @@
 #include "ShaderLoader.h"
 #include "SkyboxShader.h"
 #include "TexShader.h"
+#include "PrimitiveShader.h"
+#include "SimpleGPShader.h"
 #include "ModelObject.h"
 #include "GroupObject.h"
 #include "LightObject.h"
@@ -19,6 +21,9 @@
 #include "ModelShader.h"
 #include "ModelShaderLambert.h"
 #include "ModelShaderBlinnPhong.h"
+#include "ParametricCurveObject.h"
+
+
 
 class Scene
 {
