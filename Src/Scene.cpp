@@ -32,11 +32,13 @@ void Scene::setupScene()
 	SkyboxShader skyboxShader;
 	TexShader texShader;
 	PrimitiveShader pShader;
+	SimpleGPShader gpShader;
 
 	shaderID = loader.CreateProgram(modelShader);
 	skyboxID = loader.CreateProgram(skyboxShader);
 	GLuint texShaderID = loader.CreateProgram(texShader);
 	GLuint primitiveShaderID= loader.CreateProgram(pShader);
+	GLuint gpShaderID = loader.CreateProgram(gpShader);
 	
 	skybox.Create(skyboxID);
 	objects = std::make_shared<GroupObject>();
@@ -59,8 +61,7 @@ void Scene::setupScene()
 	objects->getObjectAt(5)->setPosition(glm::vec3(-0.5f, -0.2f, 0));
 	objects->getObjectAt(5)->setColor(glm::vec4(0, 1, 0, 1));
 
-	objects->addObject(make_shared<ParametricCurveObject>());
-	objects->getObjectAt(6)->Create(primitiveShaderID);
+
 	std::vector<glm::vec3> vertices;
 	vertices.push_back(glm::vec3(-0.5, 0, 0));
 	vertices.push_back(glm::vec3(0.0, -0.5, 0));
@@ -71,13 +72,26 @@ void Scene::setupScene()
 	vertices.push_back(glm::vec3(-1.0, 0.0, 0));
 	vertices.push_back(glm::vec3(0.0, -1.0, 0));
 	vertices.push_back(glm::vec3(0.0, 1.0, 0));
-	objects->getCastedObjectAt<ParametricCurveObject>(6)->setParametricType(ParametricCurveObject::CatmullRom);
+
+
+	glm::mat4 matrix;
+	matrix[0][0] = 1.0f;	    matrix[0][1] = 0.0f;			matrix[0][2] = 0.0f;		matrix[0][3] = 0.0f;
+	matrix[1][0] = 0.0f;		matrix[1][1] = 0.0f;			matrix[1][2] = 0.0f;		matrix[1][3] = 0.0f;
+	matrix[2][0] = 0.0f;		matrix[2][1] = 0.0f;			matrix[2][2] = 1.0f;		matrix[2][3] = 0.0f;
+	matrix[3][0] = 0.0f;		matrix[3][1] = 0.0f;			matrix[3][2] = 0.0f;		matrix[3][3] = 0.0f;
+
+
+	//objects->getCastedObjectAt<ParametricSurfaceObject>(6)->setMatrix(matrix);
+
+	/*objects->addObject(make_shared<ParametricCurveObject>());
+	objects->getObjectAt(6)->Create(primitiveShaderID);
+	objects->getCastedObjectAt<ParametricCurveObject>(6)->setParametricType(ParametricCurveObject::Bezier);
 	objects->getCastedObjectAt<ParametricCurveObject>(6)->setNumLines(100);
 	objects->getCastedObjectAt<ParametricCurveObject>(6)->setVertices(vertices);
-	objects->getCastedObjectAt<ParametricCurveObject>(6)->setColor(glm::vec4(0,0,0,1));
+	objects->getCastedObjectAt<ParametricCurveObject>(6)->setColor(glm::vec4(0, 0, 0, 1));
 	objects->getCastedObjectAt<ParametricCurveObject>(6)->setEdgeColor(glm::vec4(0, 0, 0, 1));
-	objects->getCastedObjectAt<ParametricCurveObject>(6)->setEdgeSize(5);
-	
+	objects->getCastedObjectAt<ParametricCurveObject>(6)->setEdgeSize(5);*/
+
 
 	setupLight();
 }
