@@ -86,8 +86,6 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 		scene.drawSkybox();
 
 	scene.drawScene();
-	
-
 
 	drawGUI();
 
@@ -105,7 +103,6 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 
 	testScale += 0.05f;
 }
-
 
 void Renderer::resize(const int & w, const int & h)
 {
@@ -198,20 +195,26 @@ void Renderer::drawGUI()
 	///////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////   PLEASE REMOVE   ///////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
-	if (ImGui::Button("TEST"))
-	{
-		Ray ray(glm::vec3(-1.5f, -0.15f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		double distance = std::numeric_limits<double>::infinity();
-		std::shared_ptr<AbstractObject> obj;
-		bool result = scene.raycast(ray, distance, obj);
-		std::cout << (result ? "t" : "f") << " " << distance << std::endl;
+	//if (ImGui::Button("TEST"))
+	//{
+	//	Ray ray(glm::vec3(-1.5f, -0.15f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	//	double distance = std::numeric_limits<double>::infinity();
+	//	glm::vec3 normal;
+	//	std::shared_ptr<AbstractObject> obj;
+	//	bool result = scene.raycast(ray, distance, normal, obj);
+	//	std::cout << (result ? "t" : "f") << " " << distance << std::endl;
+	//	if (obj != nullptr)
+	//		obj->addRotationDegree(glm::vec3(90.0f, 0.0f, 0.0f));
 
-		ray = Ray(glm::vec3(1.5f, -0.14f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
-		distance = std::numeric_limits<double>::infinity();
-		obj = nullptr;
-		result = scene.raycast(ray, distance, obj);
-		std::cout << (result ? "t" : "f") << " " << distance << std::endl;
-	}
+	//	ray = Ray(glm::vec3(1.5f, -0.14f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f));
+	//	distance = std::numeric_limits<double>::infinity();
+	//	normal = glm::vec3();
+	//	obj = nullptr;
+	//	result = scene.raycast(ray, distance, normal, obj);
+	//	std::cout << (result ? "t" : "f") << " " << distance << std::endl;
+	//	if (obj != nullptr)
+	//		obj->addRotationDegree(glm::vec3(90.0f, 0.0f, 0.0f));
+	//}
 
 	ImGui::SetNextWindowPos(ImVec2(2.0f, ImGui::GetCurrentWindow()->Size.y + 5.0f));
 	ImGui::End();
@@ -250,6 +253,11 @@ void Renderer::drawGUI()
 	// ********** Autres options **********
 
 	ImGui::Begin("Autres options", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+	if (ImGui::Button("Generer image raycasting"))
+		scene.renderRaycast(100, 100, 2, "Test");
+	
+	ImGui::NewLine();
 
 	if (ImGui::Combo("Mode de projection", (int*)&projectionType, "Perspective\0Perspective inverse\0Orthographique\0"))
 	{

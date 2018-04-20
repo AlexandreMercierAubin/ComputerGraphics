@@ -25,6 +25,8 @@
 #include "TexShader.h"
 #include "SimpleGPShader.h"
 
+#include <random>
+
 
 class Renderer
 {
@@ -136,4 +138,8 @@ private:
 	void ajouterEtoile();
 	void addCube();
 	void addSBPyramid();
+
+	// Raycasting
+	bool useRaycast = false;
+	int rayPerPixel = 1;
 };

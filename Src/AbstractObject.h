@@ -58,7 +58,7 @@ public:
 	virtual void addShininess(const float &shininess);
 	virtual float getShininess();
 
-	virtual bool raycast(const Ray &ray, double &distance, std::shared_ptr<AbstractObject> &object) { return false; }
+	virtual bool raycast(const Ray &ray, double &distance, glm::vec3 &normal, std::shared_ptr<AbstractObject> &object) { return false; }
 
 	bool isSelected();
 	void setSelected(bool value);

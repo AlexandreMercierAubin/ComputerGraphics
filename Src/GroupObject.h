@@ -52,7 +52,7 @@ public:
 
 	virtual void getLight(std::vector<Light*>& lights);
 
-	virtual bool raycast(const Ray &ray, double &distance, std::shared_ptr<AbstractObject> &object);
+	virtual bool raycast(const Ray &ray, double &distance, glm::vec3 &normal, std::shared_ptr<AbstractObject> &object);
 
 	GroupObject();
 	~GroupObject();
