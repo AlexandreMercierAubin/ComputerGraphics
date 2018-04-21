@@ -65,11 +65,64 @@ void Renderer::initShaders()
 	currentModelShaderID = modelShaderPhongID;
 	SimpleGPShader GPShader;
 	GPShaderID = loader.CreateProgram(GPShader);
+	PostProcessShader postProcessShader;
+	postProcessShaderID = loader.CreateProgram(postProcessShader);
 
 	curseur.Create(primitiveShaderID);
 	curseur.setCouleurRemplissage(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	curseur.setCouleurBordure(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
+
+	int w, h;
+	SDL_GetWindowSize(window, &w, &h);
+
+	GLfloat fbo_vertices[] = {
+		0, -1,
+		1, -1,
+		0,  0,
+		1,  0,
+	};
+
+	//to prepare the post-process
+	glGenBuffers(1, &vbo_fbo_vertices);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_fbo_vertices);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(fbo_vertices), fbo_vertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+	glBindVertexArray(0);
+
+	glActiveTexture(GL_TEXTURE0);
+	glGenTextures(1, &fbo_texture);
+	glBindTexture(GL_TEXTURE_2D, fbo_texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+
+	/* Depth buffer */
+	glGenRenderbuffers(1, &rbo_depth);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo_depth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	/* Framebuffer to link everything together */
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbo_texture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo_depth);
+	GLenum status;
+	if ((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
+		fprintf(stderr, "glCheckFramebufferStatus: error %p", status);
+		return;
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 
@@ -77,16 +130,27 @@ void Renderer::initShaders()
 void Renderer::drawRenderer(Scene::KeyFlags &flags)
 {
 
+
+	
+
+	
+
+	scene.refreshScene(flags);
+
 	glClearColor(BackgroundColor[0], BackgroundColor[1], BackgroundColor[2], 0);// background
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	scene.refreshScene(flags);
 
 	if (utiliserSkybox)
 		scene.drawSkybox();
 
+
 	scene.drawScene();
 
+
+	if (activatePostProcess)
+	{
+		drawPostProcess(true);
+	}
 	drawGUI();
 
 	// Affiche le curseur sélectionné
@@ -98,6 +162,8 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 		drawCursor();
 	}
 
+
+
 	//swap buffer
 	SDL_GL_SwapWindow(window);
 
@@ -107,6 +173,13 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 void Renderer::resize(const int & w, const int & h)
 {
 	glViewport(0, 0, w, h);
+	glBindTexture(GL_TEXTURE_2D, fbo_texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo_depth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 void Renderer::mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel ,Scene::KeyFlags flags)
@@ -157,6 +230,13 @@ Renderer::~Renderer()
 	glDeleteBuffers(1, &modelShaderBlinnPhongID);
 	glDeleteProgram(texShaderID);
 	glDeleteBuffers(1, &texShaderID);
+	glDeleteProgram(postProcessShaderID);
+	glDeleteBuffers(1, &postProcessShaderID);
+
+	glDeleteRenderbuffers(1, &rbo_depth);
+	glDeleteTextures(1, &fbo_texture);
+	glDeleteFramebuffers(1, &fbo);
+	glDeleteBuffers(1, &vbo_fbo_vertices);
 }
 
 void Renderer::drawGUI()
@@ -174,7 +254,7 @@ void Renderer::drawGUI()
 	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
 	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
 	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
-	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide\0"))
+	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide\0SurfaceParam\0"))
 		ptsDessin.clear();
 
 	ImGui::NewLine();
@@ -589,6 +669,58 @@ void Renderer::drawCursor()
 	curseur.Draw();
 }
 
+
+
+void Renderer::drawPostProcess(bool mirror)
+{
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glClearColor(BackgroundColor[0], BackgroundColor[1], BackgroundColor[2], 0);// background
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	if (mirror)
+	{
+		scene.addYaw(180);
+	}
+
+	if (utiliserSkybox)
+		scene.drawSkybox();
+
+
+
+	scene.drawScene();
+
+	if (mirror)
+	{
+		scene.addYaw(-180);
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	
+
+	glUseProgram(postProcessShaderID);
+
+	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_CULL_FACE);
+
+	//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_fbo_vertices);
+	glActiveTexture(0);
+	glBindTexture(GL_TEXTURE_2D, fbo_texture);
+	glUniform1i(glGetUniformLocation(fbo_texture, "text"), 0);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindVertexArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_CULL_FACE);
+
+}
+
 void Renderer::updateCursor()
 {
 	switch (typeCurseur)
@@ -748,6 +880,9 @@ void Renderer::ajouterPtDessin(int x, int y)
 	case 8://pyramid
 		addSBPyramid();
 		break;
+	case 9://pyramid
+		addParametricSurface();
+		break;
 
 	}
 
@@ -785,6 +920,14 @@ void Renderer::addCube()
 void Renderer::addSBPyramid()
 {
 	scene.addObject(make_shared<SBPyramidObject>());
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->setColor(couleurRemplissage);
+	ptsDessin.clear();
+}
+
+void Renderer::addParametricSurface()
+{
+	scene.addObject(make_shared<ParametricSurfaceObject>());
 	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
 	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->setColor(couleurRemplissage);
 	ptsDessin.clear();
