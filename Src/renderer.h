@@ -68,7 +68,7 @@ private:
 	glm::vec4 couleurBordure;
 	int epaisseurBordure = 1;
 	bool utiliserSkybox = true;
-	bool activatePostProcess = true;
+	bool activatePostProcess = false;
 	int formeADessiner = 0; // 0 = point, 1 = ligne, 2 = triangle, 3 = rectangle, 4 = quad, 5 = smiley, 6 = étoile , 7 = Cube, 8 = Sphere
 	std::vector<glm::vec3> ptsDessin;
 

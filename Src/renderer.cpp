@@ -337,7 +337,7 @@ void Renderer::drawGUI()
 	if (ImGui::Button("Generer image raycasting"))
 		scene.renderRaycast(100, 100, 2, "Test");
 	
-	ImGui::NewLine();
+	ImGui::Checkbox("Activer vue arriere", &activatePostProcess);
 
 	if (ImGui::Combo("Mode de projection", (int*)&projectionType, "Perspective\0Perspective inverse\0Orthographique\0"))
 	{
