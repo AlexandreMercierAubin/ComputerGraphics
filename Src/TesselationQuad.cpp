@@ -1,10 +1,8 @@
 #pragma once
-#include"QuadObject.h"
-#include"PerlinNoise.h"
-#include"Echantillonnage.h"
+#include"TesselationQuad.h"
 
 
-void QuadObject::Create(GLuint &Program)
+void TesselationQuad::Create(GLuint &Program)
 {
 	if (!imageOK)
 	{
@@ -39,8 +37,8 @@ void QuadObject::Create(GLuint &Program)
 	glGenBuffers(1, &textureBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, textureBuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vTexture), vTexture, GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(2);
 
 	GLuint IBO;
 	glGenBuffers(1, &IBO);
@@ -50,17 +48,6 @@ void QuadObject::Create(GLuint &Program)
 	GLint channels;
 	GLenum type;
 	SDL_Surface *image = Model::loadImage(texturePath);
-
-	if(texturePath2 == "perlinNoise") {
-		SurfacePerlinNoise(image, 300);
-	}
-	else if (texturePath2 == "composition") {
-		SurfaceCompositionImagePerlinNoise(image, 30);
-	}
-	else if (texturePath2.length() > 0) {
-
-		SurfaceSampling(image, texturePath2);
-	}
 
 	Model::getImageProperties(image, channels, type);
 
@@ -85,7 +72,7 @@ void QuadObject::Create(GLuint &Program)
 	glBindVertexArray(0);
 }
 
-void QuadObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights)
+void TesselationQuad::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights)
 {
 	if (!imageOK)
 		return;
@@ -115,14 +102,14 @@ void QuadObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos,
 	glActiveTexture(0);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	glUniform1i(glGetUniformLocation(textureID, "text"), 0);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glDrawElements(GL_PATCHES, 6, GL_UNSIGNED_INT, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindVertexArray(0);
 
 }
 
 
-QuadObject::QuadObject(std::string TexturePath)
+TesselationQuad::TesselationQuad(std::string TexturePath)
 {
 	name = "Image (" + TexturePath + ")";
 
@@ -131,7 +118,7 @@ QuadObject::QuadObject(std::string TexturePath)
 	imageOK = image != nullptr;
 	SDL_FreeSurface(image);
 }
-QuadObject::QuadObject(std::string TexturePath, std::string TexturePath2)
+TesselationQuad::TesselationQuad(std::string TexturePath, std::string TexturePath2)
 {
 	name = "Image (" + TexturePath + ")";
 
@@ -142,7 +129,7 @@ QuadObject::QuadObject(std::string TexturePath, std::string TexturePath2)
 	SDL_FreeSurface(image);
 }
 
-QuadObject::~QuadObject()
+TesselationQuad::~TesselationQuad()
 {
 	glDeleteVertexArrays(1, &VertexArray);
 }

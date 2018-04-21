@@ -119,7 +119,7 @@ void Renderer::initShaders()
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo_depth);
 	GLenum status;
 	if ((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
-		fprintf(stderr, "glCheckFramebufferStatus: error %p", status);
+		cout << "framebuffer error" << endl;
 		return;
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

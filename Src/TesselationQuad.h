@@ -2,7 +2,7 @@
 #include "AbstractObject.h"
 #include "Model.h"
 
-class QuadObject: public AbstractObject
+class TesselationQuad: public AbstractObject
 {
 private:
 	GLuint program;
@@ -20,7 +20,7 @@ private:
 public:
 	virtual void Create(GLuint &Program);
 	virtual void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights);
-	QuadObject(std::string texturePath);
-	QuadObject(std::string texturePath,std::string texturePath2);
-	~QuadObject();
+	TesselationQuad(std::string texturePath);
+	TesselationQuad(std::string texturePath,std::string texturePath2);
+	~TesselationQuad();
 };

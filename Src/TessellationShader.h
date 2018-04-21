@@ -2,7 +2,7 @@
 #include "AbstractShader.h"
 
 
-class TexShader : public AbstractShader
+class TessellationShader : public AbstractShader
 {
 	std::string fshader =
 R"(#version 430 core
