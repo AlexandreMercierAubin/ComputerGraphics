@@ -76,17 +76,17 @@ void Renderer::initShaders()
 	int w, h;
 	SDL_GetWindowSize(window, &w, &h);
 
-	glm::vec3 vertices[4];
-	float width = 0.5, height = 0.5, depth = 0.1;
-	vertices[0] = glm::vec3(0 - width / 2, 0 - height / 2, 0 - depth / 2);
-	vertices[1] = glm::vec3(0 + width / 2, 0 - height / 2, 0 - depth / 2);
-	vertices[2] = glm::vec3(0 - width / 2, 0 + height / 2, 0 - depth / 2);
-	vertices[3] = glm::vec3(0 + width / 2, 0 + height / 2, 0 - depth / 2);
+	glm::vec2 vertices[4];
+	vertices[0] = glm::vec2(-1 ,-1);
+	vertices[1] = glm::vec2(1, -1);
+	vertices[2] = glm::vec2(-1, 1 );
+	vertices[3] = glm::vec2(1,1);
+
 
 	glGenBuffers(1, &vbo_fbo_vertices);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_fbo_vertices);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
 
@@ -95,26 +95,16 @@ void Renderer::initShaders()
 	glBindTexture(GL_TEXTURE_2D, fbo_texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glm::vec2 vTexture[4] = { glm::vec2(0.0f, 1.0f)  , glm::vec2(1.0f, 1.0f), glm::vec2(0.0f, 0.0f) , glm::vec2(1.0f, 0.0f) };
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vTexture), vTexture, GL_STATIC_DRAW);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(1);
 
-	// Parameters
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	GLuint IBO;
-	glGenBuffers(1, &IBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	/* Depth buffer */
 	glGenRenderbuffers(1, &rbo_depth);
@@ -189,6 +179,13 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 void Renderer::resize(const int & w, const int & h)
 {
 	glViewport(0, 0, w, h);
+	glBindTexture(GL_TEXTURE_2D, fbo_texture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo_depth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 void Renderer::mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel ,Scene::KeyFlags flags)

@@ -73,7 +73,7 @@ private:
 	int typeCurseur = 0; // 0 = par défaut, 1 = point, 2 = points, 3 = croix, 4 = triangle, 5 = quad
 	PrimitiveObject curseur;
 
-	GLuint fbo, fbo_texture, rbo_depth, vbo_fbo_vertices;
+	GLuint fbo, fbo_texture, rbo_depth, vbo_fbo_vertices,vao;
 
 	GLuint primitiveShaderID;
 	GLuint GPShaderID;
