@@ -15,6 +15,7 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 	initShaders();
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
@@ -132,11 +133,16 @@ void Renderer::initShaders()
 
 void Renderer::drawRenderer(Scene::KeyFlags &flags)
 {
+	if (MSAA) 
+	{
+		glEnable(GL_MULTISAMPLE);
+		
+	}
 
-
-	
-
-	
+	if (activateWireframe) 
+	{
+		glEnable(GL_POLYGON_SMOOTH);
+	}
 
 	scene.refreshScene(flags);
 
