@@ -83,8 +83,8 @@ void Scene::setupScene()
 	matrix[2][0] = 0.0f;		matrix[2][1] = 0.0f;			matrix[2][2] = 1.0f;		matrix[2][3] = 0.0f;
 	matrix[3][0] = 0.0f;		matrix[3][1] = 0.0f;			matrix[3][2] = 0.0f;		matrix[3][3] = 0.0f;
 
-	objects->addObject(make_shared<TesselationQuad>("Resources/Image/Small-mario.png"));
-	objects->getObjectAt(2)->Create(tessShaderID);
+	objects->addObject(make_shared<TesselationQuad>("Resources/plancher2.png"));
+	objects->getObjectAt(6)->Create(tessShaderID);
 	//objects->getCastedObjectAt<ParametricSurfaceObject>(6)->setMatrix(matrix);
 
 	/*objects->addObject(make_shared<ParametricCurveObject>());

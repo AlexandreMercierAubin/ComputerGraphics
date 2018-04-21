@@ -7,7 +7,7 @@ class TessellationShader : public AbstractShader
 	std::string fshader =
 R"(#version 430 core
 
-in vec2 TexCoord;
+in vec2 texCoord;
 out vec4 color;
 
 uniform sampler2D text;
@@ -15,7 +15,7 @@ uniform vec4 vColor;
 
 void main(void)
 {
-	color = texture(text, TexCoord)*vColor;
+	color = texture(text, texCoord)*vColor;
 }
 
 )";
@@ -25,8 +25,8 @@ void main(void)
 
 	std::string vshader =
 R"(#version 430 core                          
-in vec3 position;
-in vec2 texCoord;
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec2 texCoord;
 
 uniform mat4 matView;
 uniform mat4 matProjection;

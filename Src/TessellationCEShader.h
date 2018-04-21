@@ -12,7 +12,7 @@ uniform mat4 matView;
 uniform mat4 matProjection;
 uniform mat4 matModel;
 
-in vec2 tcs[];
+in vec2 TexCoords[];
 
 out vec2 texCoord;
 
@@ -30,9 +30,9 @@ void main(void)
 	pos.y = grapher3d(vec4(pos, 1.0));
 	gl_Position = matProjection*matView*matModel* vec4(pos,1.0);
 
-	vec2 tc0 = gl_TessCoord.x * tcs[0];
-	vec2 tc1 = gl_TessCoord.y * tcs[1];
-	vec2 tc2 = gl_TessCoord.z * tcs[2];
+	vec2 tc0 = gl_TessCoord.x * TexCoords[0];
+	vec2 tc1 = gl_TessCoord.y * TexCoords[1];
+	vec2 tc2 = gl_TessCoord.z * TexCoords[2];
 	texCoord = tc0 + tc1 + tc2;
 }
 
@@ -42,10 +42,11 @@ void main(void)
 
 
 	std::string vshader =//control shader
-R"(#version 430 core                          
-in vec2 tc[];
-
-out vec2 tcs[];
+R"(#version 430 core
+layout(vertices = 2) out;    
+                      
+in vec2 TexCoord[];
+out vec2 TexCoords[];
 
 void main()
 {
@@ -56,7 +57,7 @@ void main()
 
 	gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
 
-	tcs[gl_InvocationID] = tc[gl_InvocationID];
+	TexCoords[gl_InvocationID] = TexCoord[gl_InvocationID];
 }
 
 )";

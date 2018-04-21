@@ -11,8 +11,8 @@ private:
 	glm::vec3 vertices[4];
 	int angle;
 	const unsigned int indices[6] = {
-		2,3,0,//face
-		0,3,1
+		0,1,2,//face
+		1,2,3
 	};
 	std::string texturePath;
 	std::string texturePath2;
