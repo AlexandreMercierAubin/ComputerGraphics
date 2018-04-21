@@ -25,6 +25,7 @@
 #include "PrimitiveShader.h"
 #include "TexShader.h"
 #include "SimpleGPShader.h"
+#include "PostProcessShader.h"
 
 
 class Renderer
@@ -65,11 +66,14 @@ private:
 	glm::vec4 couleurBordure;
 	int epaisseurBordure = 1;
 	bool utiliserSkybox = true;
+	bool activatePostProcess = true;
 	int formeADessiner = 0; // 0 = point, 1 = ligne, 2 = triangle, 3 = rectangle, 4 = quad, 5 = smiley, 6 = étoile , 7 = Cube, 8 = Sphere
 	std::vector<glm::vec3> ptsDessin;
 
 	int typeCurseur = 0; // 0 = par défaut, 1 = point, 2 = points, 3 = croix, 4 = triangle, 5 = quad
 	PrimitiveObject curseur;
+
+	GLuint fbo, fbo_texture, rbo_depth, vbo_fbo_vertices;
 
 	GLuint primitiveShaderID;
 	GLuint GPShaderID;
@@ -78,6 +82,7 @@ private:
 	GLuint modelShaderBlinnPhongID;
 	GLuint currentModelShaderID;
 	GLuint texShaderID;
+	GLuint postProcessShaderID;
 
 	// Lumières
 	int lightType = 0; // 0 = directionnelle, 1 = ponctuelle, 2 = projecteur
@@ -126,6 +131,7 @@ private:
 	void drawGUI();
 	void drawTreeRecursive(std::shared_ptr<GroupObject> objects);
 	void drawCursor();
+	void drawPostProcess();
 	void updateCursor();
 	void importImage(string file);
 	void importModel(string file);
