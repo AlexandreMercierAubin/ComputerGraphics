@@ -67,6 +67,9 @@ void Renderer::initShaders()
 	GPShaderID = loader.CreateProgram(GPShader);
 	PostProcessShader postProcessShader;
 	postProcessShaderID = loader.CreateProgram(postProcessShader);
+	TessellationCEShader tessCe;
+	TessellationShader tess;
+	tessellationShaderID = loader.CreateProgramTess(tess, tessCe);
 
 	curseur.Create(primitiveShaderID);
 	curseur.setCouleurRemplissage(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -257,7 +260,7 @@ void Renderer::drawGUI()
 	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
 	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
 	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
-	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide\0SurfaceParam\0"))
+	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide\0SurfaceParam\0SurfaceTessellation\0"))
 		ptsDessin.clear();
 
 	ImGui::NewLine();
@@ -872,8 +875,11 @@ void Renderer::ajouterPtDessin(int x, int y)
 	case 8://pyramid
 		addSBPyramid();
 		break;
-	case 9://pyramid
+	case 9://surface parametrique
 		addParametricSurface();
+		break;
+	case 10://surface tessellation
+		addSurfaceTessellation();
 		break;
 
 	}
@@ -922,6 +928,13 @@ void Renderer::addParametricSurface()
 	scene.addObject(make_shared<ParametricSurfaceObject>());
 	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
 	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->setColor(couleurRemplissage);
+	ptsDessin.clear();
+}
+
+void Renderer::addSurfaceTessellation()
+{
+	scene.addObject(make_shared<TessellationQuad>("Resources/plancher2.png"));
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(tessellationShaderID);
 	ptsDessin.clear();
 }
 

@@ -26,6 +26,9 @@
 #include "TexShader.h"
 #include "SimpleGPShader.h"
 #include "PostProcessShader.h"
+#include "TessellationShader.h"
+#include "TessellationCEShader.h"
+#include "TessellationQuad.h"
 
 
 class Renderer
@@ -83,6 +86,7 @@ private:
 	GLuint currentModelShaderID;
 	GLuint texShaderID;
 	GLuint postProcessShaderID;
+	GLuint tessellationShaderID;
 
 	// Lumières
 	int lightType = 0; // 0 = directionnelle, 1 = ponctuelle, 2 = projecteur
@@ -144,4 +148,5 @@ private:
 	void addCube();
 	void addSBPyramid();
 	void addParametricSurface();
+	void addSurfaceTessellation();
 };

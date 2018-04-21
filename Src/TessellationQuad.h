@@ -2,7 +2,7 @@
 #include "AbstractObject.h"
 #include "Model.h"
 
-class TesselationQuad: public AbstractObject
+class TessellationQuad: public AbstractObject
 {
 private:
 	GLuint program;
@@ -11,8 +11,8 @@ private:
 	glm::vec3 vertices[4];
 	int angle;
 	const unsigned int indices[6] = {
-		0,1,2,//face
-		1,2,3
+		2,3,0,//face
+		0,3,1
 	};
 	std::string texturePath;
 	std::string texturePath2;
@@ -20,7 +20,7 @@ private:
 public:
 	virtual void Create(GLuint &Program);
 	virtual void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights);
-	TesselationQuad(std::string texturePath);
-	TesselationQuad(std::string texturePath,std::string texturePath2);
-	~TesselationQuad();
+	TessellationQuad(std::string TexturePath);
+	TessellationQuad(std::string texturePath,std::string texturePath2);
+	~TessellationQuad();
 };

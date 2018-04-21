@@ -1,8 +1,8 @@
 #pragma once
-#include"TesselationQuad.h"
+#include"TessellationQuad.h"
 
 
-void TesselationQuad::Create(GLuint &Program)
+void TessellationQuad::Create(GLuint &Program)
 {
 	if (!imageOK)
 	{
@@ -74,13 +74,13 @@ void TesselationQuad::Create(GLuint &Program)
 	glBindVertexArray(0);
 }
 
-void TesselationQuad::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights)
+void TessellationQuad::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights)
 {
 	if (!imageOK)
 		return;
 
 	glUseProgram(program);
-
+	glDisable(GL_CULL_FACE);
 	AbstractObject::uniformColor(program, color);
 
 	GLuint MatView = glGetUniformLocation(program, "matView");
@@ -107,12 +107,13 @@ void TesselationQuad::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &ca
 	glDrawElements(GL_PATCHES, 6, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+	glEnable(GL_CULL_FACE);
 	
 
 }
 
 
-TesselationQuad::TesselationQuad(std::string TexturePath)
+TessellationQuad::TessellationQuad(std::string TexturePath)
 {
 	name = "Image (" + TexturePath + ")";
 
@@ -121,7 +122,7 @@ TesselationQuad::TesselationQuad(std::string TexturePath)
 	imageOK = image != nullptr;
 	SDL_FreeSurface(image);
 }
-TesselationQuad::TesselationQuad(std::string TexturePath, std::string TexturePath2)
+TessellationQuad::TessellationQuad(std::string TexturePath, std::string TexturePath2)
 {
 	name = "Image (" + TexturePath + ")";
 
@@ -132,7 +133,7 @@ TesselationQuad::TesselationQuad(std::string TexturePath, std::string TexturePat
 	SDL_FreeSurface(image);
 }
 
-TesselationQuad::~TesselationQuad()
+TessellationQuad::~TessellationQuad()
 {
 	glDeleteVertexArrays(1, &VertexArray);
 }

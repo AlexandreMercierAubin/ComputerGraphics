@@ -33,15 +33,12 @@ void Scene::setupScene()
 	TexShader texShader;
 	PrimitiveShader pShader;
 	SimpleGPShader gpShader;
-	TessellationShader tessShader;
-	TessellationCEShader tessCEShader;
 
 	shaderID = loader.CreateProgram(modelShader);
 	skyboxID = loader.CreateProgram(skyboxShader);
 	GLuint texShaderID = loader.CreateProgram(texShader);
 	GLuint primitiveShaderID= loader.CreateProgram(pShader);
 	GLuint gpShaderID = loader.CreateProgram(gpShader);
-	GLuint tessShaderID = loader.CreateProgramTess(tessShader, tessCEShader);
 
 	skybox.Create(skyboxID);
 	objects = std::make_shared<GroupObject>();
@@ -83,8 +80,6 @@ void Scene::setupScene()
 	matrix[2][0] = 0.0f;		matrix[2][1] = 0.0f;			matrix[2][2] = 1.0f;		matrix[2][3] = 0.0f;
 	matrix[3][0] = 0.0f;		matrix[3][1] = 0.0f;			matrix[3][2] = 0.0f;		matrix[3][3] = 0.0f;
 
-	objects->addObject(make_shared<TesselationQuad>("Resources/plancher2.png"));
-	objects->getObjectAt(6)->Create(tessShaderID);
 	//objects->getCastedObjectAt<ParametricSurfaceObject>(6)->setMatrix(matrix);
 
 	/*objects->addObject(make_shared<ParametricCurveObject>());
