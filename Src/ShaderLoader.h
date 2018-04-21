@@ -18,7 +18,7 @@ namespace Core
 	{
 	private:
 		GLuint CreateShader(GLenum shaderType, std::string source, std::string shadername);
-	
+		GLuint CreateProgramTess(AbstractShader &absShader, AbstractShader &absShaderCE);
 	public:
 		ShaderLoader(void);
 		~ShaderLoader(void);
