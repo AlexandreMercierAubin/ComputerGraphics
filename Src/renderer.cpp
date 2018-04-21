@@ -76,16 +76,17 @@ void Renderer::initShaders()
 	int w, h;
 	SDL_GetWindowSize(window, &w, &h);
 
-	glm::vec2 vertices[4];
-	vertices[0] = glm::vec2(-1 ,-1);
-	vertices[1] = glm::vec2(1, -1);
-	vertices[2] = glm::vec2(-1, 1 );
-	vertices[3] = glm::vec2(1,1);
+	GLfloat fbo_vertices[] = {
+		0, -1,
+		1, -1,
+		0,  0,
+		1,  0,
+	};
 
-
+	//to prepare the post-process
 	glGenBuffers(1, &vbo_fbo_vertices);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_fbo_vertices);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(fbo_vertices), fbo_vertices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
@@ -95,9 +96,8 @@ void Renderer::initShaders()
 	glBindTexture(GL_TEXTURE_2D, fbo_texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(1);
 
@@ -137,22 +137,19 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 
 	scene.refreshScene(flags);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	glClearColor(BackgroundColor[0], BackgroundColor[1], BackgroundColor[2], 0);// background
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if (utiliserSkybox)
 		scene.drawSkybox();
 
-	
+
 	scene.drawScene();
-	
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
 	if (activatePostProcess)
 	{
-		drawPostProcess();
+		drawPostProcess(true);
 	}
 	
 
@@ -666,10 +663,33 @@ void Renderer::drawCursor()
 
 
 
-void Renderer::drawPostProcess()
+void Renderer::drawPostProcess(bool mirror)
 {
-	glClearColor(0.0, 0.0, 0.0, 1.0);
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glClearColor(BackgroundColor[0], BackgroundColor[1], BackgroundColor[2], 0);// background
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	if (mirror)
+	{
+		scene.addYaw(180);
+	}
+
+	if (utiliserSkybox)
+		scene.drawSkybox();
+
+
+
+	scene.drawScene();
+
+	if (mirror)
+	{
+		scene.addYaw(-180);
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	
+
 	glUseProgram(postProcessShaderID);
 
 	glEnable(GL_TEXTURE_2D);
@@ -690,6 +710,7 @@ void Renderer::drawPostProcess()
 
 	glDisable(GL_TEXTURE_2D);
 	glEnable(GL_CULL_FACE);
+
 }
 
 void Renderer::updateCursor()

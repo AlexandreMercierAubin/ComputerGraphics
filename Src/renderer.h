@@ -131,7 +131,7 @@ private:
 	void drawGUI();
 	void drawTreeRecursive(std::shared_ptr<GroupObject> objects);
 	void drawCursor();
-	void drawPostProcess();
+	void drawPostProcess(bool mirror);
 	void updateCursor();
 	void importImage(string file);
 	void importModel(string file);

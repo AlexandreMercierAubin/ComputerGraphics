@@ -120,6 +120,12 @@ void Scene::setProjection(PROJECTIONTYPE type, const float & angleOfView, const 
 	
 }
 
+void Scene::addYaw(GLfloat y)
+{
+	yaw += y;
+	MatView(view, false);
+}
+
 void Scene::dollyZoom(float dolly,float zoom) 
 {
 	position = position + direction * dolly;
