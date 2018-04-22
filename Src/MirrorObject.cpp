@@ -2,7 +2,7 @@
 
 MirrorObject::MirrorObject() 
 {
-	name = "mirror";
+	name = "Portail";
 	quad = make_shared<QuadObject>("Resources/Image/Small-mario.png");
 }
 
