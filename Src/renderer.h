@@ -26,6 +26,7 @@
 #include "TexShader.h"
 #include "SimpleGPShader.h"
 #include "PostProcessShader.h"
+#include "PostProcessColorShader.h"
 #include "TessellationCEShader.h"
 #include "TessellationQuad.h"
 #include "TessellationShader.h"
@@ -69,6 +70,7 @@ private:
 	int epaisseurBordure = 1;
 	bool utiliserSkybox = true;
 	bool activatePostProcess = true;
+	bool activateMirror = true;
 	bool activateWireframe = false;
 	bool MSAA = true;
 	int formeADessiner = 0; // 0 = point, 1 = ligne, 2 = triangle, 3 = rectangle, 4 = quad, 5 = smiley, 6 = étoile , 7 = Cube, 8 = Sphere
@@ -86,6 +88,7 @@ private:
 	GLuint currentModelShaderID;
 	GLuint texShaderID;
 	GLuint postProcessShaderID;
+	GLuint postProcessColorShaderID;
 	GLuint tessellationShaderID;
 
 	// Lumières
@@ -135,7 +138,7 @@ private:
 	void drawGUI();
 	void drawTreeRecursive(std::shared_ptr<GroupObject> objects);
 	void drawCursor();
-	void drawPostProcess(bool mirror);
+	void drawPostProcess(bool mirror,GLuint program,bool fullScreen);
 	void updateCursor();
 	void importImage(string file);
 	void importModel(string file);
@@ -150,4 +153,5 @@ private:
 	void addParametricSurface();
 	void addSurfaceTessellation();
 	void addMirror();
+
 };

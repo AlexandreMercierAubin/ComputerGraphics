@@ -43,7 +43,7 @@ public:
 	void setupScene();
 	void setupLight();
 	void setupMirrors();
-	void setProjection(PROJECTIONTYPE type, const float & angleOfView = 0.5236f, const float & aspect = 1.5f, const float & near = 0.1f, const float &far = 100.0f);
+	void setProjection(PROJECTIONTYPE type, const float & angleOfView = 0.5236f, const float & aspect = 1.5f, const float & near = 0.0005f, const float &far = 100.0f);
 	void addYaw(GLfloat y);
 	void addPitch(GLfloat z);
 	void setPosition(glm::vec3 pos);

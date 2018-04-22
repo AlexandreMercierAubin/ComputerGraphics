@@ -71,6 +71,8 @@ void Renderer::initShaders()
 	TessellationCEShader tessCe;
 	TessellationShader tess;
 	tessellationShaderID = loader.CreateProgramTess(tess, tessCe);
+	PostProcessColorShader ppColorShader;
+	postProcessColorShaderID = loader.CreateProgram(ppColorShader);
 
 	curseur.Create(primitiveShaderID);
 	curseur.setCouleurRemplissage(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
@@ -104,11 +106,16 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 
 	scene.drawScene();
 
+	if (activateMirror)
+	{
+		drawPostProcess(true, postProcessShaderID, false);
+	}
 
 	if (activatePostProcess)
 	{
-		drawPostProcess(true);
+		drawPostProcess(false, postProcessColorShaderID,true);
 	}
+
 
 	int w, h;
 	SDL_GetWindowSize(window, &w, &h);
@@ -613,20 +620,30 @@ void Renderer::drawCursor()
 
 
 
-void Renderer::drawPostProcess(bool mirror)
+void Renderer::drawPostProcess(bool mirror, GLuint program,bool fullScreen)
 {
 	
 	int w, h;
 	SDL_GetWindowSize(window, &w, &h);
 
-	GLuint fbo, fbo_texture, rbo_depth, vbo_fbo_vertices,vao;
 
-	GLfloat fbo_vertices[] = {
-		0, -1,
-		1, -1,
-		0,  0,
-		1,  0,
-	};
+	GLuint fbo, fbo_texture, rbo_depth, vbo_fbo_vertices,vao;
+	GLfloat fbo_vertices[8];
+	if (fullScreen)
+	{
+		fbo_vertices[0] = -1; fbo_vertices[1] = -1;
+		fbo_vertices[2] = 1; fbo_vertices[3] = -1;
+		fbo_vertices[4] = -1; fbo_vertices[5] = 1;
+		fbo_vertices[6] = 1; fbo_vertices[7] = 1;
+
+	}
+	else 
+	{
+		fbo_vertices[0] = 0; fbo_vertices[1] = -1;
+		fbo_vertices[2] = 1; fbo_vertices[3] = -1;
+		fbo_vertices[4] = 0; fbo_vertices[5] = 0;
+		fbo_vertices[6] = 1; fbo_vertices[7] = 0;
+	}
 
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -649,11 +666,6 @@ void Renderer::drawPostProcess(bool mirror)
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	
-
-	GLuint IBO;
-	glGenBuffers(1, &IBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(fbo_vertices), fbo_vertices, GL_STATIC_DRAW);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindVertexArray(0);
@@ -699,7 +711,7 @@ void Renderer::drawPostProcess(bool mirror)
 
 	
 
-	glUseProgram(postProcessShaderID);
+	glUseProgram(program);
 
 	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_CULL_FACE);
