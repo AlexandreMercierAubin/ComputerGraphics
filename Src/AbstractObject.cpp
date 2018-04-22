@@ -157,6 +157,16 @@ void AbstractObject::addShininess(const float &inShininess)
 	shininess += inShininess;
 }
 
+bool AbstractObject::getFog()
+{
+	return useFog;
+}
+
+void AbstractObject::setFog(bool value)
+{
+	useFog = value;
+}
+
 void AbstractObject::uniformLight(GLuint &program, vector<Light*>lights)
 {
 	GLuint size = glGetUniformLocation(program, "structLightSize");
@@ -210,6 +220,11 @@ void AbstractObject::uniformShininess(GLuint &program,float shininess)
 {
 	// Also set each Mesh's shininess property to a default value (if you want you could extend this to another Mesh property and possibly change this value)
 	glUniform1f(glGetUniformLocation(program, "shininess"), shininess);
+}
+
+void AbstractObject::uniformFog(GLuint &program, bool value)
+{
+	glUniform1i(glGetUniformLocation(program, "useFog"), value);
 }
 
 bool AbstractObject::isSelected()

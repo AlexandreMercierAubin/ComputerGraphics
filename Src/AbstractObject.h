@@ -61,7 +61,10 @@ public:
 	virtual void addShininess(const float &shininess);
 	virtual float getShininess();
 
-	virtual bool raycast(const Ray &ray, double &distance, std::shared_ptr<AbstractObject> &object) { return false; }
+	virtual void setFog(bool value);
+	virtual bool getFog();
+
+	virtual bool raycast(const Ray &ray, double &distance, glm::vec3 &normal, std::shared_ptr<AbstractObject> &object) { return false; }
 
 	bool isSelected();
 	void setSelected(bool value);
@@ -75,6 +78,7 @@ protected:
 	virtual void uniformCameraPosition(GLuint &program, glm::vec3 &uniformCameraPos);
 	virtual void uniformLight(GLuint &program,vector<Light*>lights);
 	virtual void uniformShininess(GLuint &program,float shininess);
+	virtual void uniformFog(GLuint &program, bool value);
 
 	virtual void MatRotation(const GLuint &program, glm::mat4 &rotat, const glm::vec3 &r);
 	virtual void MatRotationDegree(const GLuint &program, glm::mat4 &rotat, const glm::vec3 &r);
@@ -87,8 +91,9 @@ protected:
 	glm::quat rotationQuat;
 	glm::vec3 position;
 	glm::vec3 scale;
-
+	
 	float shininess;
+	bool useFog = false;
 
 	GLuint program;
 

@@ -126,11 +126,190 @@ void Scene::dollyZoom(float dolly,float zoom)
 	MatView(view,false);
 }
 
-bool Scene::raycast(const Ray &ray, double &distance, std::shared_ptr<AbstractObject> &object)
+int Scene::formatColorComponent(double value)
 {
-	return objects->raycast(ray, distance, object);
+	value = glm::pow(glm::clamp(value, 0.0, 1.0), gammaCorrection);
+	value = value * 255 + 0.5;
+	return static_cast<int>(value);
 }
 
+void Scene::saveImageFile(const int &width, const int &height, glm::vec4* pixels, const string &fileName)
+{
+	std::cout << "Writing to file..." << std::endl;
+
+	std::ofstream file;
+	file.open(fileName + ".ppm", std::ios::out);
+	
+	// Entête du fichier pour une image avec un espace de couleur RGB 24 bits
+	file << "P3\n";
+
+	// Largeur et hauteur de l'image sur la seconde ligne de l'entête
+	file << width << ' ' << height << '\n';
+
+	// Valeur maximale de l'espace de couleur sur la troisième ligne de l'entête
+	file << "255\n";
+
+	// Écriture des pixels dans le fichier image
+	for (int index = 0; index < width * height; ++index)
+	{
+		file << static_cast<std::uint32_t>(formatColorComponent(pixels[index].x)) << " ";
+		file << static_cast<std::uint32_t>(formatColorComponent(pixels[index].y)) << " ";
+		file << static_cast<std::uint32_t>(formatColorComponent(pixels[index].z)) << " ";
+	}
+
+	file.close();
+	std::cout << "File saved" << std::endl;
+}
+
+void Scene::renderRaycast(const int &width, const int &height, const int &rayPerPixel, const int &depth, const string &fileName)
+{
+	std::cout << "Render start" << std::endl;
+	float progress = 0.0f;
+
+	glm::vec4 *pixels = new glm::vec4[width * height];
+	for (int i = 0; i < width * height; ++i)
+		pixels[i] = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	double proportion = 1.0 / rayPerPixel;
+
+	glm::vec3 zAxis = orientation;
+	glm::vec3 xAxis(width * viewAngle / height, 0.0f, 0.0f);
+	glm::vec3 yAxis = glm::normalize(glm::cross(xAxis, zAxis)) * viewAngle;
+
+	for (int y = 0; y < height; ++y)
+	{
+		progress = 100.0f * y / (height - 1.0f);
+		std::cout << progress << "%" << std::endl;
+
+		for (int x = 0; x < width; ++x)
+		{
+			int index = y * width + x;
+			for (int sy = 0; sy < 2; ++sy)
+			{
+				for (int sx = 0; sx < 2; ++sx)
+				{
+					glm::vec4 radiance(0.0f, 0.0f, 0.0f, 0.0f);
+					for (int s = 0; s < rayPerPixel; ++s)
+					{
+						double r1 = 2.0 * random01(rng);
+						double dx = r1 < 1.0 ? glm::sqrt(r1) - 1.0 : 1.0 - glm::sqrt(2.0 - r1);
+						double r2 = 2.0 * random01(rng);
+						double dy = r2 < 1.0 ? glm::sqrt(r2) - 1.0 : 1.0 - glm::sqrt(2.0 - r2);
+						double tempX = ((sx + 0.5 + dx) / 2.0 + x) / width - 0.5;
+						double tempY = ((sy + 0.5 + dy) / 2.0 + y) / height - 0.5;
+						
+						glm::vec3 direction = glm::vec3(xAxis.x * tempX, xAxis.y * tempX, xAxis.z * tempX) +
+							glm::vec3(yAxis.x * tempY, yAxis.y * tempY, yAxis.z * tempY) + zAxis;
+
+						glm::vec4 tempRadiance = computeRadiance(Ray(position, glm::normalize(direction)), 0, depth);
+						radiance += glm::vec4(tempRadiance.x * proportion, tempRadiance.y * proportion, tempRadiance.z * proportion, tempRadiance.w * proportion);
+					}
+					pixels[index] += glm::clamp(radiance, 0.0f, 1.0f);
+				}
+			}
+		}
+	}
+	std::cout << "Render complete" << std::endl;
+	saveImageFile(width, height, pixels, fileName);
+}
+
+bool Scene::raycast(const Ray &ray, double &distance, glm::vec3 &normal, std::shared_ptr<AbstractObject> &object)
+{
+	return objects->raycast(ray, distance, normal, object);
+}
+
+glm::vec4 Scene::computeRadiance(const Ray &ray, const int &depth, const int &maxDepth)
+{
+	double distance;
+	glm::vec3 normal;
+	std::shared_ptr<AbstractObject> obj;
+
+	if (!raycast(ray, distance, normal, obj))
+		return glm::vec4();
+
+	// Coordonnées du point d'intersection
+	glm::vec3 x = ray.origin + glm::vec3(ray.direction.x * distance, ray.direction.y * distance, ray.direction.z * distance);
+
+	// Ajustement de la normale
+	normal = glm::normalize(normal);
+	if (glm::dot(normal, ray.direction) > 0)
+		normal = glm::vec3(normal.x * -1, normal.y * -1, normal.z * -1);
+
+	glm::vec4 f = obj->getColor();
+	glm::vec4 color = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+
+	for (auto light : lights)
+	{
+		if (light->lightType == 0) // Directionnelle
+		{
+			glm::vec4 vAmbient = glm::vec4(light->ambientColor * light->ambientIntensity, 1.0f);
+			float diffuseFactor = glm::dot(normal, -light->direction);
+
+			glm::vec4 diffuseColor;
+			if (diffuseFactor > 0)
+				diffuseColor = glm::vec4(light->diffuseColor * light->diffuseIntensity * diffuseFactor, 1.0f);
+			else
+				diffuseColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+
+			color += f * (vAmbient + diffuseColor);
+		}
+		else if (light->lightType == 1) // Ponctuelle
+		{
+			glm::vec3 vAmbient = light->ambientColor * light->ambientIntensity * glm::vec3(f);
+			glm::vec3 surfaceToLight = light->position - x;
+			glm::vec3 surfaceToCamera = glm::normalize(this->position - x);
+
+			float attenuation = 1.0f / (1.0f + light->attenuation * glm::pow(glm::length(surfaceToLight), 2));
+			surfaceToLight = glm::normalize(surfaceToLight);
+
+			color += makeLightPoint(f, obj->getShininess(), normal, vAmbient, surfaceToLight, surfaceToCamera, attenuation, light);
+		}
+		else if (light->lightType == 2) // Projecteur
+		{
+			glm::vec3 vAmbient = light->ambientColor * light->ambientIntensity * glm::vec3(f);
+			glm::vec3 surfaceToLight = light->position - x;
+			glm::vec3 surfaceToCamera = glm::normalize(this->position - x);
+
+			float attenuation = 1.0f / (1.0f + light->attenuation * glm::pow(glm::length(surfaceToLight), 2));
+			surfaceToLight = glm::normalize(surfaceToLight);
+
+			float lightToSurfaceAngle = glm::degrees(glm::acos(glm::dot(-surfaceToLight, glm::normalize(-light->direction))));
+			if (lightToSurfaceAngle < light->coneAngle)
+				color += makeLightPoint(f, obj->getShininess(), normal, vAmbient, surfaceToLight, surfaceToCamera, attenuation, light);
+		}
+	}
+	float blendFactor = 1.0f;
+	if (color.w > 1.0f)
+		blendFactor = 1.0f / color.w;
+	color = glm::vec4(color.x * blendFactor, color.y * blendFactor, color.z * blendFactor, color.w * blendFactor);
+
+	if (depth < maxDepth)
+	{
+		glm::vec4 temp = computeRadiance(Ray(x, glm::reflect(direction, normal)), depth + 1, maxDepth);
+		color += glm::vec4(temp.x * 0.5f, temp.y * 0.5f, temp.z * 0.5f, temp.w * 0.5f);
+	}
+
+	return color;
+}
+
+glm::vec4 Scene::makeLightPoint(const glm::vec4 &color, const float &shininess, const glm::vec3 &normal, glm::vec3 &vAmbient, 
+	const glm::vec3 &surfaceToLight, const glm::vec3 &surfaceToCamera, const float &attenuation, AbstractObject::Light *light)
+{
+	glm::vec3 diffuseColor(0.0f, 0.0f, 0.0f);
+	float diffuseFactor = glm::max(0.0f, glm::dot(normal, surfaceToLight));
+	if (diffuseFactor > 0)
+		diffuseColor = glm::vec3(light->diffuseColor * light->diffuseIntensity * diffuseFactor);
+
+	float specularFactor = 0.0f;
+	if (diffuseFactor > 0.0f)
+		specularFactor = glm::pow(glm::max(0.0f, glm::dot(surfaceToCamera, glm::reflect(-surfaceToLight, normal))), shininess);
+	glm::vec3 specularColor(specularFactor * light->specularIntensity * light->specularColor);
+
+	glm::vec3 linearColor = vAmbient + attenuation * (diffuseColor + specularColor);
+	glm::vec3 gamma(1.0f / 2.2f);
+
+	return glm::vec4(glm::pow(linearColor, gamma), color.w);
+}
 
 void Scene::addObject(shared_ptr<AbstractObject> object) 
 {
@@ -368,10 +547,21 @@ void Scene::mouseMotion(const unsigned int & timestamp, const unsigned int & win
 
 void Scene::drawSkybox()
 {
-	skybox.Draw(projection,view,position,lights);
+	skybox.Draw(projection, view, position, lights);
 }
 
 std::shared_ptr<GroupObject> Scene::getObjects()
 {
 	return objects;
+}
+
+void Scene::setFog(bool value)
+{
+	objects->setFog(value);
+	skybox.setFog(value);
+}
+
+bool Scene::getFog()
+{
+	return objects->getFog();
 }

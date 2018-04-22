@@ -11,6 +11,7 @@ R"(#version 430 core
 in vec3 normal;
 in vec2 TexCoord;
 in vec3 vertices;
+in vec3 viewSpacePos;
 out vec4 color;
 
 uniform sampler2D texture_diffuse;
@@ -40,6 +41,10 @@ uniform Light structLight[MAXLIGHTS];
 
 vec4 texColor;
 vec3 normalizedNormal;
+
+uniform bool useFog;
+const vec4 fogColor = vec4(0.5, 0.5, 0.5, 1.0);
+const float fogDensity = 0.35;
 
 vec4 MakeLightPoint(vec3 vAmbient,vec3 surfaceToLight,vec3 surfaceToCamera,float attenuation,Light light)
 {
@@ -121,6 +126,13 @@ void main(void)
 		blendFactor=1/color.w;
 	color=vec4(color.x*blendFactor,color.y*blendFactor,color.z*blendFactor,color.w*blendFactor);// simple personalized way to counter overly white colors
 	
+	if (useFog)
+	{
+		float dist = length(viewSpacePos);
+		float fogFactor = 1.0 / exp(dist * fogDensity);
+		fogFactor = clamp(fogFactor, 0.0, 1.0);
+		color = mix(fogColor, color, fogFactor);
+	}
 }
 
 )";
@@ -140,11 +152,13 @@ uniform mat4 matModel;
 
 out vec3 normal;
 out vec3 vertices;
+out vec3 viewSpacePos;
 out vec2 TexCoord;
 
 void main()
 {
 	vertices = (matModel*vec4(in_position,1.0)).xyz;
+	viewSpacePos = (matView*vec4(vertices,1.0)).xyz;
 	gl_Position =  matProjection*matView*matModel*(vec4(in_position, 1.0));
 	normal = vec3(matModel*(vec4(in_normal, 0.0))).xyz;
 	TexCoord = vec2(texCoord.x,texCoord.y);
