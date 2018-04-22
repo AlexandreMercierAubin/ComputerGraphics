@@ -76,58 +76,6 @@ void Renderer::initShaders()
 	curseur.setCouleurRemplissage(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	curseur.setCouleurBordure(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
-
-	int w, h;
-	SDL_GetWindowSize(window, &w, &h);
-
-	GLfloat fbo_vertices[] = {
-		0, -1,
-		1, -1,
-		0,  0,
-		1,  0,
-	};
-
-	//to prepare the post-process
-	glGenBuffers(1, &vbo_fbo_vertices);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_fbo_vertices);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(fbo_vertices), fbo_vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(0);
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-	glActiveTexture(GL_TEXTURE0);
-	glGenTextures(1, &fbo_texture);
-	glBindTexture(GL_TEXTURE_2D, fbo_texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(1);
-
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-
-	/* Depth buffer */
-	glGenRenderbuffers(1, &rbo_depth);
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo_depth);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-	/* Framebuffer to link everything together */
-	glGenFramebuffers(1, &fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbo_texture, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo_depth);
-	GLenum status;
-	if ((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
-		cout << "framebuffer error" << endl;
-		return;
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 
@@ -161,12 +109,10 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 	{
 		drawPostProcess(true);
 	}
-	else 
-	{
-		int w, h;
-		SDL_GetWindowSize(window, &w, &h);
-		scene.drawMirrors(w, h, utiliserSkybox);
-	}
+
+	int w, h;
+	SDL_GetWindowSize(window, &w, &h);
+	scene.drawMirrors(w, h, utiliserSkybox);
 	
 
 	drawGUI();
@@ -192,13 +138,6 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 void Renderer::resize(const int & w, const int & h)
 {
 	glViewport(0, 0, w, h);
-	glBindTexture(GL_TEXTURE_2D, fbo_texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo_depth);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 void Renderer::mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel ,Scene::KeyFlags flags)
@@ -251,11 +190,6 @@ Renderer::~Renderer()
 	glDeleteBuffers(1, &texShaderID);
 	glDeleteProgram(postProcessShaderID);
 	glDeleteBuffers(1, &postProcessShaderID);
-
-	glDeleteRenderbuffers(1, &rbo_depth);
-	glDeleteTextures(1, &fbo_texture);
-	glDeleteFramebuffers(1, &fbo);
-	glDeleteBuffers(1, &vbo_fbo_vertices);
 }
 
 void Renderer::drawGUI()
@@ -682,7 +616,65 @@ void Renderer::drawCursor()
 void Renderer::drawPostProcess(bool mirror)
 {
 	
+	int w, h;
+	SDL_GetWindowSize(window, &w, &h);
+
+	GLuint fbo, fbo_texture, rbo_depth, vbo_fbo_vertices,vao;
+
+	GLfloat fbo_vertices[] = {
+		0, -1,
+		1, -1,
+		0,  0,
+		1,  0,
+	};
+
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	glGenBuffers(1, &vbo_fbo_vertices);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_fbo_vertices);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(fbo_vertices), fbo_vertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glActiveTexture(GL_TEXTURE0);
+	glGenTextures(1, &fbo_texture);
+	glBindTexture(GL_TEXTURE_2D, fbo_texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	
+
+	GLuint IBO;
+	glGenBuffers(1, &IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(fbo_vertices), fbo_vertices, GL_STATIC_DRAW);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindVertexArray(0);
+
+	/* Depth buffer */
+	glGenRenderbuffers(1, &rbo_depth);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo_depth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	/* Framebuffer to link everything together */
+	glGenFramebuffers(1, &fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbo_texture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo_depth);
+	GLenum status;
+	if ((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
+		cout << "framebuffer error" << endl;
+		return;
+	}
+
 	glClearColor(BackgroundColor[0], BackgroundColor[1], BackgroundColor[2], 0);// background
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -712,20 +704,26 @@ void Renderer::drawPostProcess(bool mirror)
 	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_CULL_FACE);
 
+	//Quad to draw on
 
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_fbo_vertices);
+	glBindVertexArray(vao);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, fbo_texture);
 	glUniform1i(glGetUniformLocation(fbo_texture, "text"), 0);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
 
 
 	glDisable(GL_TEXTURE_2D);
 	glEnable(GL_CULL_FACE);
+
+	glDeleteRenderbuffers(1, &rbo_depth);
+	glDeleteTextures(1, &fbo_texture);
+	glDeleteFramebuffers(1, &fbo);
+	glDeleteBuffers(1, &vbo_fbo_vertices);
 
 }
 

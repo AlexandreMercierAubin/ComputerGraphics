@@ -68,7 +68,7 @@ private:
 	glm::vec4 couleurBordure;
 	int epaisseurBordure = 1;
 	bool utiliserSkybox = true;
-	bool activatePostProcess = false;
+	bool activatePostProcess = true;
 	bool activateWireframe = false;
 	bool MSAA = true;
 	int formeADessiner = 0; // 0 = point, 1 = ligne, 2 = triangle, 3 = rectangle, 4 = quad, 5 = smiley, 6 = étoile , 7 = Cube, 8 = Sphere
@@ -77,7 +77,6 @@ private:
 	int typeCurseur = 0; // 0 = par défaut, 1 = point, 2 = points, 3 = croix, 4 = triangle, 5 = quad
 	PrimitiveObject curseur;
 
-	GLuint fbo, fbo_texture, rbo_depth, vbo_fbo_vertices,vao;
 
 	GLuint primitiveShaderID;
 	GLuint GPShaderID;
