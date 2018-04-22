@@ -153,5 +153,7 @@ private:
 	void addParametricSurface();
 	void addSurfaceTessellation();
 	void addMirror();
+	void addParametricCurve(ParametricCurveObject::PARAMETRICTYPE type);
+
 
 };

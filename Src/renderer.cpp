@@ -222,7 +222,7 @@ void Renderer::drawGUI()
 	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
 	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
 	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
-	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide\0SurfaceParam\0SurfaceTessellation\0Portail\0"))
+	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide\0SurfaceParam\0SurfaceTessellation\0Portail\0BezierQuad\0BezierCub\0Hermite\0bezier\0CatmullRom\0"))
 		ptsDessin.clear();
 
 	ImGui::NewLine();
@@ -915,6 +915,27 @@ void Renderer::ajouterPtDessin(int x, int y)
 	case 11://Portail
 		addMirror();
 		break;
+	case 12://bezier quad
+		if (ptsDessin.size() >= 3)
+			addParametricCurve(ParametricCurveObject::BezierQuadratic);
+		break;
+	case 13://bezier cubic
+		if (ptsDessin.size() >= 4)
+			addParametricCurve(ParametricCurveObject::BezierCubic);
+		break;
+	case 14://hermite
+		if (ptsDessin.size() >= 4)
+			addParametricCurve(ParametricCurveObject::Hermite);
+		break;
+	case 15://bezier
+		if (ptsDessin.size() >= 2)//change that 
+			addParametricCurve(ParametricCurveObject::Bezier);
+		break;
+	case 16://catmullrom
+		if (ptsDessin.size() >= 4)
+			addParametricCurve(ParametricCurveObject::CatmullRom);
+		break;
+	//BezierQuad\0BezierCub\0Hermite\0bezier\0CatmullRom\0
 
 	}
 
@@ -979,6 +1000,22 @@ void Renderer::addMirror()
 	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(texShaderID);	
 	scene.setupMirrors();
 	ptsDessin.clear();
+}
+
+void Renderer::addParametricCurve(ParametricCurveObject::PARAMETRICTYPE type)
+{
+	if (type != ParametricCurveObject::Bezier || ptsDessin.size() <= 2) {
+		scene.addObject(make_shared<ParametricCurveObject>());
+		scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(primitiveShaderID);
+		scene.getObjects()->getCastedObjectAt<ParametricCurveObject>(scene.getObjects()->size() - 1)->setParametricType(type);
+		scene.getObjects()->getCastedObjectAt<ParametricCurveObject>(scene.getObjects()->size() - 1)->setNumLines(100);
+	}
+	scene.getObjects()->getCastedObjectAt<ParametricCurveObject>(scene.getObjects()->size() - 1)->setVertices(ptsDessin);
+	scene.getObjects()->getCastedObjectAt<ParametricCurveObject>(scene.getObjects()->size() - 1)->setColor(couleurRemplissage);
+	scene.getObjects()->getCastedObjectAt<ParametricCurveObject>(scene.getObjects()->size() - 1)->setEdgeColor(couleurRemplissage);
+	scene.getObjects()->getCastedObjectAt<ParametricCurveObject>(scene.getObjects()->size() - 1)->setEdgeSize(5);
+	if(type!= ParametricCurveObject::Bezier)
+		ptsDessin.clear();
 }
 
 void Renderer::ajouterSmiley()

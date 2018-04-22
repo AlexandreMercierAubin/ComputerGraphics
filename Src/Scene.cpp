@@ -87,15 +87,6 @@ void Scene::setupScene()
 
 	//objects->getCastedObjectAt<ParametricSurfaceObject>(6)->setMatrix(matrix);
 
-	objects->addObject(make_shared<ParametricCurveObject>());
-	objects->getObjectAt(6)->Create(primitiveShaderID);
-	objects->getCastedObjectAt<ParametricCurveObject>(6)->setParametricType(ParametricCurveObject::Bezier);
-	objects->getCastedObjectAt<ParametricCurveObject>(6)->setNumLines(100);
-	objects->getCastedObjectAt<ParametricCurveObject>(6)->setVertices(vertices);
-	objects->getCastedObjectAt<ParametricCurveObject>(6)->setColor(glm::vec4(0, 0, 0, 1));
-	objects->getCastedObjectAt<ParametricCurveObject>(6)->setEdgeColor(glm::vec4(0, 0, 0, 1));
-	objects->getCastedObjectAt<ParametricCurveObject>(6)->setEdgeSize(5);
-
 
 	setupLight();
 	setupMirrors();
