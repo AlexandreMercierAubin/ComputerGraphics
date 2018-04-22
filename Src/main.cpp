@@ -9,7 +9,7 @@ int main()
 {
 
 
-	Application app = Application();
+	Application app;
 	app.setup();
 	app.mainLoop();
 	app.exit();

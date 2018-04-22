@@ -50,11 +50,13 @@ public:
 	virtual void setScale(glm::vec3 scl);
 	virtual void addScale(const glm::vec3 &scl);
 	virtual void setColor(glm::vec4 Color);
+	virtual void setShininess(float shininess);
+	virtual void setFog(bool value);
 
 	virtual void getLight(std::vector<Light*>& lights);
 	virtual void getMirrors(std::vector<std::shared_ptr<MirrorObject>>& mirrors);
 
-	virtual bool raycast(const Ray &ray, double &distance, std::shared_ptr<AbstractObject> &object);
+	virtual bool raycast(const Ray &ray, double &distance, glm::vec3 &normal, std::shared_ptr<AbstractObject> &object);
 
 	GroupObject();
 	~GroupObject();

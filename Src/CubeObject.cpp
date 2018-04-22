@@ -58,6 +58,7 @@ void CubeObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos,
 {
 	glUseProgram(program);
 	uniformColor(program, color);
+	uniformFog(program, useFog);
 	GLuint MatView = glGetUniformLocation(program, "matView");
 	glUniformMatrix4fv(MatView, 1, GL_FALSE, &view[0][0]);
 	GLuint MatProjection = glGetUniformLocation(program, "matProjection");
@@ -80,6 +81,83 @@ void CubeObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos,
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
+}
+
+bool CubeObject::raycast(const Ray &ray, double &distance, glm::vec3 &normal, std::shared_ptr<AbstractObject> &object)
+{
+	bool intersect = false;
+
+	// Boucle sur les différentes faces
+	for (int i = 0; i < 6; ++i)
+	{
+		int i1 = indices[i * 6];
+		int i2 = indices[i * 6 + 1];
+		int i3 = indices[i * 6 + 2];
+
+		glm::vec3 v[4];
+		v[0] = vertices[i1];
+		v[1] = vertices[i2];
+		v[2] = vertices[i3];
+		
+		// Si la face n'est pas visible, on ne teste pas l'intersection
+		glm::vec3 n = glm::cross(v[1] - v[0], v[2] - v[0]);
+		if (glm::dot(n, ray.direction) >= 0)
+			continue;
+
+		for (int j = 3; j <= 5; ++j)
+		{
+			int temp = indices[i * 6 + j];
+			if (temp != i1 && temp != i2)
+			{
+				v[3] = vertices[temp];
+				break;
+			}
+		}
+
+		double dist = glm::dot(n, ray.origin) + glm::dot(-n, v[3]);
+		if (dist < 0.0)
+			break; // Derrière la caméra
+
+		glm::vec3 intersection = ray.origin + glm::vec3(ray.direction.x * dist, ray.direction.y * dist, ray.direction.z * dist);
+
+		// Vérification que l'intersection est à l'intérieur des bornes de la face
+		float minX = v[0].x;
+		float maxX = v[0].x;
+		float minY = v[0].y;
+		float maxY = v[0].y;
+		float minZ = v[0].z;
+		float maxZ = v[0].z;
+
+		for (int j = 1; j <= 3; ++j)
+		{
+			if (v[j].x < minX)
+				minX = v[j].x;
+			else if (v[j].x > maxX)
+				maxX = v[j].x;
+
+			if (v[j].y < minY)
+				minY = v[j].y;
+			else if (v[j].y > maxY)
+				maxY = v[j].y;
+
+			if (v[j].z < minZ)
+				minZ = v[j].z;
+			else if (v[j].z > maxZ)
+				maxZ = v[j].z;
+		}
+
+		if (intersection.x >= minX && intersection.x <= maxX &&
+			intersection.y >= minY && intersection.y <= maxY &&
+			intersection.z >= minZ && intersection.z <= maxZ)
+		{
+			distance = dist;
+			normal = n;
+			intersect = true;
+			break;
+		}
+	}
+
+	return intersect;
 }
 
 CubeObject::~CubeObject()

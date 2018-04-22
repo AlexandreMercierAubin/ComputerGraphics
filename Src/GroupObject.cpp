@@ -105,6 +105,20 @@ void GroupObject::setColor(glm::vec4 Color)
 		obj->setColor(Color);
 }
 
+void GroupObject::setShininess(float inShininess)
+{
+	AbstractObject::setShininess(inShininess);
+	for (auto obj : vObject)
+		obj->setShininess(inShininess);
+}
+
+void GroupObject::setFog(bool value)
+{
+	AbstractObject::setFog(value);
+	for (auto obj : vObject)
+		obj->setFog(value);
+}
+
 void GroupObject::getLight(std::vector<Light*>& lights)
 {
 	for (unsigned int i = 0; i < vObject.size();++i) 
@@ -135,7 +149,7 @@ void GroupObject::getMirrors(std::vector<std::shared_ptr<MirrorObject>>& mirrors
 	}
 }
 
-bool GroupObject::raycast(const Ray &ray, double &distance, std::shared_ptr<AbstractObject> &object)
+bool GroupObject::raycast(const Ray &ray, double &distance, glm::vec3 &normal, std::shared_ptr<AbstractObject> &object)
 {
 	bool intersect = false;
 	distance = std::numeric_limits<double>::infinity();
@@ -143,14 +157,16 @@ bool GroupObject::raycast(const Ray &ray, double &distance, std::shared_ptr<Abst
 	for (auto obj : vObject)
 	{
 		double dist = std::numeric_limits<double>::infinity();
-		std::shared_ptr<AbstractObject> o;
+		glm::vec3 n;
+		std::shared_ptr<AbstractObject> o = obj;
 
-		if (obj->raycast(ray, dist, o))
+		if (obj->raycast(ray, dist, n, o))
 		{
 			intersect = true;
 			if (dist < distance)
 			{
 				distance = dist;
+				normal = n;
 				object = o;
 			}
 		}

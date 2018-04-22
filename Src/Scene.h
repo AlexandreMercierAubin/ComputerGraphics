@@ -25,6 +25,8 @@
 
 
 
+#include <random>
+
 class Scene
 {
 
@@ -58,8 +60,10 @@ public:
 
 	void dollyZoom(float dolly, float zoom);
 
-	bool raycast(const Ray &ray, double &distance, std::shared_ptr<AbstractObject> &object);
+	void renderRaycast(const int &width, const int &height, const int &rayPerPixel, const int &depth, const string &fileName);
 
+	void setFog(bool value);
+	bool getFog();
 
 	struct KeyFlags
 	{
@@ -108,4 +112,17 @@ private:
 	std::vector<AbstractObject::Light*> lights;
 	std::vector<std::shared_ptr<MirrorObject>> mirrors;
 	SkyboxObject skybox;
+
+	// Raycasting
+	std::random_device rd;
+	std::mt19937 rng{ rd() };
+	std::uniform_real_distribution<double> random01{ 0.0, 1.0 };
+	const double gammaCorrection = 1 / 2.2;
+
+	bool raycast(const Ray &ray, double &distance, glm::vec3 &normal, std::shared_ptr<AbstractObject> &object);
+	glm::vec4 computeRadiance(const Ray &ray, const int &depth, const int &maxDepth);
+	glm::vec4 makeLightPoint(const glm::vec4 &color, const float &shininess, const glm::vec3 &normal, glm::vec3 &vAmbient,
+		const glm::vec3 &surfaceToLight, const glm::vec3 &surfaceToCamera, const float &attenuation, AbstractObject::Light* light);
+	void saveImageFile(const int &width, const int &height, glm::vec4* pixels, const string &fileName);
+	int formatColorComponent(double value);
 };

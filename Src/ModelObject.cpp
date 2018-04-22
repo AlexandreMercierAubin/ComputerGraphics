@@ -40,6 +40,7 @@ void ModelObject::Draw(glm::mat4 &projection, glm::mat4 &view , glm::vec3 &camPo
 	AbstractObject::uniformLight(program, lights);
 	AbstractObject::uniformCameraPosition(program, camPos);
 	AbstractObject::uniformShininess(program,shininess);
+	AbstractObject::uniformFog(program, useFog);
 
 	model.Draw(program);
 }
@@ -50,7 +51,7 @@ void ModelObject::setModelToCreate(string path)
 	name = "Modele (" + path + ")";
 }
 
-bool ModelObject::raycast(const Ray &ray, double &distance, std::shared_ptr<AbstractObject> &object)
+bool ModelObject::raycast(const Ray &ray, double &distance, glm::vec3 &normal, std::shared_ptr<AbstractObject> &object)
 {
 	bool intersect = false;
 
@@ -114,9 +115,11 @@ bool ModelObject::raycast(const Ray &ray, double &distance, std::shared_ptr<Abst
 			{
 				intersect = true;
 				distance = glm::min(distance, dist);
+				normal = n;
 			}
 		}
 	}
 
 	return intersect;
 }
+

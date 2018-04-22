@@ -184,4 +184,7 @@ private:
 		}
 	}
 
+	// Raycasting
+	bool useRaycast = false;
+	int rayPerPixel = 1;
 };
