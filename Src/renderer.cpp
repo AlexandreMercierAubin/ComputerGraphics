@@ -87,12 +87,21 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 	if (MSAA) 
 	{
 		glEnable(GL_MULTISAMPLE);
-		
+		glEnable(GL_LINE_SMOOTH);
+	}
+	else
+	{
+		glDisable(GL_MULTISAMPLE);
+		glDisable(GL_LINE_SMOOTH);
 	}
 
 	if (activateWireframe) 
 	{
 		glEnable(GL_POLYGON_SMOOTH);
+	}
+	else 
+	{
+		glDisable(GL_POLYGON_SMOOTH);
 	}
 
 	scene.refreshScene(flags);
@@ -102,7 +111,6 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 
 	if (utiliserSkybox)
 		scene.drawSkybox();
-
 
 	scene.drawScene();
 
@@ -287,6 +295,11 @@ void Renderer::drawGUI()
 	// ********** Autres options **********
 
 	ImGui::Begin("Autres options", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+	ImGui::Checkbox("Retroviseur", &activateMirror); 
+	ImGui::Checkbox("Post-Process", &activatePostProcess);
+	ImGui::Checkbox("MSAA", &MSAA);
+	ImGui::Checkbox("fil de fer inverse", &activateWireframe);
 
 	if (ImGui::Combo("Mode de projection", (int*)&projectionType, "Perspective\0Perspective inverse\0Orthographique\0"))
 	{
@@ -698,10 +711,7 @@ void Renderer::drawPostProcess(bool mirror, GLuint program,bool fullScreen)
 	if (utiliserSkybox)
 		scene.drawSkybox();
 
-
-
 	scene.drawScene();
-
 
 	if (mirror)
 	{
@@ -711,12 +721,10 @@ void Renderer::drawPostProcess(bool mirror, GLuint program,bool fullScreen)
 
 	
 
+	//Quad to draw on
 	glUseProgram(program);
-
 	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_CULL_FACE);
-
-	//Quad to draw on
 
 	glBindVertexArray(vao);
 	glActiveTexture(GL_TEXTURE0);
@@ -727,11 +735,11 @@ void Renderer::drawPostProcess(bool mirror, GLuint program,bool fullScreen)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-
-
 	glDisable(GL_TEXTURE_2D);
 	glEnable(GL_CULL_FACE);
 
+
+	//clean buffers
 	glDeleteRenderbuffers(1, &rbo_depth);
 	glDeleteTextures(1, &fbo_texture);
 	glDeleteFramebuffers(1, &fbo);
