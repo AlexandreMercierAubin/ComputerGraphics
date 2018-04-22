@@ -273,7 +273,7 @@ void Renderer::drawGUI()
 	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
 	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
 	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
-	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide\0SurfaceParam\0SurfaceTessellation\0"))
+	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide\0SurfaceParam\0SurfaceTessellation\0Miroir\0"))
 		ptsDessin.clear();
 
 	ImGui::NewLine();
@@ -957,6 +957,8 @@ void Renderer::addSurfaceTessellation()
 void Renderer::addMirror()
 {
 	scene.addObject(make_shared<MirrorObject>());
+	scene.getObjects()->getCastedObjectAt<MirrorObject>(scene.getObjects()->size() - 1)->setInverted(false, true);
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(texShaderID);	
 	scene.setupMirrors();
 	ptsDessin.clear();
 }

@@ -64,10 +64,34 @@ void QuadObject::Create()
 	glGenVertexArrays(1, &VertexArray);
 	glBindVertexArray(VertexArray);
 
-	vertices[0] = glm::vec3(0 - width / 2, 0 - height / 2, 0 - depth / 2);
-	vertices[1] = glm::vec3(0 + width / 2, 0 - height / 2, 0 - depth / 2);
-	vertices[2] = glm::vec3(0 - width / 2, 0 + height / 2, 0 - depth / 2);
-	vertices[3] = glm::vec3(0 + width / 2, 0 + height / 2, 0 - depth / 2);
+	if (invertedX && invertedY) 
+	{
+		vertices[3] = glm::vec3(0 - width / 2, 0 - height / 2, 0 - depth / 2);
+		vertices[2] = glm::vec3(0 + width / 2, 0 - height / 2, 0 - depth / 2);
+		vertices[1] = glm::vec3(0 - width / 2, 0 + height / 2, 0 - depth / 2);
+		vertices[0] = glm::vec3(0 + width / 2, 0 + height / 2, 0 - depth / 2);
+	}
+	else if (invertedX) 
+	{
+		vertices[1] = glm::vec3(0 - width / 2, 0 - height / 2, 0 - depth / 2);
+		vertices[0] = glm::vec3(0 + width / 2, 0 - height / 2, 0 - depth / 2);
+		vertices[3] = glm::vec3(0 - width / 2, 0 + height / 2, 0 - depth / 2);
+		vertices[2] = glm::vec3(0 + width / 2, 0 + height / 2, 0 - depth / 2);
+	}
+	else if (invertedY) 
+	{
+		vertices[2] = glm::vec3(0 - width / 2, 0 - height / 2, 0 - depth / 2);
+		vertices[3] = glm::vec3(0 + width / 2, 0 - height / 2, 0 - depth / 2);
+		vertices[0] = glm::vec3(0 - width / 2, 0 + height / 2, 0 - depth / 2);
+		vertices[1] = glm::vec3(0 + width / 2, 0 + height / 2, 0 - depth / 2);
+	}
+	else 
+	{
+		vertices[0] = glm::vec3(0 - width / 2, 0 - height / 2, 0 - depth / 2);
+		vertices[1] = glm::vec3(0 + width / 2, 0 - height / 2, 0 - depth / 2);
+		vertices[2] = glm::vec3(0 - width / 2, 0 + height / 2, 0 - depth / 2);
+		vertices[3] = glm::vec3(0 + width / 2, 0 + height / 2, 0 - depth / 2);
+	}
 
 	glm::vec2 vTexture[4] = { glm::vec2(0.0f, 1.0f)  , glm::vec2(1.0f, 1.0f), glm::vec2(0.0f, 0.0f) , glm::vec2(1.0f, 0.0f) };
 
@@ -137,6 +161,12 @@ void QuadObject::DrawSimple(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &c
 void QuadObject::setTexture(GLuint text) 
 {
 	textureID = text;
+}
+
+void QuadObject::setInverted(bool x, bool y)
+{
+	invertedX = x;
+	invertedY = y;
 }
 
 QuadObject::QuadObject(std::string TexturePath)

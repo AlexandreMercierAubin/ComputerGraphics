@@ -84,8 +84,6 @@ void Scene::setupScene()
 	matrix[2][0] = 0.0f;		matrix[2][1] = 0.0f;			matrix[2][2] = 1.0f;		matrix[2][3] = 0.0f;
 	matrix[3][0] = 0.0f;		matrix[3][1] = 0.0f;			matrix[3][2] = 0.0f;		matrix[3][3] = 0.0f;
 
-	objects->addObject(make_shared<MirrorObject>());
-	objects->addObject(make_shared<MirrorObject>());
 
 	//objects->getCastedObjectAt<ParametricSurfaceObject>(6)->setMatrix(matrix);
 
@@ -136,6 +134,12 @@ void Scene::setProjection(PROJECTIONTYPE type, const float & angleOfView, const 
 void Scene::addYaw(GLfloat y)
 {
 	yaw += y;
+	MatView(view, false);
+}
+
+void Scene::addPitch(GLfloat z)
+{
+	pitch += z;
 	MatView(view, false);
 }
 
@@ -263,11 +267,13 @@ void Scene::drawMirrors(int w, int h,bool DrawSkybox)
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	
+
 	for (unsigned int i = 0; i < mirrors.size(); ++i) 
 	{
 		//settint the position of the camera
 		glm::vec3 mPos = mirrors[i]->getPosition();
-		setPosition(mPos);
+		setPosition(-mPos);
 
 		//filling the framebuffer
 		glBindFramebuffer(GL_FRAMEBUFFER, fboM);
@@ -284,9 +290,7 @@ void Scene::drawMirrors(int w, int h,bool DrawSkybox)
 
 		//draw part
 		glUseProgram(texShaderID);
-
 		mirrors[i]->setTexture(fbo_textureM);
-
 		mirrors[i]->drawMirror(projection, view, position, lights);
 	}
 	setPosition(tempPlayerPos);

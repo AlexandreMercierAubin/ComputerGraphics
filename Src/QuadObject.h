@@ -18,7 +18,10 @@ private:
 	std::string texturePath2;
 	bool imageOK = false;
 public:
+	bool invertedX = false;
+	bool invertedY = false;
 	void setTexture(GLuint text);
+	void setInverted(bool x, bool y);
 	virtual void Create(GLuint &Program);
 	virtual void Create();
 	virtual void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights);
