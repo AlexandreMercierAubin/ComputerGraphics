@@ -56,7 +56,7 @@ public:
 
 	void dollyZoom(float dolly, float zoom);
 
-	void renderRaycast(const int &width, const int &height, const int &rayPerPixel, const string &fileName);
+	void renderRaycast(const int &width, const int &height, const int &rayPerPixel, const int &depth, const string &fileName);
 
 	void setFog(bool value);
 	bool getFog();
@@ -113,7 +113,7 @@ private:
 	const double gammaCorrection = 1 / 2.2;
 
 	bool raycast(const Ray &ray, double &distance, glm::vec3 &normal, std::shared_ptr<AbstractObject> &object);
-	glm::vec4 computeRadiance(const Ray &ray, int depth);
+	glm::vec4 computeRadiance(const Ray &ray, const int &depth, const int &maxDepth);
 	glm::vec4 makeLightPoint(const glm::vec4 &color, const float &shininess, const glm::vec3 &normal, glm::vec3 &vAmbient,
 		const glm::vec3 &surfaceToLight, const glm::vec3 &surfaceToCamera, const float &attenuation, AbstractObject::Light* light);
 	void saveImageFile(const int &width, const int &height, glm::vec4* pixels, const string &fileName);

@@ -169,12 +169,15 @@ void Scene::saveImageFile(const int &width, const int &height, glm::vec4* pixels
 	std::cout << "File saved" << std::endl;
 }
 
-void Scene::renderRaycast(const int &width, const int &height, const int &rayPerPixel, const string &fileName)
+void Scene::renderRaycast(const int &width, const int &height, const int &rayPerPixel, const int &depth, const string &fileName)
 {
 	std::cout << "Render start" << std::endl;
 	float progress = 0.0f;
 
 	glm::vec4 *pixels = new glm::vec4[width * height];
+	for (int i = 0; i < width * height; ++i)
+		pixels[i] = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+
 	double proportion = 1.0 / rayPerPixel;
 
 	glm::vec3 zAxis = orientation;
@@ -193,7 +196,7 @@ void Scene::renderRaycast(const int &width, const int &height, const int &rayPer
 			{
 				for (int sx = 0; sx < 2; ++sx)
 				{
-					glm::vec4 radiance;
+					glm::vec4 radiance(0.0f, 0.0f, 0.0f, 0.0f);
 					for (int s = 0; s < rayPerPixel; ++s)
 					{
 						double r1 = 2.0 * random01(rng);
@@ -203,10 +206,10 @@ void Scene::renderRaycast(const int &width, const int &height, const int &rayPer
 						double tempX = ((sx + 0.5 + dx) / 2.0 + x) / width - 0.5;
 						double tempY = ((sy + 0.5 + dy) / 2.0 + y) / height - 0.5;
 						
-						glm::vec3 distance = glm::vec3(xAxis.x * tempX, xAxis.y * tempX, xAxis.z * tempX) +
+						glm::vec3 direction = glm::vec3(xAxis.x * tempX, xAxis.y * tempX, xAxis.z * tempX) +
 							glm::vec3(yAxis.x * tempY, yAxis.y * tempY, yAxis.z * tempY) + zAxis;
 
-						glm::vec4 tempRadiance = computeRadiance(Ray(position + glm::vec3(distance.x * 140, distance.y * 140, distance.z * 140), glm::normalize(distance)), 0);
+						glm::vec4 tempRadiance = computeRadiance(Ray(position, glm::normalize(direction)), 0, depth);
 						radiance += glm::vec4(tempRadiance.x * proportion, tempRadiance.y * proportion, tempRadiance.z * proportion, tempRadiance.w * proportion);
 					}
 					pixels[index] += glm::clamp(radiance, 0.0f, 1.0f);
@@ -223,7 +226,7 @@ bool Scene::raycast(const Ray &ray, double &distance, glm::vec3 &normal, std::sh
 	return objects->raycast(ray, distance, normal, object);
 }
 
-glm::vec4 Scene::computeRadiance(const Ray &ray, int depth)
+glm::vec4 Scene::computeRadiance(const Ray &ray, const int &depth, const int &maxDepth)
 {
 	double distance;
 	glm::vec3 normal;
@@ -287,6 +290,12 @@ glm::vec4 Scene::computeRadiance(const Ray &ray, int depth)
 	if (color.w > 1.0f)
 		blendFactor = 1.0f / color.w;
 	color = glm::vec4(color.x * blendFactor, color.y * blendFactor, color.z * blendFactor, color.w * blendFactor);
+
+	if (depth < maxDepth)
+	{
+		glm::vec4 temp = computeRadiance(Ray(x, glm::reflect(direction, normal)), depth + 1, maxDepth);
+		color += glm::vec4(temp.x * 0.5f, temp.y * 0.5f, temp.z * 0.5f, temp.w * 0.5f);
+	}
 
 	return color;
 }
