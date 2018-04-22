@@ -448,6 +448,16 @@ void Renderer::drawGUI()
 		ImGui::Checkbox("Redimensionnement proportionnel", &proportionalResizing);
 		ImGui::Checkbox("Utiliser les quaternions", &useQuaternion);
 
+		if (selectedNodes.size() == 1&& isCastable<ParametricSurfaceObject,AbstractObject>(selectedNodes[0].first.get()) )
+		{
+			ImGui::DragFloat4("Parameters1", &currentMat4[0][0], 0.01f, -1000.0f, 1000.0f, "%.2f");
+			ImGui::DragFloat4("2", &currentMat4[1][0], 0.01f, -1000.0f, 1000.0f, "%.2f");
+			ImGui::DragFloat4("3", &currentMat4[2][0], 0.01f, -1000.0f, 1000.0f, "%.2f");
+			ImGui::DragFloat4("4", &currentMat4[3][0], 0.01f, -1000.0f, 1000.0f, "%.2f");
+			ParametricSurfaceObject* object = getCasted<ParametricSurfaceObject, AbstractObject>(selectedNodes[0].first.get());
+			object->setMatrix(currentMat4);
+		}
+
 		transformationsWindowWidth = ImGui::GetCurrentWindow()->Size.x;
 		ImGui::End();
 	}
@@ -1249,6 +1259,11 @@ void Renderer::updateTransformations()
 		currentRotationQuat = obj->getRotationQuaternion();
 		currentTranslation = obj->getPosition();
 		currentScale = obj->getScale();
+		if ( isCastable<ParametricSurfaceObject, AbstractObject>(selectedNodes[0].first.get()))
+		{
+			ParametricSurfaceObject* object = getCasted<ParametricSurfaceObject, AbstractObject>(selectedNodes[0].first.get());
+			currentMat4= object->getMatrix();
+		}
 	}
 	else // Aucun ou plusieurs sélectionnés
 	{

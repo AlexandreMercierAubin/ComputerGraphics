@@ -15,6 +15,7 @@ public:
 
 	void setNumLines(int numN,int numM);
 	void setMatrix(glm::mat4 G);
+	glm::mat4 getMatrix();
 	void setParametricType(PARAMETRICTYPE in_type);
 	virtual void Create(GLuint &program);
 	virtual void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights);

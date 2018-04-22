@@ -115,6 +115,7 @@ private:
 	glm::vec3 currentRotation;
 	glm::quat currentRotationQuat;
 	glm::vec3 currentScale;
+	glm::mat4 currentMat4;
 	bool proportionalResizing = true;
 	bool useQuaternion = false;
 	void setColor();
@@ -155,5 +156,30 @@ private:
 	void addMirror();
 	void addParametricCurve(ParametricCurveObject::PARAMETRICTYPE type);
 
+	template <class abObject,class abObject2>
+	bool isCastable(abObject2 *obj)
+	{
+		if (abObject* casted = dynamic_cast<abObject*>(obj))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	template <class abObject, class abObject2>
+	abObject* getCasted(abObject2 *obj)
+	{
+		if (abObject* casted = dynamic_cast<abObject*>(obj))
+		{
+			return casted;
+		}
+		else
+		{
+			return NULL;
+		}
+	}
 
 };
