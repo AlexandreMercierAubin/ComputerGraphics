@@ -14,8 +14,10 @@ public:
 		const float &specularIntensity,
 		const float attenuation,
 		const glm::vec3 &direction,
-		const glm::vec3 &in_position, 
-		const float &coneAngle);
+		const glm::vec3 &in_position,
+		const float &coneAngle,
+		bool volumetric,
+		const glm::vec3 &volume);
 
 	void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights);
 	AbstractObject::Light* getLight();

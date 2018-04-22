@@ -47,9 +47,9 @@ void Scene::setupScene()
 	skybox.Create(skyboxID);
 	objects = std::make_shared<GroupObject>();
 	objects->addObject(make_shared<LightObject>());
-	objects->getCastedObjectAt<LightObject>(0)->setLight(0, glm::vec3(1, 1, 1), 0.2f, glm::vec3(1, 1, 1), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(-1, -1, 0), glm::vec3(0, 0, 0),30);
+	objects->getCastedObjectAt<LightObject>(0)->setLight(0, glm::vec3(1, 1, 1), 0.2f, glm::vec3(1, 1, 1), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(-1, -1, 0), glm::vec3(0, 0, 0),30,false,glm::vec3(0,0,0));
 	objects->addObject(make_shared<LightObject>());
-	objects->getCastedObjectAt<LightObject>(1)->setLight(1, glm::vec3(1, 1, 1), 0.2f, glm::vec3(0, 1, 1), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(0, -1, 0), glm::vec3(-0.25, 7.5, 0),30);
+	objects->getCastedObjectAt<LightObject>(1)->setLight(1, glm::vec3(1, 1, 1), 0.2f, glm::vec3(0, 1, 1), 1.0f, glm::vec3(1, 1, 1), 1.0f, 0.2f, glm::vec3(0, -1, 0), glm::vec3(-0.25, 7.5, 0),30,false, glm::vec3(0, 0, 0));
 	objects->addObject(make_shared<QuadObject>("Resources/Image/Small-mario.png"));
 	objects->getObjectAt(2)->Create(texShaderID);
 	objects->getObjectAt(2)->setPosition(glm::vec3(0, 0, -1));
@@ -64,28 +64,6 @@ void Scene::setupScene()
 	objects->getObjectAt(5)->Create(shaderID);
 	objects->getObjectAt(5)->setPosition(glm::vec3(-0.5f, -0.2f, 0));
 	objects->getObjectAt(5)->setColor(glm::vec4(0, 1, 0, 1));
-
-
-	std::vector<glm::vec3> vertices;
-	vertices.push_back(glm::vec3(-0.5, 0, 0));
-	vertices.push_back(glm::vec3(0.0, -0.5, 0));
-	vertices.push_back(glm::vec3(0.5, 0.0, 0));
-	vertices.push_back(glm::vec3(0.0, 0.6, 0));
-	vertices.push_back(glm::vec3(0.0, 0.0, 0));
-	vertices.push_back(glm::vec3(0.0, 0.0, 0.5));
-	vertices.push_back(glm::vec3(-1.0, 0.0, 0));
-	vertices.push_back(glm::vec3(0.0, -1.0, 0));
-	vertices.push_back(glm::vec3(0.0, 1.0, 0));
-
-
-	glm::mat4 matrix;
-	matrix[0][0] = 1.0f;	    matrix[0][1] = 0.0f;			matrix[0][2] = 0.0f;		matrix[0][3] = 0.0f;
-	matrix[1][0] = 0.0f;		matrix[1][1] = 0.0f;			matrix[1][2] = 0.0f;		matrix[1][3] = 0.0f;
-	matrix[2][0] = 0.0f;		matrix[2][1] = 0.0f;			matrix[2][2] = 1.0f;		matrix[2][3] = 0.0f;
-	matrix[3][0] = 0.0f;		matrix[3][1] = 0.0f;			matrix[3][2] = 0.0f;		matrix[3][3] = 0.0f;
-
-
-	//objects->getCastedObjectAt<ParametricSurfaceObject>(6)->setMatrix(matrix);
 
 
 	setupLight();

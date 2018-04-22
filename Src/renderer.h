@@ -99,6 +99,8 @@ private:
 	float lightDiffuseIntensity = 1.0f;
 	glm::vec3 lightSpecularColor;
 	float lightSpecularIntensity = 1.0f;
+	glm::vec3 lightVolume=glm::vec3(1,1,1);
+	bool lightVolumetric=false;
 	float lightAttenuation = 1.0f;
 	glm::vec3 lightDirection;
 	glm::vec3 lightPosition;

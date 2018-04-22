@@ -498,6 +498,8 @@ void Renderer::drawGUI()
 	ImGui::SliderFloat("Intensite diffuse", &lightDiffuseIntensity, 0.0f, 1.0f);
 	ImGui::ColorEdit3("Couleur speculaire", &lightSpecularColor.r);
 	ImGui::SliderFloat("Intensite speculaire", &lightSpecularIntensity, 0.0f, 1.0f);
+	ImGui::DragFloat3("volume", &lightVolume.x, 1.0f, -359.9f, 359.9f, "%.1f");
+	ImGui::Checkbox("Volumetrique", &lightVolumetric);
 
 	if (lightType != 0)
 		ImGui::SliderFloat("Attenuation", &lightAttenuation, 0.0f, 1.0f);
@@ -525,7 +527,9 @@ void Renderer::drawGUI()
 			lightAttenuation,
 			lightDirection,
 			lightPosition,
-			lightConeAngle);
+			lightConeAngle,
+			lightVolumetric,
+			lightVolume);
 
 		scene.addObject(light);
 		scene.setupLight();

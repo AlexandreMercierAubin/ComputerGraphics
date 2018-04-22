@@ -17,7 +17,9 @@ void LightObject::setLight(const int &type,
 							const float attenuation,
 							const glm::vec3 &direction,
 							const glm::vec3 &in_position,
-							const float &coneAngle)
+							const float &coneAngle,
+							bool volumetric,
+							const glm::vec3 &volume)
 {
 	light.lightType = type;
 	light.ambientColor = ambientColor;
@@ -30,6 +32,8 @@ void LightObject::setLight(const int &type,
 	light.direction = direction;
 	light.coneAngle = coneAngle;
 	position=in_position;
+	light.volumetric = volumetric;
+	light.volume = volume;
 
 	setRotationDegree(direction);
 }
