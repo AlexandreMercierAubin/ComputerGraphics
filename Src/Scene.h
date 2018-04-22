@@ -58,6 +58,9 @@ public:
 
 	void renderRaycast(const int &width, const int &height, const int &rayPerPixel, const string &fileName);
 
+	void setFog(bool value);
+	bool getFog();
+
 	struct KeyFlags
 	{
 		bool flagUp, flagDown, flagLeft, flagRight, flagLeftMouse, flagRightMouse;

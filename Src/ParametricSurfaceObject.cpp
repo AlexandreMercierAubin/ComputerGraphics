@@ -71,6 +71,7 @@ void ParametricSurfaceObject::Draw(glm::mat4 & projection, glm::mat4 & view, glm
 	glDisable(GL_CULL_FACE);
 
 	uniformColor(program, color);
+	uniformFog(program, useFog);
 	GLuint MatView = glGetUniformLocation(program, "matView");
 	glUniformMatrix4fv(MatView, 1, GL_FALSE, &view[0][0]);
 	GLuint MatProjection = glGetUniformLocation(program, "matProjection");

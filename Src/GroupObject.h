@@ -49,6 +49,8 @@ public:
 	virtual void setScale(glm::vec3 scl);
 	virtual void addScale(const glm::vec3 &scl);
 	virtual void setColor(glm::vec4 Color);
+	virtual void setShininess(float shininess);
+	virtual void setFog(bool value);
 
 	virtual void getLight(std::vector<Light*>& lights);
 

@@ -93,6 +93,8 @@ void QuadObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos,
 	glUseProgram(program);
 
 	AbstractObject::uniformColor(program, color);
+	AbstractObject::uniformFog(program, useFog);
+
 
 	GLuint MatView = glGetUniformLocation(program, "matView");
 	glUniformMatrix4fv(MatView, 1, GL_FALSE, &view[0][0]);

@@ -137,7 +137,11 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 
 	scene.refreshScene(flags);
 
-	glClearColor(BackgroundColor[0], BackgroundColor[1], BackgroundColor[2], 0);// background
+	if (scene.getFog())
+		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	else
+		glClearColor(BackgroundColor[0], BackgroundColor[1], BackgroundColor[2], 0);// background
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if (utiliserSkybox)
@@ -334,11 +338,15 @@ void Renderer::drawGUI()
 
 	ImGui::Begin("Autres options", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
 
+	ImGui::Checkbox("Activer vue arriere", &activatePostProcess);
+
+	bool fog = scene.getFog();
+	if (ImGui::Checkbox("Activer le brouillard", &fog))
+		scene.setFog(fog);
+
 	if (ImGui::Button("Generer image raycasting"))
 		scene.renderRaycast(100, 100, 2, "Test");
 	
-	ImGui::Checkbox("Activer vue arriere", &activatePostProcess);
-
 	if (ImGui::Combo("Mode de projection", (int*)&projectionType, "Perspective\0Perspective inverse\0Orthographique\0"))
 	{
 		if (projectionType == Scene::PROJECTIONTYPE::Orthographic)

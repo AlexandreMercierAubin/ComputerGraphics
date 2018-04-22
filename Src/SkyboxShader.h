@@ -8,14 +8,20 @@ class SkyboxShader : public AbstractShader
 R"(#version 430 core
 in vec3 TexCoords;
 out vec4 color;
+
 uniform samplerCube skybox;
 uniform vec4 vColor;
 
+uniform bool useFog;
+const vec4 fogColor = vec4(0.5, 0.5, 0.5, 1.0);
+const float fogDensity = 0.35;
+
 void main()
 {
-
-	color = texture(skybox, TexCoords)*vColor;
-
+	if (useFog)
+		color = fogColor;
+	else
+		color = texture(skybox, TexCoords)*vColor;
 }
 
 )";
@@ -32,7 +38,6 @@ out vec3 TexCoords;
 
 void main() 
 {
-	
 	vec4 pos = matProjection * matView * vec4(position, 1.0);
 	gl_Position = pos.xyww;
 	TexCoords = normalize(position);

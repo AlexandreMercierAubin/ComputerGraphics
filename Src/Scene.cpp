@@ -470,10 +470,21 @@ void Scene::mouseMotion(const unsigned int & timestamp, const unsigned int & win
 
 void Scene::drawSkybox()
 {
-	skybox.Draw(projection,view,position,lights);
+	skybox.Draw(projection, view, position, lights);
 }
 
 std::shared_ptr<GroupObject> Scene::getObjects()
 {
 	return objects;
+}
+
+void Scene::setFog(bool value)
+{
+	objects->setFog(value);
+	skybox.setFog(value);
+}
+
+bool Scene::getFog()
+{
+	return objects->getFog();
 }

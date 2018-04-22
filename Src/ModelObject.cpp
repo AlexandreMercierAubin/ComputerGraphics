@@ -40,6 +40,7 @@ void ModelObject::Draw(glm::mat4 &projection, glm::mat4 &view , glm::vec3 &camPo
 	AbstractObject::uniformLight(program, lights);
 	AbstractObject::uniformCameraPosition(program, camPos);
 	AbstractObject::uniformShininess(program,shininess);
+	AbstractObject::uniformFog(program, useFog);
 
 	model.Draw(program);
 }

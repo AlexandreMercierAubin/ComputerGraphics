@@ -105,6 +105,20 @@ void GroupObject::setColor(glm::vec4 Color)
 		obj->setColor(Color);
 }
 
+void GroupObject::setShininess(float inShininess)
+{
+	AbstractObject::setShininess(inShininess);
+	for (auto obj : vObject)
+		obj->setShininess(inShininess);
+}
+
+void GroupObject::setFog(bool value)
+{
+	AbstractObject::setFog(value);
+	for (auto obj : vObject)
+		obj->setFog(value);
+}
+
 void GroupObject::getLight(std::vector<Light*>& lights)
 {
 	for (unsigned int i = 0; i < vObject.size();++i) 
