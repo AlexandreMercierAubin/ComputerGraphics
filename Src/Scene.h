@@ -51,7 +51,7 @@ public:
 
 	void drawSkybox();
 	void drawScene();
-	void drawMirrors(int w,int h);
+	void drawMirrors(int w,int h,bool drawSkybox);
 
 	void mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel);
 

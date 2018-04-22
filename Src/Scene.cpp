@@ -88,6 +88,7 @@ void Scene::setupScene()
 	matrix[3][0] = 0.0f;		matrix[3][1] = 0.0f;			matrix[3][2] = 0.0f;		matrix[3][3] = 0.0f;
 
 	objects->addObject(make_shared<MirrorObject>());
+	objects->addObject(make_shared<MirrorObject>());
 
 	//objects->getCastedObjectAt<ParametricSurfaceObject>(6)->setMatrix(matrix);
 
@@ -224,7 +225,7 @@ void Scene::drawScene()
 	objects->Draw(projection,view,position, lights);
 }
 
-void Scene::drawMirrors(int w, int h)
+void Scene::drawMirrors(int w, int h,bool DrawSkybox)
 {
 	glm::vec3 tempPlayerPos = position;
 	GLuint fboM, fbo_textureM, rbo_depthM;
@@ -275,7 +276,8 @@ void Scene::drawMirrors(int w, int h)
 		glClearColor(0, 0, 0, 1);// background
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//add skybox here
+		if (DrawSkybox)
+			drawSkybox();
 
 		drawScene();
 

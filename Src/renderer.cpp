@@ -156,17 +156,17 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 
 	scene.drawScene();
 
-	//temp test move it 
-	int w, h;
-	SDL_GetWindowSize(window, &w, &h);
-	scene.setupMirrors();
-	scene.drawMirrors(w, h);
-	//end of temp
-
 
 	if (activatePostProcess)
 	{
 		drawPostProcess(true);
+	}
+	else 
+	{
+		int w, h;
+		SDL_GetWindowSize(window, &w, &h);
+		scene.setupMirrors();
+		scene.drawMirrors(w, h, utiliserSkybox);
 	}
 	
 
