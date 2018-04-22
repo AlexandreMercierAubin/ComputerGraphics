@@ -149,4 +149,5 @@ private:
 	void addSBPyramid();
 	void addParametricSurface();
 	void addSurfaceTessellation();
+	void addMirror();
 };

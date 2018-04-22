@@ -165,7 +165,6 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 	{
 		int w, h;
 		SDL_GetWindowSize(window, &w, &h);
-		scene.setupMirrors();
 		scene.drawMirrors(w, h, utiliserSkybox);
 	}
 	
@@ -895,6 +894,9 @@ void Renderer::ajouterPtDessin(int x, int y)
 	case 10://surface tessellation
 		addSurfaceTessellation();
 		break;
+	case 11://Mirror
+		addMirror();
+		break;
 
 	}
 
@@ -949,6 +951,13 @@ void Renderer::addSurfaceTessellation()
 {
 	scene.addObject(make_shared<TessellationQuad>("Resources/plancher2.png"));
 	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(tessellationShaderID);
+	ptsDessin.clear();
+}
+
+void Renderer::addMirror()
+{
+	scene.addObject(make_shared<MirrorObject>());
+	scene.setupMirrors();
 	ptsDessin.clear();
 }
 
@@ -1111,6 +1120,7 @@ void Renderer::eraseNodes()
 	}
 	selectedNodes.clear();
 	scene.setupLight();
+	scene.setupMirrors();
 }
 
 void Renderer::groupNodes()

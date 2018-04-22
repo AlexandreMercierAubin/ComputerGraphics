@@ -37,12 +37,9 @@ void Scene::setupScene()
 	TexShader texShader;
 	PrimitiveShader pShader;
 	SimpleGPShader gpShader;
-	TessellationShader tessShader;
-	TessellationCEShader tessCeShader;
 
 	shaderID = loader.CreateProgram(modelShader);
 	skyboxID = loader.CreateProgram(skyboxShader);
-	tessellationShaderID= loader.CreateProgramTess(tessShader, tessCeShader);
 	texShaderID = loader.CreateProgram(texShader);
 	GLuint primitiveShaderID= loader.CreateProgram(pShader);
 	GLuint gpShaderID = loader.CreateProgram(gpShader);
@@ -103,6 +100,7 @@ void Scene::setupScene()
 
 
 	setupLight();
+	setupMirrors();
 }
 
 void Scene::setupLight()

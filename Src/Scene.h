@@ -22,9 +22,7 @@
 #include "ModelShaderLambert.h"
 #include "ModelShaderBlinnPhong.h"
 #include "ParametricCurveObject.h"
-#include "TessellationShader.h"
-#include "TessellationCEShader.h"
-#include "TessellationQuad.h"
+
 
 
 class Scene
