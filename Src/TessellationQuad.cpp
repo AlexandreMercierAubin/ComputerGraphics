@@ -4,6 +4,7 @@
 
 void TessellationQuad::Create(GLuint &Program)
 {
+	name = "SurfaceTessellation";;
 	if (!imageOK)
 	{
 		cout << "Erreur au chargement de l'image" << endl;

@@ -26,9 +26,7 @@
 #include "TexShader.h"
 #include "SimpleGPShader.h"
 #include "PostProcessShader.h"
-#include "TessellationShader.h"
-#include "TessellationCEShader.h"
-#include "TessellationQuad.h"
+
 
 
 class Renderer

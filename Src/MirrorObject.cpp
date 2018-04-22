@@ -1,75 +1,47 @@
-#include "LightObject.h"
+#include "MirrorObject.h"
 
-LightObject::LightObject() 
+MirrorObject::MirrorObject() 
 {
-	name = "Light";
+	name = "mirror";
+	quad = make_shared<QuadObject>("Resources/Image/Small-mario.png");
+	quad->Create();
+}
+
+void MirrorObject::setTexture(GLuint a)
+{
+	quad->setTexture(a);
+}
+void MirrorObject::drawMirror(glm::mat4 & projection, glm::mat4 & view, glm::vec3 & camPos, const vector<Light*>& lights)
+{
+	quad->DrawSimple(projection, view, camPos, lights);
+}
+void MirrorObject::setPosition(glm::vec3 pos)
+{
+	quad->setPosition(pos);
+}
+glm::vec3 MirrorObject::getPosition()
+{
+	return quad->getPosition();
+}
+void MirrorObject::setRotationDegree(glm::vec3 rot)
+{
+	quad->setRotationDegree(rot);
+}
+void MirrorObject::addRotationDegree(const glm::vec3 & rot)
+{
+	quad->addRotationDegree(rot);
+}
+glm::vec3 MirrorObject::getRotationDegree()
+{
+	return quad->getRotationDegree();
+}
+void MirrorObject::addPosition(const glm::vec3 & pos)
+{
+	quad->addPosition(pos);
+}
+void MirrorObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights)
+{
+	//nothing to be done
 }
 
 
-
-void LightObject::setLight(const int &type,
-							const glm::vec3 &ambientColor,
-							const float &ambientIntensity,
-							const glm::vec3 &diffuseColor,
-							const float &diffuseIntensity,
-							const glm::vec3 &specularColor,
-							const float &specularIntensity,
-							const float attenuation,
-							const glm::vec3 &direction,
-							const glm::vec3 &in_position,
-							const float &coneAngle)
-{
-	light.lightType = type;
-	light.ambientColor = ambientColor;
-	light.ambientIntensity = ambientIntensity;
-	light.diffuseColor = diffuseColor;
-	light.diffuseIntensity = diffuseIntensity;
-	light.specularColor = specularColor;
-	light.specularIntensity = specularIntensity;
-	light.attenuation = attenuation;
-	light.direction = direction;
-	light.coneAngle = coneAngle;
-	position=in_position;
-
-	setRotationDegree(direction);
-}
-
-void LightObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights) 
-{
-	light.position = position;
-}
-
-AbstractObject::Light* LightObject::getLight() 
-{
-	return &light;
-}
-
-void LightObject::setRotationDegree(glm::vec3 rot)
-{
-	AbstractObject::setRotationDegree(rot);
-	light.direction = glm::normalize(rotationDegree);
-}
-
-void LightObject::addRotationDegree(const glm::vec3 & rot)
-{
-	AbstractObject::addRotationDegree(rot);
-	light.direction = glm::normalize(rotationDegree);
-}
-
-void LightObject::setRotationQuaternion(glm::quat quat)
-{
-	AbstractObject::setRotationQuaternion(quat);
-	light.direction = glm::normalize(rotationDegree);
-}
-
-void LightObject::addRotationQuaternion(const glm::quat & quat)
-{
-	AbstractObject::addRotationQuaternion(quat);
-	light.direction = glm::normalize(rotationDegree);
-}
-
-void LightObject::setColor(glm::vec4 Color)
-{
-	AbstractObject::setColor(Color);
-	light.diffuseColor = Color;
-}

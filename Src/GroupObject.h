@@ -1,6 +1,7 @@
 #pragma once
 #include "AbstractObject.h"
 #include "LightObject.h"
+#include "MirrorObject.h"
 #include "Model.h"
 #include <memory>
 
@@ -51,6 +52,7 @@ public:
 	virtual void setColor(glm::vec4 Color);
 
 	virtual void getLight(std::vector<Light*>& lights);
+	virtual void getMirrors(std::vector<std::shared_ptr<MirrorObject>>& mirrors);
 
 	virtual bool raycast(const Ray &ray, double &distance, std::shared_ptr<AbstractObject> &object);
 

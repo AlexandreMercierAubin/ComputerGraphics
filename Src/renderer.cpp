@@ -94,6 +94,7 @@ void Renderer::initShaders()
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glActiveTexture(GL_TEXTURE0);
 	glGenTextures(1, &fbo_texture);
@@ -154,6 +155,13 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 
 
 	scene.drawScene();
+
+	//temp test move it 
+	int w, h;
+	SDL_GetWindowSize(window, &w, &h);
+	scene.setupMirrors();
+	scene.drawMirrors(w, h);
+	//end of temp
 
 
 	if (activatePostProcess)
@@ -691,6 +699,7 @@ void Renderer::drawPostProcess(bool mirror)
 
 	scene.drawScene();
 
+
 	if (mirror)
 	{
 		scene.addYaw(-180);
@@ -704,18 +713,17 @@ void Renderer::drawPostProcess(bool mirror)
 	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_CULL_FACE);
 
-	//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+
 
 	glBindBuffer(GL_ARRAY_BUFFER, vbo_fbo_vertices);
-	glActiveTexture(0);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, fbo_texture);
 	glUniform1i(glGetUniformLocation(fbo_texture, "text"), 0);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindVertexArray(0);
-
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 
 	glDisable(GL_TEXTURE_2D);
 	glEnable(GL_CULL_FACE);

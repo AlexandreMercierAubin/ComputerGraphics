@@ -9,6 +9,10 @@ Scene::~Scene(void)
 	glDeleteProgram(shaderID);
 	glDeleteBuffers(1, &bufferID);
 	glDeleteProgram(skyboxID);
+	glDeleteProgram(tessellationShaderID);
+	glDeleteBuffers(1, &tessellationShaderID);
+	glDeleteProgram(texShaderID);
+	glDeleteBuffers(1, &texShaderID);
 }
 
 void Scene::setupScene()
@@ -33,10 +37,13 @@ void Scene::setupScene()
 	TexShader texShader;
 	PrimitiveShader pShader;
 	SimpleGPShader gpShader;
+	TessellationShader tessShader;
+	TessellationCEShader tessCeShader;
 
 	shaderID = loader.CreateProgram(modelShader);
 	skyboxID = loader.CreateProgram(skyboxShader);
-	GLuint texShaderID = loader.CreateProgram(texShader);
+	tessellationShaderID= loader.CreateProgramTess(tessShader, tessCeShader);
+	texShaderID = loader.CreateProgram(texShader);
 	GLuint primitiveShaderID= loader.CreateProgram(pShader);
 	GLuint gpShaderID = loader.CreateProgram(gpShader);
 
@@ -80,6 +87,8 @@ void Scene::setupScene()
 	matrix[2][0] = 0.0f;		matrix[2][1] = 0.0f;			matrix[2][2] = 1.0f;		matrix[2][3] = 0.0f;
 	matrix[3][0] = 0.0f;		matrix[3][1] = 0.0f;			matrix[3][2] = 0.0f;		matrix[3][3] = 0.0f;
 
+	objects->addObject(make_shared<MirrorObject>());
+
 	//objects->getCastedObjectAt<ParametricSurfaceObject>(6)->setMatrix(matrix);
 
 	/*objects->addObject(make_shared<ParametricCurveObject>());
@@ -99,6 +108,12 @@ void Scene::setupLight()
 {
 	lights.clear();
 	objects->getLight(lights);
+}
+
+void Scene::setupMirrors()
+{
+	mirrors.clear();
+	objects->getMirrors(mirrors);
 }
 
 void Scene::setProjection(PROJECTIONTYPE type, const float & angleOfView, const float & aspect, const float & near, const float &far)
@@ -122,6 +137,12 @@ void Scene::setProjection(PROJECTIONTYPE type, const float & angleOfView, const 
 void Scene::addYaw(GLfloat y)
 {
 	yaw += y;
+	MatView(view, false);
+}
+
+void Scene::setPosition(glm::vec3 pos)
+{
+	position = pos;
 	MatView(view, false);
 }
 
@@ -201,6 +222,81 @@ void Scene::MatView(glm::mat4 &matView, bool staticPos)
 void Scene::drawScene()
 {
 	objects->Draw(projection,view,position, lights);
+}
+
+void Scene::drawMirrors(int w, int h)
+{
+	glm::vec3 tempPlayerPos = position;
+	GLuint fboM, fbo_textureM, rbo_depthM;
+
+	glDisable(GL_CULL_FACE);
+
+	glActiveTexture(GL_TEXTURE1);
+	glGenTextures(1, &fbo_textureM);
+	glBindTexture(GL_TEXTURE_2D, fbo_textureM);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+
+	/* Depth buffer */
+	glGenRenderbuffers(1, &rbo_depthM);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo_depthM);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	/* Framebuffer to link everything together */
+	glGenFramebuffers(1, &fboM);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboM);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbo_textureM, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo_depthM);
+	GLenum status;
+	if ((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
+		cout << "framebuffer error" << endl;
+		return;
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	for (unsigned int i = 0; i < mirrors.size(); ++i) 
+	{
+		//settint the position of the camera
+		glm::vec3 mPos = mirrors[i]->getPosition();
+		setPosition(mPos);
+
+		//filling the framebuffer
+		glBindFramebuffer(GL_FRAMEBUFFER, fboM);
+		glClearColor(0, 0, 0, 1);// background
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		//add skybox here
+
+		drawScene();
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+		//draw part
+		glUseProgram(texShaderID);
+
+		mirrors[i]->setTexture(fbo_textureM);
+
+		mirrors[i]->drawMirror(projection, view, position, lights);
+	}
+	setPosition(tempPlayerPos);
+
+	glDeleteRenderbuffers(1, &rbo_depthM);
+	glDeleteTextures(1, &fbo_textureM);
+	glDeleteFramebuffers(1, &fboM);
+
+	glDisable(GL_TEXTURE_2D);
+	glEnable(GL_CULL_FACE);
 }
 
 void Scene::MatPerspective(glm::mat4 &proj,const float & angleOfView,const float &aspect, const float & near, const float &far)

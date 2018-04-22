@@ -120,6 +120,21 @@ void GroupObject::getLight(std::vector<Light*>& lights)
 	}
 }
 
+void GroupObject::getMirrors(std::vector<std::shared_ptr<MirrorObject>>& mirrors)
+{
+	for (unsigned int i = 0; i < vObject.size(); ++i)
+	{
+		if (isCastableAt<GroupObject>(i))
+		{
+			getCastedObjectAt<GroupObject>(i)->getMirrors(mirrors);
+		}
+		else if (isCastableAt<MirrorObject>(i))
+		{
+			mirrors.push_back(getCastedObjectAt<MirrorObject>(i));
+		}
+	}
+}
+
 bool GroupObject::raycast(const Ray &ray, double &distance, std::shared_ptr<AbstractObject> &object)
 {
 	bool intersect = false;

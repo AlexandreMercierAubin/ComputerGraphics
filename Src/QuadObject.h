@@ -18,8 +18,11 @@ private:
 	std::string texturePath2;
 	bool imageOK = false;
 public:
+	void setTexture(GLuint text);
 	virtual void Create(GLuint &Program);
+	virtual void Create();
 	virtual void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights);
+	virtual void DrawSimple(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights);
 	QuadObject(std::string texturePath);
 	QuadObject(std::string texturePath,std::string texturePath2);
 	~QuadObject();

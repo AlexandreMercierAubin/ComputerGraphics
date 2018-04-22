@@ -17,12 +17,14 @@
 #include "ModelObject.h"
 #include "GroupObject.h"
 #include "LightObject.h"
-
+#include "MirrorObject.h"
 #include "ModelShader.h"
 #include "ModelShaderLambert.h"
 #include "ModelShaderBlinnPhong.h"
 #include "ParametricCurveObject.h"
-
+#include "TessellationShader.h"
+#include "TessellationCEShader.h"
+#include "TessellationQuad.h"
 
 
 class Scene
@@ -42,11 +44,14 @@ public:
 
 	void setupScene();
 	void setupLight();
+	void setupMirrors();
 	void setProjection(PROJECTIONTYPE type, const float & angleOfView = 0.5236f, const float & aspect = 1.5f, const float & near = 0.1f, const float &far = 100.0f);
 	void addYaw(GLfloat y);
+	void setPosition(glm::vec3 pos);
 
 	void drawSkybox();
 	void drawScene();
+	void drawMirrors(int w,int h);
 
 	void mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel);
 
@@ -97,8 +102,11 @@ private:
 	GLuint skyboxID;
 	GLuint bufferID;
 	GLuint bufferColorID;
+	GLuint tessellationShaderID;
+	GLuint texShaderID;
 	//end of test
 	std::shared_ptr<GroupObject> objects;
 	std::vector<AbstractObject::Light*> lights;
+	std::vector<std::shared_ptr<MirrorObject>> mirrors;
 	SkyboxObject skybox;
 };
