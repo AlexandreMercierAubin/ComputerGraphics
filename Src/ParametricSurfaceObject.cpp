@@ -28,10 +28,17 @@ void ParametricSurfaceObject::setNumLines(int in_numN, int in_numM)
 
 void ParametricSurfaceObject::setMatrix(glm::mat4 G)
 {
+	vertices.clear();
+	indices.clear();
 	matrix = G;
 	forNumLines(matrix, numN, numM, bezierBicubic);
 	fillIndices(numM);
 	Create(program);
+}
+
+glm::mat4 ParametricSurfaceObject::getMatrix()
+{
+	return matrix;
 }
 
 void ParametricSurfaceObject::setParametricType(PARAMETRICTYPE in_type)

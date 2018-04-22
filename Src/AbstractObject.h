@@ -25,6 +25,9 @@ public:
 		float specularIntensity = 0.5f;
 		float attenuation = 0.2f;
 
+		glm::vec3 volume = glm::vec3(1, 1, 1);//cubic volume
+		bool volumetric = true;
+
 		glm::vec3 direction = glm::vec3(-1.0f, -1.0f, 0.0f);
 		glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 		float coneAngle = 30.0f;

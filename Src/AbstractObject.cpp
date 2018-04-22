@@ -196,6 +196,13 @@ void AbstractObject::uniformLight(GLuint &program, vector<Light*>lights)
 
 		location = "structLight[" + to_string(i) + "].type";
 		glUniform1i(glGetUniformLocation(program, location.c_str()), lights[i]->lightType);
+
+		location = "structLight[" + to_string(i) + "].volume";
+		glUniform3fv(glGetUniformLocation(program, location.c_str()),1, &(lights[i]->volume[0]));
+
+		location = "structLight[" + to_string(i) + "].volumetric";
+		glUniform1i(glGetUniformLocation(program, location.c_str()), lights[i]->volumetric);
+
 	}
 }
 

@@ -26,7 +26,10 @@
 #include "TexShader.h"
 #include "SimpleGPShader.h"
 #include "PostProcessShader.h"
-
+#include "PostProcessColorShader.h"
+#include "TessellationCEShader.h"
+#include "TessellationQuad.h"
+#include "TessellationShader.h"
 
 class Renderer
 {
@@ -66,14 +69,16 @@ private:
 	glm::vec4 couleurBordure;
 	int epaisseurBordure = 1;
 	bool utiliserSkybox = true;
-	bool activatePostProcess = true;
+	bool activatePostProcess = false;
+	bool activateMirror = false;
+	bool activateWireframe = false;
+	bool MSAA = true;
 	int formeADessiner = 0; // 0 = point, 1 = ligne, 2 = triangle, 3 = rectangle, 4 = quad, 5 = smiley, 6 = étoile , 7 = Cube, 8 = Sphere
 	std::vector<glm::vec3> ptsDessin;
 
 	int typeCurseur = 0; // 0 = par défaut, 1 = point, 2 = points, 3 = croix, 4 = triangle, 5 = quad
 	PrimitiveObject curseur;
 
-	GLuint fbo, fbo_texture, rbo_depth, vbo_fbo_vertices,vao;
 
 	GLuint primitiveShaderID;
 	GLuint GPShaderID;
@@ -83,6 +88,8 @@ private:
 	GLuint currentModelShaderID;
 	GLuint texShaderID;
 	GLuint postProcessShaderID;
+	GLuint postProcessColorShaderID;
+	GLuint tessellationShaderID;
 
 	// Lumières
 	int lightType = 0; // 0 = directionnelle, 1 = ponctuelle, 2 = projecteur
@@ -92,6 +99,8 @@ private:
 	float lightDiffuseIntensity = 1.0f;
 	glm::vec3 lightSpecularColor;
 	float lightSpecularIntensity = 1.0f;
+	glm::vec3 lightVolume=glm::vec3(1,1,1);
+	bool lightVolumetric=false;
 	float lightAttenuation = 1.0f;
 	glm::vec3 lightDirection;
 	glm::vec3 lightPosition;
@@ -108,6 +117,7 @@ private:
 	glm::vec3 currentRotation;
 	glm::quat currentRotationQuat;
 	glm::vec3 currentScale;
+	glm::mat4 currentMat4;
 	bool proportionalResizing = true;
 	bool useQuaternion = false;
 	void setColor();
@@ -131,7 +141,7 @@ private:
 	void drawGUI();
 	void drawTreeRecursive(std::shared_ptr<GroupObject> objects);
 	void drawCursor();
-	void drawPostProcess(bool mirror);
+	void drawPostProcess(bool mirror,GLuint program,bool fullScreen);
 	void updateCursor();
 	void importImage(string file);
 	void importModel(string file);
@@ -144,4 +154,34 @@ private:
 	void addCube();
 	void addSBPyramid();
 	void addParametricSurface();
+	void addSurfaceTessellation();
+	void addMirror();
+	void addParametricCurve(ParametricCurveObject::PARAMETRICTYPE type);
+
+	template <class abObject,class abObject2>
+	bool isCastable(abObject2 *obj)
+	{
+		if (abObject* casted = dynamic_cast<abObject*>(obj))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	template <class abObject, class abObject2>
+	abObject* getCasted(abObject2 *obj)
+	{
+		if (abObject* casted = dynamic_cast<abObject*>(obj))
+		{
+			return casted;
+		}
+		else
+		{
+			return NULL;
+		}
+	}
+
 };

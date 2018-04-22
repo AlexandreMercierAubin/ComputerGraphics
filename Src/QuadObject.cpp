@@ -14,38 +14,8 @@ void QuadObject::Create(GLuint &Program)
 
 	program = Program;
 	glUseProgram(program);
-	GLfloat width, height, depth;
-	width = 0.5f;
-	height = 0.5f;
-	depth = 0.001f;
-	glGenVertexArrays(1, &VertexArray);
-	glBindVertexArray(VertexArray);
-
-	vertices[0] = glm::vec3(0 - width / 2, 0 - height / 2, 0 - depth / 2);
-	vertices[1] = glm::vec3(0 + width / 2, 0 - height / 2, 0 - depth / 2);
-	vertices[2] = glm::vec3(0 - width / 2, 0 + height / 2, 0 - depth / 2);
-	vertices[3] = glm::vec3(0 + width / 2, 0 + height / 2, 0 - depth / 2);
-
-	glm::vec2 vTexture[4] = { glm::vec2(0.0f, 1.0f)  , glm::vec2(1.0f, 1.0f), glm::vec2(0.0f, 0.0f) , glm::vec2(1.0f, 0.0f) };
-
-	GLuint vertexbuffer;
-	glGenBuffers(1, &vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(0);
-
-	GLuint textureBuffer;
-	glGenBuffers(1, &textureBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, textureBuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vTexture), vTexture, GL_STATIC_DRAW);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(1);
-
-	GLuint IBO;
-	glGenBuffers(1, &IBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	
+	Create();
 
 	GLint channels;
 	GLenum type;
@@ -85,8 +55,70 @@ void QuadObject::Create(GLuint &Program)
 	glBindVertexArray(0);
 }
 
+void QuadObject::Create()
+{
+	GLfloat width, height, depth;
+	width = 0.5f;
+	height = 0.5f;
+	depth = 0.001f;
+	glGenVertexArrays(1, &VertexArray);
+	glBindVertexArray(VertexArray);
+
+	if (invertedX && invertedY) 
+	{
+		vertices[3] = glm::vec3(0 - width / 2, 0 - height / 2, 0 - depth / 2);
+		vertices[2] = glm::vec3(0 + width / 2, 0 - height / 2, 0 - depth / 2);
+		vertices[1] = glm::vec3(0 - width / 2, 0 + height / 2, 0 - depth / 2);
+		vertices[0] = glm::vec3(0 + width / 2, 0 + height / 2, 0 - depth / 2);
+	}
+	else if (invertedX) 
+	{
+		vertices[1] = glm::vec3(0 - width / 2, 0 - height / 2, 0 - depth / 2);
+		vertices[0] = glm::vec3(0 + width / 2, 0 - height / 2, 0 - depth / 2);
+		vertices[3] = glm::vec3(0 - width / 2, 0 + height / 2, 0 - depth / 2);
+		vertices[2] = glm::vec3(0 + width / 2, 0 + height / 2, 0 - depth / 2);
+	}
+	else if (invertedY) 
+	{
+		vertices[2] = glm::vec3(0 - width / 2, 0 - height / 2, 0 - depth / 2);
+		vertices[3] = glm::vec3(0 + width / 2, 0 - height / 2, 0 - depth / 2);
+		vertices[0] = glm::vec3(0 - width / 2, 0 + height / 2, 0 - depth / 2);
+		vertices[1] = glm::vec3(0 + width / 2, 0 + height / 2, 0 - depth / 2);
+	}
+	else 
+	{
+		vertices[0] = glm::vec3(0 - width / 2, 0 - height / 2, 0 - depth / 2);
+		vertices[1] = glm::vec3(0 + width / 2, 0 - height / 2, 0 - depth / 2);
+		vertices[2] = glm::vec3(0 - width / 2, 0 + height / 2, 0 - depth / 2);
+		vertices[3] = glm::vec3(0 + width / 2, 0 + height / 2, 0 - depth / 2);
+	}
+
+	glm::vec2 vTexture[4] = { glm::vec2(0.0f, 1.0f)  , glm::vec2(1.0f, 1.0f), glm::vec2(0.0f, 0.0f) , glm::vec2(1.0f, 0.0f) };
+
+	GLuint vertexbuffer;
+	glGenBuffers(1, &vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	GLuint textureBuffer;
+	glGenBuffers(1, &textureBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, textureBuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vTexture), vTexture, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	GLuint IBO;
+	glGenBuffers(1, &IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	glBindVertexArray(0);
+}
+
 void QuadObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights)
 {
+	
 	if (!imageOK)
 		return;
 
@@ -110,9 +142,15 @@ void QuadObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos,
 
 	GLuint MatModel = glGetUniformLocation(program, "matModel");
 	glUniformMatrix4fv(MatModel, 1, GL_FALSE, &model[0][0]);
+	DrawSimple(projection,view, camPos, lights);
+
+}
+
+void QuadObject::DrawSimple(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights)
+{
 
 	glBindVertexArray(VertexArray);
-	glActiveTexture(0);
+	glActiveTexture(1);
 	glBindTexture(GL_TEXTURE_2D, textureID);
 	glUniform1i(glGetUniformLocation(textureID, "text"), 0);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -121,6 +159,16 @@ void QuadObject::Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos,
 
 }
 
+void QuadObject::setTexture(GLuint text) 
+{
+	textureID = text;
+}
+
+void QuadObject::setInverted(bool x, bool y)
+{
+	invertedX = x;
+	invertedY = y;
+}
 
 QuadObject::QuadObject(std::string TexturePath)
 {

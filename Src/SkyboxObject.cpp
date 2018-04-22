@@ -113,6 +113,12 @@ void SkyboxObject::Draw(glm::mat4 &projection, glm::mat4 &view , glm::vec3 &camP
 	GLuint MatProjection = glGetUniformLocation(program, "matProjection");
 	glUniformMatrix4fv(MatProjection, 1, GL_FALSE, &projection[0][0]);
 
+	glm::mat4 t;
+	AbstractObject::MatTranslation(program, t, camPos);
+
+	GLuint MatModel = glGetUniformLocation(program, "matModel");
+	glUniformMatrix4fv(MatModel, 1, GL_FALSE, &t[0][0]);
+
 	//Changer le test de profondeur
 	glDepthMask(GL_FALSE);
 

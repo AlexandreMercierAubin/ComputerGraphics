@@ -15,6 +15,7 @@ void Renderer::setupRenderer(SDL_Window * window, SDL_GLContext *context)
 	initShaders();
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
@@ -67,73 +68,41 @@ void Renderer::initShaders()
 	GPShaderID = loader.CreateProgram(GPShader);
 	PostProcessShader postProcessShader;
 	postProcessShaderID = loader.CreateProgram(postProcessShader);
+	TessellationCEShader tessCe;
+	TessellationShader tess;
+	tessellationShaderID = loader.CreateProgramTess(tess, tessCe);
+	PostProcessColorShader ppColorShader;
+	postProcessColorShaderID = loader.CreateProgram(ppColorShader);
 
 	curseur.Create(primitiveShaderID);
 	curseur.setCouleurRemplissage(glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	curseur.setCouleurBordure(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
-
-	int w, h;
-	SDL_GetWindowSize(window, &w, &h);
-
-	GLfloat fbo_vertices[] = {
-		0, -1,
-		1, -1,
-		0,  0,
-		1,  0,
-	};
-
-	//to prepare the post-process
-	glGenBuffers(1, &vbo_fbo_vertices);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_fbo_vertices);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(fbo_vertices), fbo_vertices, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(0);
-	glBindVertexArray(0);
-
-	glActiveTexture(GL_TEXTURE0);
-	glGenTextures(1, &fbo_texture);
-	glBindTexture(GL_TEXTURE_2D, fbo_texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(1);
-
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-
-	/* Depth buffer */
-	glGenRenderbuffers(1, &rbo_depth);
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo_depth);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-	/* Framebuffer to link everything together */
-	glGenFramebuffers(1, &fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbo_texture, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo_depth);
-	GLenum status;
-	if ((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
-		fprintf(stderr, "glCheckFramebufferStatus: error %p", status);
-		return;
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 
 
 void Renderer::drawRenderer(Scene::KeyFlags &flags)
 {
+	if (MSAA) 
+	{
+		glEnable(GL_MULTISAMPLE);
+		glEnable(GL_LINE_SMOOTH);
+	}
+	else
+	{
+		glDisable(GL_MULTISAMPLE);
+		glDisable(GL_LINE_SMOOTH);
+	}
 
-
-	
-
-	
+	if (activateWireframe) 
+	{
+		glEnable(GL_POLYGON_SMOOTH);
+	}
+	else 
+	{
+		glDisable(GL_POLYGON_SMOOTH);
+	}
 
 	scene.refreshScene(flags);
 
@@ -143,14 +112,22 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 	if (utiliserSkybox)
 		scene.drawSkybox();
 
-
 	scene.drawScene();
 
+	if (activateMirror)
+	{
+		drawPostProcess(true, postProcessShaderID, false);
+	}
 
 	if (activatePostProcess)
 	{
-		drawPostProcess(true);
+		drawPostProcess(false, postProcessColorShaderID,true);
 	}
+
+
+	int w, h;
+	SDL_GetWindowSize(window, &w, &h);
+	scene.drawMirrors(w, h, utiliserSkybox);
 	
 
 	drawGUI();
@@ -176,13 +153,6 @@ void Renderer::drawRenderer(Scene::KeyFlags &flags)
 void Renderer::resize(const int & w, const int & h)
 {
 	glViewport(0, 0, w, h);
-	glBindTexture(GL_TEXTURE_2D, fbo_texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glBindRenderbuffer(GL_RENDERBUFFER, rbo_depth);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 }
 
 void Renderer::mouseMotion(const unsigned int & timestamp, const unsigned int & windowID, const unsigned int & state, const int & x, const int & y, const int & xRel, const int & yRel ,Scene::KeyFlags flags)
@@ -235,11 +205,6 @@ Renderer::~Renderer()
 	glDeleteBuffers(1, &texShaderID);
 	glDeleteProgram(postProcessShaderID);
 	glDeleteBuffers(1, &postProcessShaderID);
-
-	glDeleteRenderbuffers(1, &rbo_depth);
-	glDeleteTextures(1, &fbo_texture);
-	glDeleteFramebuffers(1, &fbo);
-	glDeleteBuffers(1, &vbo_fbo_vertices);
 }
 
 void Renderer::drawGUI()
@@ -257,7 +222,7 @@ void Renderer::drawGUI()
 	ImGui::ColorEdit4("Remplissage", &couleurRemplissage.r);
 	ImGui::ColorEdit4("Bordures", &couleurBordure.r);
 	ImGui::SliderInt("Epaisseur bordures", &epaisseurBordure, 0, 10);
-	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide\0SurfaceParam\0"))
+	if (ImGui::Combo("Forme a dessiner", &formeADessiner, "Point\0Ligne\0Triangle\0Rectangle\0Quad\0Smiley\0Etoile\0Cube\0Pyramide\0SurfaceParam\0SurfaceTessellation\0Portail\0BezierQuad\0BezierCub\0Hermite\0bezier\0CatmullRom\0"))
 		ptsDessin.clear();
 
 	ImGui::NewLine();
@@ -330,6 +295,11 @@ void Renderer::drawGUI()
 	// ********** Autres options **********
 
 	ImGui::Begin("Autres options", (bool *)0, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+
+	ImGui::Checkbox("Retroviseur", &activateMirror); 
+	ImGui::Checkbox("Post-Process", &activatePostProcess);
+	ImGui::Checkbox("MSAA", &MSAA);
+	ImGui::Checkbox("fil de fer inverse", &activateWireframe);
 
 	if (ImGui::Combo("Mode de projection", (int*)&projectionType, "Perspective\0Perspective inverse\0Orthographique\0"))
 	{
@@ -478,6 +448,16 @@ void Renderer::drawGUI()
 		ImGui::Checkbox("Redimensionnement proportionnel", &proportionalResizing);
 		ImGui::Checkbox("Utiliser les quaternions", &useQuaternion);
 
+		if (selectedNodes.size() == 1&& isCastable<ParametricSurfaceObject,AbstractObject>(selectedNodes[0].first.get()) )
+		{
+			ImGui::DragFloat4("Parameters1", &currentMat4[0][0], 0.01f, -1000.0f, 1000.0f, "%.2f");
+			ImGui::DragFloat4("2", &currentMat4[1][0], 0.01f, -1000.0f, 1000.0f, "%.2f");
+			ImGui::DragFloat4("3", &currentMat4[2][0], 0.01f, -1000.0f, 1000.0f, "%.2f");
+			ImGui::DragFloat4("4", &currentMat4[3][0], 0.01f, -1000.0f, 1000.0f, "%.2f");
+			ParametricSurfaceObject* object = getCasted<ParametricSurfaceObject, AbstractObject>(selectedNodes[0].first.get());
+			object->setMatrix(currentMat4);
+		}
+
 		transformationsWindowWidth = ImGui::GetCurrentWindow()->Size.x;
 		ImGui::End();
 	}
@@ -518,6 +498,8 @@ void Renderer::drawGUI()
 	ImGui::SliderFloat("Intensite diffuse", &lightDiffuseIntensity, 0.0f, 1.0f);
 	ImGui::ColorEdit3("Couleur speculaire", &lightSpecularColor.r);
 	ImGui::SliderFloat("Intensite speculaire", &lightSpecularIntensity, 0.0f, 1.0f);
+	ImGui::DragFloat3("volume", &lightVolume.x, 1.0f, -359.9f, 359.9f, "%.1f");
+	ImGui::Checkbox("Volumetrique", &lightVolumetric);
 
 	if (lightType != 0)
 		ImGui::SliderFloat("Attenuation", &lightAttenuation, 0.0f, 1.0f);
@@ -545,7 +527,9 @@ void Renderer::drawGUI()
 			lightAttenuation,
 			lightDirection,
 			lightPosition,
-			lightConeAngle);
+			lightConeAngle,
+			lightVolumetric,
+			lightVolume);
 
 		scene.addObject(light);
 		scene.setupLight();
@@ -663,10 +647,73 @@ void Renderer::drawCursor()
 
 
 
-void Renderer::drawPostProcess(bool mirror)
+void Renderer::drawPostProcess(bool mirror, GLuint program,bool fullScreen)
 {
 	
+	int w, h;
+	SDL_GetWindowSize(window, &w, &h);
+
+
+	GLuint fbo, fbo_texture, rbo_depth, vbo_fbo_vertices,vao;
+	GLfloat fbo_vertices[8];
+	if (fullScreen)
+	{
+		fbo_vertices[0] = -1; fbo_vertices[1] = -1;
+		fbo_vertices[2] = 1; fbo_vertices[3] = -1;
+		fbo_vertices[4] = -1; fbo_vertices[5] = 1;
+		fbo_vertices[6] = 1; fbo_vertices[7] = 1;
+
+	}
+	else 
+	{
+		fbo_vertices[0] = 0; fbo_vertices[1] = -1;
+		fbo_vertices[2] = 1; fbo_vertices[3] = -1;
+		fbo_vertices[4] = 0; fbo_vertices[5] = 0;
+		fbo_vertices[6] = 1; fbo_vertices[7] = 0;
+	}
+
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
+
+	glGenBuffers(1, &vbo_fbo_vertices);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo_fbo_vertices);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(fbo_vertices), fbo_vertices, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	glActiveTexture(GL_TEXTURE0);
+	glGenTextures(1, &fbo_texture);
+	glBindTexture(GL_TEXTURE_2D, fbo_texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(1);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindVertexArray(0);
+
+	/* Depth buffer */
+	glGenRenderbuffers(1, &rbo_depth);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo_depth);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, w, h);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	/* Framebuffer to link everything together */
+	glGenFramebuffers(1, &fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fbo_texture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo_depth);
+	GLenum status;
+	if ((status = glCheckFramebufferStatus(GL_FRAMEBUFFER)) != GL_FRAMEBUFFER_COMPLETE) {
+		cout << "framebuffer error" << endl;
+		return;
+	}
+
 	glClearColor(BackgroundColor[0], BackgroundColor[1], BackgroundColor[2], 0);// background
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -678,8 +725,6 @@ void Renderer::drawPostProcess(bool mirror)
 	if (utiliserSkybox)
 		scene.drawSkybox();
 
-
-
 	scene.drawScene();
 
 	if (mirror)
@@ -690,26 +735,29 @@ void Renderer::drawPostProcess(bool mirror)
 
 	
 
-	glUseProgram(postProcessShaderID);
-
+	//Quad to draw on
+	glUseProgram(program);
 	glEnable(GL_TEXTURE_2D);
 	glDisable(GL_CULL_FACE);
 
-	//glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-	glBindBuffer(GL_ARRAY_BUFFER, vbo_fbo_vertices);
-	glActiveTexture(0);
+	glBindVertexArray(vao);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, fbo_texture);
 	glUniform1i(glGetUniformLocation(fbo_texture, "text"), 0);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindVertexArray(0);
-
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindVertexArray(0);
 
 	glDisable(GL_TEXTURE_2D);
 	glEnable(GL_CULL_FACE);
+
+
+	//clean buffers
+	glDeleteRenderbuffers(1, &rbo_depth);
+	glDeleteTextures(1, &fbo_texture);
+	glDeleteFramebuffers(1, &fbo);
+	glDeleteBuffers(1, &vbo_fbo_vertices);
 
 }
 
@@ -872,9 +920,36 @@ void Renderer::ajouterPtDessin(int x, int y)
 	case 8://pyramid
 		addSBPyramid();
 		break;
-	case 9://pyramid
+	case 9://surface parametrique
 		addParametricSurface();
 		break;
+	case 10://surface tessellation
+		addSurfaceTessellation();
+		break;
+	case 11://Portail
+		addMirror();
+		break;
+	case 12://bezier quad
+		if (ptsDessin.size() >= 3)
+			addParametricCurve(ParametricCurveObject::BezierQuadratic);
+		break;
+	case 13://bezier cubic
+		if (ptsDessin.size() >= 4)
+			addParametricCurve(ParametricCurveObject::BezierCubic);
+		break;
+	case 14://hermite
+		if (ptsDessin.size() >= 4)
+			addParametricCurve(ParametricCurveObject::Hermite);
+		break;
+	case 15://bezier
+		if (ptsDessin.size() >= 2)//change that 
+			addParametricCurve(ParametricCurveObject::Bezier);
+		break;
+	case 16://catmullrom
+		if (ptsDessin.size() >= 4)
+			addParametricCurve(ParametricCurveObject::CatmullRom);
+		break;
+	//BezierQuad\0BezierCub\0Hermite\0bezier\0CatmullRom\0
 
 	}
 
@@ -923,6 +998,38 @@ void Renderer::addParametricSurface()
 	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(GPShaderID);
 	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->setColor(couleurRemplissage);
 	ptsDessin.clear();
+}
+
+void Renderer::addSurfaceTessellation()
+{
+	scene.addObject(make_shared<TessellationQuad>("Resources/plancher2.png"));
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(tessellationShaderID);
+	ptsDessin.clear();
+}
+
+void Renderer::addMirror()
+{
+	scene.addObject(make_shared<MirrorObject>());
+	scene.getObjects()->getCastedObjectAt<MirrorObject>(scene.getObjects()->size() - 1)->setInverted(false, true);
+	scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(texShaderID);	
+	scene.setupMirrors();
+	ptsDessin.clear();
+}
+
+void Renderer::addParametricCurve(ParametricCurveObject::PARAMETRICTYPE type)
+{
+	if (type != ParametricCurveObject::Bezier || ptsDessin.size() <= 2) {
+		scene.addObject(make_shared<ParametricCurveObject>());
+		scene.getObjects()->getObjectAt(scene.getObjects()->size() - 1)->Create(primitiveShaderID);
+		scene.getObjects()->getCastedObjectAt<ParametricCurveObject>(scene.getObjects()->size() - 1)->setParametricType(type);
+		scene.getObjects()->getCastedObjectAt<ParametricCurveObject>(scene.getObjects()->size() - 1)->setNumLines(100);
+	}
+	scene.getObjects()->getCastedObjectAt<ParametricCurveObject>(scene.getObjects()->size() - 1)->setVertices(ptsDessin);
+	scene.getObjects()->getCastedObjectAt<ParametricCurveObject>(scene.getObjects()->size() - 1)->setColor(couleurRemplissage);
+	scene.getObjects()->getCastedObjectAt<ParametricCurveObject>(scene.getObjects()->size() - 1)->setEdgeColor(couleurRemplissage);
+	scene.getObjects()->getCastedObjectAt<ParametricCurveObject>(scene.getObjects()->size() - 1)->setEdgeSize(5);
+	if(type!= ParametricCurveObject::Bezier)
+		ptsDessin.clear();
 }
 
 void Renderer::ajouterSmiley()
@@ -1084,6 +1191,7 @@ void Renderer::eraseNodes()
 	}
 	selectedNodes.clear();
 	scene.setupLight();
+	scene.setupMirrors();
 }
 
 void Renderer::groupNodes()
@@ -1155,6 +1263,11 @@ void Renderer::updateTransformations()
 		currentRotationQuat = obj->getRotationQuaternion();
 		currentTranslation = obj->getPosition();
 		currentScale = obj->getScale();
+		if ( isCastable<ParametricSurfaceObject, AbstractObject>(selectedNodes[0].first.get()))
+		{
+			ParametricSurfaceObject* object = getCasted<ParametricSurfaceObject, AbstractObject>(selectedNodes[0].first.get());
+			currentMat4= object->getMatrix();
+		}
 	}
 	else // Aucun ou plusieurs sélectionnés
 	{
