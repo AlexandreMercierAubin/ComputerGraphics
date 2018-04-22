@@ -322,10 +322,11 @@ void Renderer::drawGUI()
 	ImGui::InputText("Fichier", fichierRaycast, IM_ARRAYSIZE(fichier));
 	ImGui::DragInt2("Largeur / Hauteur", size, 1.0f, 0, 500);
 	ImGui::SliderInt("Rayons par pixel", &rayPerPixel, 1, 10);
-	ImGui::SliderInt("Nombre max de rebonds", &depth, 1, 10);
+	ImGui::SliderInt("Rebonds max", &depth, 1, 10);
 	if (ImGui::Button("Generer image"))
 		scene.renderRaycast(size[0], size[1], rayPerPixel, depth, fichierRaycast);
-	ImGui::Text("Avertissement: fonction bloquante. Progres sur console.");
+	ImGui::Text("Avertissement: Fonction bloquante.");
+	ImGui::Text("Progres affiche sur la console.");
 
 	ImGui::SetNextWindowPos(ImVec2(2.0f, ImGui::GetCurrentWindow()->Pos.y + ImGui::GetCurrentWindow()->Size.y + 3.0f));
 	ImGui::End();

@@ -29,5 +29,6 @@ private:
 public:
 	virtual void Create(GLuint &Program);
 	virtual void Draw(glm::mat4 &projection, glm::mat4 &view, glm::vec3 &camPos, const vector<Light*>& lights);
+	virtual bool raycast(const Ray &ray, double &distance, glm::vec3 &normal, std::shared_ptr<AbstractObject> &object);
 	~CubeObject();
 };
