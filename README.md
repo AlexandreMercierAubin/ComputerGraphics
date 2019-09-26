@@ -1,4 +1,4 @@
-# Infographics
+# Computer Graphics
 University project repository
 
 ## WIN32
